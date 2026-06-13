@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="theme-color" content="#0F6E56">
+  <meta name="theme-color" content="#1f2937">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Sportzähler</title>
@@ -11,6 +11,7 @@
   <link rel="manifest" href="manifest.webmanifest">
 </head>
 <body>
+
   <!-- Session-Recovery-Banner -->
   <div id="session-banner" class="session-banner hidden">
     <p>Letztes Match wiederherstellen?</p>
@@ -25,26 +26,67 @@
     <button id="btn-dismiss-install">&#x2715;</button>
   </div>
 
+  <!-- Top Navigation -->
+  <nav class="top-nav" aria-label="Hauptnavigation">
+    <span class="nav-logo">Sportzähler</span>
+    <div class="nav-tabs" role="tablist">
+      <button class="nav-tab nav-tab--active" data-tab="home" aria-label="Home">HOME</button>
+      <button class="nav-tab" data-tab="tools" aria-label="Tools">TOOLS</button>
+      <button class="nav-tab" data-tab="history" aria-label="Verlauf">LOG</button>
+    </div>
+    <button class="nav-settings-btn" id="btn-open-settings" aria-label="Einstellungen">&#x2699;</button>
+  </nav>
+
   <main id="app">
 
-    <!-- ═══ Screen: Match-Hub ═══ -->
-    <section id="screen-match-hub" class="screen screen--active">
-      <header class="screen-header">
-        <h1>Match</h1>
-        <button class="btn-icon" id="btn-open-settings" aria-label="Einstellungen">&#x2699;</button>
-      </header>
-      <div class="screen-body">
-        <button class="btn-primary btn-full" id="btn-new-match">Neues Match starten</button>
+    <!-- ═══ Screen: Home ═══ -->
+    <section id="screen-home" class="screen screen--active">
+      <div class="home-grid">
+        <button class="home-tile home-tile--primary" id="btn-new-match" aria-label="Neues Match starten">
+          <div>
+            <div class="home-tile-label">Match starten</div>
+            <div class="home-tile-sub">Neues Spiel</div>
+          </div>
+          <span class="home-tile-icon">⚽</span>
+        </button>
+        <button class="home-tile" id="btn-open-presets" aria-label="Presets verwalten">
+          <span class="home-tile-icon">🎮</span>
+          <div class="home-tile-label">Presets</div>
+          <div id="home-preset-badge" class="home-tile-badge">0 gespeichert</div>
+        </button>
+        <button class="home-tile" id="btn-goto-tools" aria-label="Werkzeuge öffnen">
+          <span class="home-tile-icon">⏱️</span>
+          <div class="home-tile-label">Timer</div>
+          <div class="home-tile-sub">Stoppuhr &amp; Countdown</div>
+        </button>
+        <button class="home-tile home-tile--full" id="btn-open-teambuilder" aria-label="Teams zufällig einteilen">
+          <span class="home-tile-icon">🎲</span>
+          <div>
+            <div class="home-tile-label">Teambildung</div>
+            <div class="home-tile-sub">Zufällige Teameinteilung</div>
+          </div>
+        </button>
       </div>
+    </section>
+
+    <!-- ═══ Screen: Presets ═══ -->
+    <section id="screen-presets" class="screen">
+      <div class="sub-header">
+        <button class="btn-back" id="btn-presets-back" aria-label="Zurück">&#x2190;</button>
+        <h2>Presets</h2>
+        <button class="btn-icon" id="btn-preset-add" aria-label="Preset hinzufügen">&#x2B;</button>
+      </div>
+      <div class="preset-list" id="preset-list" role="list"></div>
     </section>
 
     <!-- ═══ Screen: Match-Setup ═══ -->
     <section id="screen-match-setup" class="screen">
-      <header class="screen-header">
+      <div class="sub-header">
         <button class="btn-back" id="btn-setup-back" aria-label="Zurück">&#x2190;</button>
-        <h1>Match einrichten</h1>
-      </header>
-      <div class="screen-body">
+        <h2>Match einrichten</h2>
+      </div>
+      <div class="setup-preset-strip" id="setup-preset-strip" aria-label="Preset wählen"></div>
+      <div class="setup-form">
         <div class="setup-team">
           <label for="team-a-name">Team A</label>
           <input type="text" id="team-a-name" placeholder="Name" maxlength="20" autocomplete="off">
@@ -55,7 +97,6 @@
           <input type="text" id="team-b-name" placeholder="Name" maxlength="20" autocomplete="off">
           <div class="color-picker" id="color-picker-b" role="group" aria-label="Farbe Team B"></div>
         </div>
-        <div class="preset-chips" id="preset-chips" aria-label="Gespeicherte Teams"></div>
         <button class="btn-primary btn-full" id="btn-start-match">Match starten</button>
       </div>
     </section>
@@ -86,9 +127,8 @@
       </div>
     </section>
 
-    <!-- ═══ Screen: Werkzeuge ═══ -->
+    <!-- ═══ Screen: Tools ═══ -->
     <section id="screen-tools" class="screen">
-      <header class="screen-header"><h1>Werkzeuge</h1></header>
       <div class="screen-body">
 
         <!-- Stoppuhr 1 -->
@@ -146,26 +186,65 @@
       </div>
     </section>
 
-    <!-- ═══ Screen: Verlauf ═══ -->
+    <!-- ═══ Screen: Verlauf / Log ═══ -->
     <section id="screen-history" class="screen">
-      <header class="screen-header">
-        <h1>Verlauf</h1>
-        <button class="btn-icon" id="btn-export" aria-label="Exportieren">&#x2193;</button>
-      </header>
       <div class="history-tabs" role="tablist">
         <button class="history-tab active" data-tab="matches" role="tab" aria-selected="true">Matches</button>
         <button class="history-tab" data-tab="stopwatches" role="tab" aria-selected="false">Stoppuhren</button>
         <button class="history-tab" data-tab="timers" role="tab" aria-selected="false">Timer</button>
       </div>
+      <div class="history-actions" style="display:flex;justify-content:flex-end;padding:10px 14px 0;flex-shrink:0">
+        <button class="btn-icon" id="btn-export" aria-label="Exportieren">&#x2193;</button>
+      </div>
       <div class="history-list" id="history-list" role="list"></div>
+    </section>
+
+    <!-- ═══ Screen: Teambildung Setup ═══ -->
+    <section id="screen-teambuilder" class="screen">
+      <div class="sub-header">
+        <button class="btn-back" id="btn-teambuilder-back" aria-label="Zurück">&#x2190;</button>
+        <h2>Teambildung</h2>
+      </div>
+      <div class="screen-body">
+        <div class="tb-counter-row">
+          <span class="tb-counter-label">Personen</span>
+          <div class="tb-counter">
+            <button class="tb-counter-btn" id="tb-persons-dec">&#x2212;</button>
+            <span class="tb-counter-val" id="tb-persons-val">10</span>
+            <button class="tb-counter-btn" id="tb-persons-inc">+</button>
+          </div>
+        </div>
+        <div class="tb-counter-row">
+          <span class="tb-counter-label">Teams</span>
+          <div class="tb-counter">
+            <button class="tb-counter-btn" id="tb-teams-dec">&#x2212;</button>
+            <span class="tb-counter-val" id="tb-teams-val">2</span>
+            <button class="tb-counter-btn" id="tb-teams-inc">+</button>
+          </div>
+        </div>
+        <div class="tb-preview" id="tb-preview"></div>
+        <button class="btn-primary btn-full" id="btn-teambuilder-start">Einteilung starten</button>
+      </div>
+    </section>
+
+    <!-- ═══ Screen: Teambildung Reveal ═══ -->
+    <section id="screen-teambuilder-reveal" class="screen">
+      <div class="tb-reveal" id="tb-reveal" role="button" aria-label="Tippen für nächste Zuteilung">
+        <div class="tb-reveal-counter" id="tb-reveal-counter">1 / 10</div>
+        <div class="tb-reveal-content">
+          <div class="tb-reveal-prompt" id="tb-reveal-prompt">TIPPEN!</div>
+          <div class="tb-reveal-team hidden" id="tb-reveal-team"></div>
+        </div>
+        <button class="tb-reveal-exit" id="btn-teambuilder-exit">&#x2715; Beenden</button>
+      </div>
     </section>
 
     <!-- ═══ Screen: Einstellungen ═══ -->
     <section id="screen-settings" class="screen">
-      <header class="screen-header">
+      <div class="sub-header">
         <button class="btn-back" id="btn-settings-back" aria-label="Zurück">&#x2190;</button>
-        <h1>Einstellungen</h1>
-      </header>
+        <h2>Einstellungen</h2>
+      </div>
       <div class="screen-body">
         <div class="setting-row">
           <label for="toggle-sound">Sound</label>
@@ -182,22 +261,6 @@
 
   </main>
 
-  <!-- Tab-Bar -->
-  <nav class="tab-bar" aria-label="Navigation">
-    <button class="tab tab--active" data-screen="screen-match-hub" aria-label="Match">
-      <span class="tab-icon" aria-hidden="true">&#x26BD;</span>
-      <span class="tab-label">Match</span>
-    </button>
-    <button class="tab" data-screen="screen-tools" aria-label="Werkzeuge">
-      <span class="tab-icon" aria-hidden="true">&#x23F1;</span>
-      <span class="tab-label">Werkzeuge</span>
-    </button>
-    <button class="tab" data-screen="screen-history" aria-label="Verlauf">
-      <span class="tab-icon" aria-hidden="true">&#x1F4CB;</span>
-      <span class="tab-label">Verlauf</span>
-    </button>
-  </nav>
-
   <!-- Modal -->
   <div id="modal-backdrop" class="modal-backdrop hidden" role="dialog" aria-modal="true">
     <div class="modal" id="modal">
@@ -209,7 +272,8 @@
   <!-- Toast -->
   <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
 
-  <!-- Modal-Templates (kein JavaScript-innerHTML für User-Daten nötig) -->
+  <!-- ═══ Modal-Templates ═══ -->
+
   <template id="tmpl-modal-match-end">
     <h2>Match beenden</h2>
     <p class="detail-score" id="m-score"></p>
@@ -223,8 +287,10 @@
 
   <template id="tmpl-modal-sw-save">
     <h2>Stoppuhr speichern</h2>
-    <label class="modal-label" for="sw-save-input">Bezeichnung</label>
-    <input class="modal-input" id="sw-save-input" type="text" maxlength="40" autocomplete="off">
+    <div class="modal-field">
+      <label class="modal-label" for="sw-save-input">Bezeichnung</label>
+      <input class="modal-input" id="sw-save-input" type="text" maxlength="40" autocomplete="off">
+    </div>
     <div class="modal-actions">
       <button class="btn-secondary" id="sw-save-cancel">Abbrechen</button>
       <button class="btn-primary" id="sw-save-ok">Speichern</button>
@@ -233,8 +299,10 @@
 
   <template id="tmpl-modal-timer-preset">
     <h2>Timer-Preset speichern</h2>
-    <label class="modal-label" for="timer-preset-input">Name</label>
-    <input class="modal-input" id="timer-preset-input" type="text" placeholder="z.B. Pause" maxlength="30" autocomplete="off">
+    <div class="modal-field">
+      <label class="modal-label" for="timer-preset-input">Name</label>
+      <input class="modal-input" id="timer-preset-input" type="text" placeholder="z.B. Pause" maxlength="30" autocomplete="off">
+    </div>
     <div class="modal-actions">
       <button class="btn-secondary" id="tp-cancel">Abbrechen</button>
       <button class="btn-primary" id="tp-ok">Speichern</button>
@@ -281,6 +349,36 @@
     <ol class="lap-list-detail" id="sd-laps"></ol>
     <div class="modal-actions">
       <button class="btn-danger" id="sd-delete">L&#xF6;schen</button>
+    </div>
+  </template>
+
+  <template id="tmpl-modal-preset">
+    <h2 id="pm-title">Preset</h2>
+    <div class="modal-field">
+      <span class="modal-label">Icon</span>
+      <div class="icon-picker" id="pm-icons"></div>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label" for="pm-name">Name</label>
+      <input class="modal-input" id="pm-name" type="text" maxlength="20" autocomplete="off">
+    </div>
+    <div class="modal-row">
+      <div class="modal-field">
+        <label class="modal-label" for="pm-team-a">Team A</label>
+        <input class="modal-input" id="pm-team-a" type="text" maxlength="20" autocomplete="off">
+      </div>
+      <div class="modal-field">
+        <label class="modal-label" for="pm-team-b">Team B</label>
+        <input class="modal-input" id="pm-team-b" type="text" maxlength="20" autocomplete="off">
+      </div>
+    </div>
+    <div class="modal-field">
+      <span class="modal-label">Farbe</span>
+      <div class="color-row" id="pm-colors"></div>
+    </div>
+    <div class="modal-actions" id="pm-actions">
+      <button class="btn-secondary" id="pm-cancel">Abbrechen</button>
+      <button class="btn-primary" id="pm-save">Speichern</button>
     </div>
   </template>
 

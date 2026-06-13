@@ -1,5 +1,16 @@
 const screens = new Map();
-const TAB_SCREENS = new Set(['screen-match-hub', 'screen-tools', 'screen-history']);
+
+// Maps screen ID → which nav-tab data-tab value to highlight (null = none)
+const TAB_MAP = {
+  'screen-home':        'home',
+  'screen-presets':     'home',
+  'screen-match-setup': 'home',
+  'screen-match-live':  null,
+  'screen-tools':       'tools',
+  'screen-history':     'history',
+  'screen-settings':    null,
+};
+
 const FULLSCREEN = new Set(['screen-match-live']);
 let current = null;
 
@@ -14,9 +25,6 @@ export function navigateTo(id, opts = {}) {
   if (current) {
     screens.get(current)?.onLeave?.();
     document.getElementById(current)?.classList.remove('screen--active');
-    if (TAB_SCREENS.has(current)) {
-      document.querySelector(`[data-screen="${current}"]`)?.classList.remove('tab--active');
-    }
   }
 
   if (FULLSCREEN.has(id)) {
@@ -28,9 +36,11 @@ export function navigateTo(id, opts = {}) {
   el.classList.add('screen--active');
   current = id;
 
-  if (TAB_SCREENS.has(id)) {
-    document.querySelector(`[data-screen="${id}"]`)?.classList.add('tab--active');
-  }
+  // Update active nav tab
+  const activeTab = TAB_MAP[id] ?? null;
+  document.querySelectorAll('.nav-tab').forEach(btn => {
+    btn.classList.toggle('nav-tab--active', btn.dataset.tab === activeTab);
+  });
 
   screens.get(id)?.onEnter?.(opts);
 }

@@ -1,0 +1,117 @@
+<h2>Wo leben Presets in der Navigation?</h2>
+<p class="subtitle">Top-Nav mit 3 oder 4 Tabs — oder Presets als Kachel auf dem Home-Screen?</p>
+
+<div class="cards">
+
+  <!-- Option A: Presets als eigener Tab -->
+  <div class="card" data-choice="presets-tab" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#111827;padding:12px;border-radius:8px;font-family:system-ui;min-height:160px">
+      <!-- Top Nav mit 4 Tabs -->
+      <div style="background:#1f2937;border-radius:8px;padding:6px 8px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center">
+        <span style="color:#f59e0b;font-weight:800;font-size:12px">SPORTZÄHLER</span>
+        <div style="display:flex;gap:2px">
+          <span style="color:#111;background:#f59e0b;font-size:9px;padding:3px 6px;border-radius:4px;font-weight:700">MATCH</span>
+          <span style="color:#9ca3af;font-size:9px;padding:3px 6px">TOOLS</span>
+          <span style="color:#9ca3af;font-size:9px;padding:3px 6px">PRESETS</span>
+          <span style="color:#9ca3af;font-size:9px;padding:3px 6px">LOG</span>
+        </div>
+      </div>
+      <!-- Match-Screen mit Preset-Auswahl -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+        <div style="background:#f59e0b;border-radius:8px;padding:12px;color:#111">
+          <div style="font-size:18px">⚽</div>
+          <div style="font-size:10px;font-weight:800;margin-top:4px">MATCH STARTEN</div>
+        </div>
+        <div style="background:#1f2937;border-radius:8px;padding:12px;color:white;border:1px solid #374151">
+          <div style="font-size:18px">⏱️</div>
+          <div style="font-size:10px;font-weight:800;margin-top:4px">TIMER</div>
+        </div>
+      </div>
+      <div style="color:#6b7280;font-size:9px;text-align:center;margin-top:6px">Presets → eigener Tab im Menü</div>
+    </div>
+    <div class="card-body">
+      <h3>Presets als eigener Tab</h3>
+      <p>4 Tabs in der Top-Nav: Match · Tools · Presets · Verlauf. Presets immer direkt erreichbar.</p>
+    </div>
+  </div>
+
+  <!-- Option B: Presets als Kachel auf Home -->
+  <div class="card" data-choice="presets-tile" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#111827;padding:12px;border-radius:8px;font-family:system-ui;min-height:160px">
+      <!-- Top Nav mit 3 Tabs -->
+      <div style="background:#1f2937;border-radius:8px;padding:6px 8px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center">
+        <span style="color:#f59e0b;font-weight:800;font-size:12px">SPORTZÄHLER</span>
+        <div style="display:flex;gap:2px">
+          <span style="color:#111;background:#f59e0b;font-size:9px;padding:3px 6px;border-radius:4px;font-weight:700">HOME</span>
+          <span style="color:#9ca3af;font-size:9px;padding:3px 6px">TOOLS</span>
+          <span style="color:#9ca3af;font-size:9px;padding:3px 6px">LOG</span>
+        </div>
+      </div>
+      <!-- Home-Screen mit 3 Kacheln inkl. Presets -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+        <div style="background:#f59e0b;border-radius:8px;padding:12px;color:#111;grid-column:1/-1">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:20px">⚽</span>
+            <div>
+              <div style="font-size:11px;font-weight:800">MATCH STARTEN</div>
+              <div style="font-size:9px;opacity:0.7">Tippe um loszulegen</div>
+            </div>
+          </div>
+        </div>
+        <div style="background:#1f2937;border-radius:8px;padding:12px;color:white;border:1px solid #374151">
+          <div style="font-size:18px">🎮</div>
+          <div style="font-size:10px;font-weight:800;margin-top:4px">PRESETS</div>
+          <div style="font-size:8px;color:#9ca3af">3 gespeichert</div>
+        </div>
+        <div style="background:#1f2937;border-radius:8px;padding:12px;color:white;border:1px solid #374151">
+          <div style="font-size:18px">⏱️</div>
+          <div style="font-size:10px;font-weight:800;margin-top:4px">TIMER</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Presets als Home-Kachel</h3>
+      <p>3 Tabs: Home · Tools · Verlauf. Auf dem Home-Screen gibt's eine eigene Kachel für Presets.</p>
+    </div>
+  </div>
+
+  <!-- Option C: Presets im Match-Setup integriert -->
+  <div class="card" data-choice="presets-in-setup" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#111827;padding:12px;border-radius:8px;font-family:system-ui;min-height:160px">
+      <!-- Top Nav mit 3 Tabs -->
+      <div style="background:#1f2937;border-radius:8px;padding:6px 8px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center">
+        <span style="color:#f59e0b;font-weight:800;font-size:12px">SPORTZÄHLER</span>
+        <div style="display:flex;gap:2px">
+          <span style="color:#111;background:#f59e0b;font-size:9px;padding:3px 6px;border-radius:4px;font-weight:700">MATCH</span>
+          <span style="color:#9ca3af;font-size:9px;padding:3px 6px">TOOLS</span>
+          <span style="color:#9ca3af;font-size:9px;padding:3px 6px">LOG</span>
+        </div>
+      </div>
+      <!-- Match-Tab mit Preset-Chips oben -->
+      <div style="background:#1f2937;border-radius:8px;padding:10px">
+        <div style="font-size:9px;color:#9ca3af;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px">Preset wählen</div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px">
+          <span style="background:#f59e0b;color:#111;font-size:9px;padding:3px 8px;border-radius:12px;font-weight:700">⚽ Fußball</span>
+          <span style="background:#374151;color:#9ca3af;font-size:9px;padding:3px 8px;border-radius:12px">🏀 Basketball</span>
+          <span style="background:#374151;color:#9ca3af;font-size:9px;padding:3px 8px;border-radius:12px">🏐 Volleyball</span>
+          <span style="background:#374151;color:#9ca3af;font-size:9px;padding:3px 8px;border-radius:12px">+ Neu</span>
+        </div>
+        <div style="display:flex;gap:4px">
+          <div style="flex:1;background:#111827;border-radius:6px;padding:6px;border:1px solid #374151">
+            <div style="font-size:8px;color:#9ca3af">Team A</div>
+            <div style="font-size:10px;color:white;font-weight:600">Heim</div>
+          </div>
+          <div style="flex:1;background:#111827;border-radius:6px;padding:6px;border:1px solid #374151">
+            <div style="font-size:8px;color:#9ca3af">Team B</div>
+            <div style="font-size:10px;color:white;font-weight:600">Gast</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Presets im Match-Setup</h3>
+      <p>Keine eigene Seite. Presets erscheinen direkt oben im Match-Tab als wählbare Chips — schnell, kein Umweg.</p>
+    </div>
+  </div>
+
+</div>

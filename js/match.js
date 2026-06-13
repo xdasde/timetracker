@@ -85,9 +85,6 @@ export function saveMatch() {
     note: '',
   };
   storage.addToCollection('matches', m);
-  const presets = storage.getCollection('teamPresets');
-  [live.teamA.name, live.teamB.name].forEach(n => { if (!presets.includes(n)) presets.push(n); });
-  storage.setCollection('teamPresets', presets);
   _clearSession();
   live = null;
   return m;

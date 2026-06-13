@@ -2,6 +2,7 @@ import * as router from './js/router.js';
 import * as ui from './js/ui.js';
 import * as storage from './js/storage.js';
 import * as match from './js/match.js';
+import * as presets from './js/presets.js';
 import { Stopwatch, fmtMs } from './js/stopwatch.js';
 import * as timer from './js/timer.js';
 import * as historyMod from './js/history.js';
@@ -12,26 +13,73 @@ import { acquireWakeLock, releaseWakeLock } from './js/wakelock.js';
 // ═══════════════════════════════════════════════════════════
 // SCREEN-REGISTRIERUNG
 // ═══════════════════════════════════════════════════════════
-router.register('screen-match-hub');
+router.register('screen-home', enterHome);
+router.register('screen-presets', enterPresets);
 router.register('screen-match-setup', enterSetup);
 router.register('screen-match-live', enterLive, leaveLive);
 router.register('screen-tools');
 router.register('screen-history', () => historyMod.render(currentHistoryTab));
 router.register('screen-settings');
 
-// Tab-Bar
-document.querySelectorAll('.tab').forEach(t =>
-  t.addEventListener('click', () => router.navigateTo(t.dataset.screen)));
+// ═══════════════════════════════════════════════════════════
+// TOP-NAV
+// ═══════════════════════════════════════════════════════════
+document.querySelectorAll('.nav-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const tab = btn.dataset.tab;
+    if (tab === 'home')    router.navigateTo('screen-home');
+    if (tab === 'tools')   router.navigateTo('screen-tools');
+    if (tab === 'history') router.navigateTo('screen-history');
+  });
+});
 
-// Zurück / Icon-Buttons
-document.getElementById('btn-setup-back').addEventListener('click', () => router.navigateTo('screen-match-hub'));
-document.getElementById('btn-open-settings').addEventListener('click', () => router.navigateTo('screen-settings'));
-document.getElementById('btn-settings-back').addEventListener('click', () => router.navigateTo('screen-match-hub'));
+document.getElementById('btn-open-settings').addEventListener('click', () =>
+  router.navigateTo('screen-settings'));
 
-// Modal schließen
-document.getElementById('modal-close').addEventListener('click', ui.closeModal);
-document.getElementById('modal-backdrop').addEventListener('click', e => {
-  if (e.target.id === 'modal-backdrop') ui.closeModal();
+// ═══════════════════════════════════════════════════════════
+// HOME SCREEN
+// ═══════════════════════════════════════════════════════════
+function enterHome() {
+  const count = presets.getAll().length;
+  const badge = document.getElementById('home-preset-badge');
+  if (badge) badge.textContent = `${count} gespeichert`;
+}
+
+document.getElementById('btn-new-match').addEventListener('click', () =>
+  router.navigateTo('screen-match-setup'));
+
+document.getElementById('btn-open-presets').addEventListener('click', () =>
+  router.navigateTo('screen-presets'));
+
+document.getElementById('btn-goto-tools').addEventListener('click', () =>
+  router.navigateTo('screen-tools'));
+
+// ═══════════════════════════════════════════════════════════
+// PRESETS SCREEN
+// ═══════════════════════════════════════════════════════════
+function enterPresets() {
+  renderPresetList();
+}
+
+function renderPresetList() {
+  presets.renderList(preset => {
+    presets.openModal(
+      preset,
+      () => { renderPresetList(); enterHome(); },
+      () => { renderPresetList(); enterHome(); }
+    );
+  });
+}
+
+document.getElementById('btn-presets-back').addEventListener('click', () =>
+  router.navigateTo('screen-home'));
+
+document.getElementById('btn-preset-add').addEventListener('click', () => {
+  presets.openModal(
+    null,
+    () => { renderPresetList(); enterHome(); },
+    null
+  );
 });
 
 // ═══════════════════════════════════════════════════════════
@@ -41,8 +89,8 @@ function enterSetup() {
   match.initSetup();
   document.getElementById('team-a-name').value = '';
   document.getElementById('team-b-name').value = '';
-  buildColorPickers();
-  buildPresetChips();
+  const selectColorIdx = buildColorPickers();
+  buildPresetChips(selectColorIdx);
 }
 
 function buildColorPickers() {
@@ -60,6 +108,7 @@ function buildColorPickers() {
       p.dataset.i = i;
       p.setAttribute('role', 'radio');
       p.setAttribute('tabindex', '0');
+      p.setAttribute('aria-checked', String(i === 0));
       return p;
     };
     piA.appendChild(mkPill(pair.a));
@@ -85,32 +134,27 @@ function buildColorPickers() {
   }));
 
   selectIdx(0);
+  return selectIdx;
 }
 
-function buildPresetChips() {
-  const cont = document.getElementById('preset-chips');
-  const presets = storage.getCollection('teamPresets');
-  cont.replaceChildren();
-  presets.forEach(name => {
-    const chip = document.createElement('button');
-    chip.className = 'preset-chip';
-    chip.textContent = name;
-    chip.addEventListener('click', () => {
-      const active = document.activeElement;
-      const target = active?.id === 'team-b-name'
-        ? document.getElementById('team-b-name')
-        : document.getElementById('team-a-name');
-      target.value = name;
-      target.dispatchEvent(new Event('input'));
-    });
-    cont.appendChild(chip);
+function buildPresetChips(selectColorIdx) {
+  const strip = document.getElementById('setup-preset-strip');
+  presets.renderChips(strip, preset => {
+    document.getElementById('team-a-name').value = preset.teamA.name;
+    document.getElementById('team-b-name').value = preset.teamB.name;
+    match.setTeamName('a', preset.teamA.name);
+    match.setTeamName('b', preset.teamB.name);
+    selectColorIdx(preset.colorIndex ?? 0);
   });
 }
 
-document.getElementById('team-a-name').addEventListener('input', e => match.setTeamName('a', e.target.value));
-document.getElementById('team-b-name').addEventListener('input', e => match.setTeamName('b', e.target.value));
+document.getElementById('team-a-name').addEventListener('input', e =>
+  match.setTeamName('a', e.target.value));
+document.getElementById('team-b-name').addEventListener('input', e =>
+  match.setTeamName('b', e.target.value));
 
-document.getElementById('btn-new-match').addEventListener('click', () => router.navigateTo('screen-match-setup'));
+document.getElementById('btn-setup-back').addEventListener('click', () =>
+  router.navigateTo('screen-home'));
 
 document.getElementById('btn-start-match').addEventListener('click', () => {
   const s = match.getSetup();
@@ -160,13 +204,16 @@ function startMatchRaf() {
 function updateScores() {
   const s = match.getLive();
   if (!s) return;
-  document.getElementById('live-score-a').textContent = s.teamA.score;
-  document.getElementById('live-score-b').textContent = s.teamB.score;
+  const elA = document.getElementById('live-score-a');
+  const elB = document.getElementById('live-score-b');
+  elA.textContent = s.teamA.score;
+  elB.textContent = s.teamB.score;
+  elA.classList.toggle('team-score--leading', s.teamA.score > s.teamB.score);
+  elB.classList.toggle('team-score--leading', s.teamB.score > s.teamA.score);
   document.getElementById('btn-minus-a').disabled = s.teamA.score === 0;
   document.getElementById('btn-minus-b').disabled = s.teamB.score === 0;
 }
 
-// Timer-Pill: Tap = toggle, Long-Press (700ms) = Reset
 const pill = document.getElementById('match-timer-pill');
 let _lp = null;
 pill.addEventListener('pointerdown', () => {
@@ -210,7 +257,7 @@ document.getElementById('btn-end-match').addEventListener('click', () => {
       }
       match.discardMatch();
       ui.closeModal();
-      router.navigateTo('screen-match-hub');
+      router.navigateTo('screen-home');
     };
 
     document.getElementById('m-cancel').onclick = ui.closeModal;
@@ -423,7 +470,7 @@ document.getElementById('btn-timer-save-preset').addEventListener('click', () =>
 });
 
 // ═══════════════════════════════════════════════════════════
-// VERLAUF
+// VERLAUF / LOG
 // ═══════════════════════════════════════════════════════════
 let currentHistoryTab = 'matches';
 
@@ -478,6 +525,17 @@ function initSettings() {
     initSettings();
   });
 }
+
+document.getElementById('btn-settings-back').addEventListener('click', () =>
+  router.navigateTo('screen-home'));
+
+// ═══════════════════════════════════════════════════════════
+// MODAL SCHLIESSEN
+// ═══════════════════════════════════════════════════════════
+document.getElementById('modal-close').addEventListener('click', ui.closeModal);
+document.getElementById('modal-backdrop').addEventListener('click', e => {
+  if (e.target.id === 'modal-backdrop') ui.closeModal();
+});
 
 // ═══════════════════════════════════════════════════════════
 // SESSION-RECOVERY
@@ -536,4 +594,4 @@ if ('serviceWorker' in navigator) {
 // ═══════════════════════════════════════════════════════════
 initSettings();
 checkSession();
-router.navigateTo('screen-match-hub');
+router.navigateTo('screen-home');

@@ -1,0 +1,129 @@
+<h2>Design-Richtung: Welches Look & Feel passt?</h2>
+<p class="subtitle">Alle drei haben Top-Navigation statt Bottom-Bar. Klick auf eine Option zum Auswählen.</p>
+
+<div class="cards">
+
+  <!-- Option A: Dark Dashboard -->
+  <div class="card" data-choice="dark-dashboard" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0f0f1a;padding:12px;border-radius:8px;font-family:system-ui">
+      <!-- Top Nav -->
+      <div style="display:flex;align-items:center;justify-content:space-between;background:#1a1a2e;border-radius:8px;padding:8px 12px;margin-bottom:10px">
+        <span style="color:#7c3aed;font-weight:700;font-size:14px">⚡ Sportzähler</span>
+        <div style="display:flex;gap:8px">
+          <span style="color:#7c3aed;font-size:11px;background:#2d1f4e;padding:3px 8px;border-radius:12px">Match</span>
+          <span style="color:#888;font-size:11px;padding:3px 8px">Tools</span>
+          <span style="color:#888;font-size:11px;padding:3px 8px">Verlauf</span>
+        </div>
+      </div>
+      <!-- Tiles -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div style="background:linear-gradient(135deg,#7c3aed,#4f46e5);border-radius:12px;padding:14px;color:white">
+          <div style="font-size:22px">⚽</div>
+          <div style="font-size:11px;margin-top:6px;font-weight:600">Match starten</div>
+          <div style="font-size:9px;color:rgba(255,255,255,0.6);margin-top:2px">Neues Spiel</div>
+        </div>
+        <div style="background:linear-gradient(135deg,#0891b2,#0e7490);border-radius:12px;padding:14px;color:white">
+          <div style="font-size:22px">⏱️</div>
+          <div style="font-size:11px;margin-top:6px;font-weight:600">Stoppuhr</div>
+          <div style="font-size:9px;color:rgba(255,255,255,0.6);margin-top:2px">Zeit messen</div>
+        </div>
+        <div style="background:linear-gradient(135deg,#059669,#047857);border-radius:12px;padding:14px;color:white;grid-column:1/-1">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div style="font-size:11px;font-weight:600">Presets</div>
+              <div style="font-size:9px;color:rgba(255,255,255,0.6);margin-top:2px">Fußball · Basketball · Volleyball</div>
+            </div>
+            <span style="font-size:20px">🎮</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Dark Dashboard</h3>
+      <p>Dunkles, energiegeladenes Design mit farbigen Gradient-Kacheln. Modern wie eine Sport-App.</p>
+    </div>
+  </div>
+
+  <!-- Option B: Light Cards -->
+  <div class="card" data-choice="light-cards" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#f8fafc;padding:12px;border-radius:8px;font-family:system-ui">
+      <!-- Top Nav -->
+      <div style="display:flex;align-items:center;justify-content:space-between;background:white;border-radius:8px;padding:8px 12px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,0.08)">
+        <span style="color:#0f172a;font-weight:700;font-size:14px">Sportzähler</span>
+        <div style="display:flex;gap:4px">
+          <span style="color:white;font-size:11px;background:#0f6e56;padding:3px 8px;border-radius:12px">Match</span>
+          <span style="color:#64748b;font-size:11px;padding:3px 8px">Tools</span>
+          <span style="color:#64748b;font-size:11px;padding:3px 8px">Verlauf</span>
+        </div>
+      </div>
+      <!-- Tiles -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div style="background:white;border-radius:12px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,0.08);border:2px solid #0f6e56">
+          <div style="font-size:22px">⚽</div>
+          <div style="font-size:11px;margin-top:6px;font-weight:600;color:#0f172a">Match starten</div>
+          <div style="font-size:9px;color:#64748b;margin-top:2px">Neues Spiel</div>
+        </div>
+        <div style="background:white;border-radius:12px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,0.08)">
+          <div style="font-size:22px">⏱️</div>
+          <div style="font-size:11px;margin-top:6px;font-weight:600;color:#0f172a">Stoppuhr</div>
+          <div style="font-size:9px;color:#64748b;margin-top:2px">Zeit messen</div>
+        </div>
+        <div style="background:#f0fdf4;border-radius:12px;padding:14px;grid-column:1/-1;border:1px solid #bbf7d0">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div style="font-size:11px;font-weight:600;color:#0f172a">Schnell-Presets</div>
+              <div style="display:flex;gap:4px;margin-top:4px">
+                <span style="font-size:9px;background:#0f6e56;color:white;padding:2px 6px;border-radius:8px">Fußball</span>
+                <span style="font-size:9px;background:#e2e8f0;color:#475569;padding:2px 6px;border-radius:8px">Basketball</span>
+              </div>
+            </div>
+            <span style="font-size:20px">🎮</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Light & Clean</h3>
+      <p>Helles, übersichtliches Design mit weißen Karten. Klare Struktur, gut lesbar bei Tageslicht.</p>
+    </div>
+  </div>
+
+  <!-- Option C: Bold Sport -->
+  <div class="card" data-choice="bold-sport" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#111827;padding:12px;border-radius:8px;font-family:system-ui">
+      <!-- Top Nav -->
+      <div style="display:flex;align-items:center;justify-content:space-between;background:#1f2937;border-radius:8px;padding:8px 12px;margin-bottom:10px">
+        <span style="color:#f59e0b;font-weight:800;font-size:14px;letter-spacing:-0.5px">SPORT<span style="color:white">ZÄHLER</span></span>
+        <div style="display:flex;gap:4px">
+          <span style="color:#111827;font-size:11px;background:#f59e0b;padding:3px 8px;border-radius:4px;font-weight:700">MATCH</span>
+          <span style="color:#9ca3af;font-size:11px;padding:3px 8px">TOOLS</span>
+          <span style="color:#9ca3af;font-size:11px;padding:3px 8px">LOG</span>
+        </div>
+      </div>
+      <!-- Tiles -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+        <div style="background:#f59e0b;border-radius:8px;padding:14px;color:#111">
+          <div style="font-size:22px">⚽</div>
+          <div style="font-size:11px;margin-top:6px;font-weight:800;text-transform:uppercase;letter-spacing:0.5px">Match</div>
+        </div>
+        <div style="background:#1f2937;border-radius:8px;padding:14px;color:white;border:1px solid #374151">
+          <div style="font-size:22px">⏱️</div>
+          <div style="font-size:11px;margin-top:6px;font-weight:800;text-transform:uppercase;letter-spacing:0.5px">Timer</div>
+        </div>
+        <div style="background:#1f2937;border-radius:8px;padding:14px;color:white;border:1px solid #374151">
+          <div style="font-size:20px">🎮</div>
+          <div style="font-size:11px;margin-top:6px;font-weight:800;text-transform:uppercase;letter-spacing:0.5px">Presets</div>
+        </div>
+        <div style="background:#1f2937;border-radius:8px;padding:14px;color:white;border:1px solid #374151">
+          <div style="font-size:20px">📋</div>
+          <div style="font-size:11px;margin-top:6px;font-weight:800;text-transform:uppercase;letter-spacing:0.5px">Verlauf</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Bold Sport</h3>
+      <p>Dunkel, kraftvoll, mit Amber-Akzenten. Scoreboard-Feeling – wie eine professionelle Sport-App.</p>
+    </div>
+  </div>
+
+</div>
