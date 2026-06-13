@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0F6E56">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Sportzähler</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.webmanifest">
+</head>
+<body>
+  <!-- Session-Recovery-Banner -->
+  <div id="session-banner" class="session-banner hidden">
+    <p>Letztes Match wiederherstellen?</p>
+    <button id="btn-restore">Wiederherstellen</button>
+    <button id="btn-discard-session">Verwerfen</button>
+  </div>
+
+  <!-- Installations-Banner -->
+  <div id="install-banner" class="install-banner hidden">
+    <span>App installieren</span>
+    <button id="btn-install">Installieren</button>
+    <button id="btn-dismiss-install">&#x2715;</button>
+  </div>
+
+  <main id="app">
+
+    <!-- ═══ Screen: Match-Hub ═══ -->
+    <section id="screen-match-hub" class="screen screen--active">
+      <header class="screen-header">
+        <h1>Match</h1>
+        <button class="btn-icon" id="btn-open-settings" aria-label="Einstellungen">&#x2699;</button>
+      </header>
+      <div class="screen-body">
+        <button class="btn-primary btn-full" id="btn-new-match">Neues Match starten</button>
+      </div>
+    </section>
+
+    <!-- ═══ Screen: Match-Setup ═══ -->
+    <section id="screen-match-setup" class="screen">
+      <header class="screen-header">
+        <button class="btn-back" id="btn-setup-back" aria-label="Zurück">&#x2190;</button>
+        <h1>Match einrichten</h1>
+      </header>
+      <div class="screen-body">
+        <div class="setup-team">
+          <label for="team-a-name">Team A</label>
+          <input type="text" id="team-a-name" placeholder="Name" maxlength="20" autocomplete="off">
+          <div class="color-picker" id="color-picker-a" role="group" aria-label="Farbe Team A"></div>
+        </div>
+        <div class="setup-team">
+          <label for="team-b-name">Team B</label>
+          <input type="text" id="team-b-name" placeholder="Name" maxlength="20" autocomplete="off">
+          <div class="color-picker" id="color-picker-b" role="group" aria-label="Farbe Team B"></div>
+        </div>
+        <div class="preset-chips" id="preset-chips" aria-label="Gespeicherte Teams"></div>
+        <button class="btn-primary btn-full" id="btn-start-match">Match starten</button>
+      </div>
+    </section>
+
+    <!-- ═══ Screen: Match-Live ═══ -->
+    <section id="screen-match-live" class="screen">
+      <div class="match-live">
+        <div class="team-card" id="card-team-a">
+          <div class="team-name" id="live-team-a-name">Team A</div>
+          <div class="team-score" id="live-score-a">0</div>
+          <div class="score-btns">
+            <button class="btn-score btn-minus" id="btn-minus-a" aria-label="Punkt abziehen Team A">&#x2212;</button>
+            <button class="btn-score btn-plus" id="btn-plus-a" aria-label="Punkt hinzufügen Team A">+1</button>
+          </div>
+        </div>
+        <div class="match-timer-pill" id="match-timer-pill" role="button" aria-label="Spielzeit starten / pausieren">
+          <span id="match-time">00:00</span>
+        </div>
+        <div class="team-card" id="card-team-b">
+          <div class="team-name" id="live-team-b-name">Team B</div>
+          <div class="team-score" id="live-score-b">0</div>
+          <div class="score-btns">
+            <button class="btn-score btn-minus" id="btn-minus-b" aria-label="Punkt abziehen Team B">&#x2212;</button>
+            <button class="btn-score btn-plus" id="btn-plus-b" aria-label="Punkt hinzufügen Team B">+1</button>
+          </div>
+        </div>
+        <button class="fab" id="btn-end-match">Match beenden</button>
+      </div>
+    </section>
+
+    <!-- ═══ Screen: Werkzeuge ═══ -->
+    <section id="screen-tools" class="screen">
+      <header class="screen-header"><h1>Werkzeuge</h1></header>
+      <div class="screen-body">
+
+        <!-- Stoppuhr 1 -->
+        <div class="tool-card" id="stopwatch-1">
+          <input type="text" class="sw-label" placeholder="Bezeichnung" maxlength="30" autocomplete="off" aria-label="Bezeichnung Stoppuhr 1">
+          <div class="sw-time" aria-live="polite">00:00.00</div>
+          <div class="sw-btns">
+            <button class="btn-sw btn-sw-startstop">Start</button>
+            <button class="btn-sw btn-sw-lap" disabled>Runde</button>
+            <button class="btn-sw btn-sw-save">Speichern</button>
+            <button class="btn-sw btn-sw-reset">Reset</button>
+          </div>
+          <ol class="lap-list" aria-label="Rundenzeiten"></ol>
+        </div>
+
+        <!-- Stoppuhr 2 -->
+        <div class="tool-card" id="stopwatch-2">
+          <input type="text" class="sw-label" placeholder="Bezeichnung" maxlength="30" autocomplete="off" aria-label="Bezeichnung Stoppuhr 2">
+          <div class="sw-time" aria-live="polite">00:00.00</div>
+          <div class="sw-btns">
+            <button class="btn-sw btn-sw-startstop">Start</button>
+            <button class="btn-sw btn-sw-lap" disabled>Runde</button>
+            <button class="btn-sw btn-sw-save">Speichern</button>
+            <button class="btn-sw btn-sw-reset">Reset</button>
+          </div>
+          <ol class="lap-list" aria-label="Rundenzeiten"></ol>
+        </div>
+
+        <!-- Countdown-Timer -->
+        <div class="tool-card" id="countdown-timer">
+          <h3 class="tool-card-title">Countdown</h3>
+          <div id="timer-picker">
+            <div class="wheel-picker" aria-label="Zeit wählen">
+              <div class="wheel-wrapper">
+                <div class="wheel" id="wheel-minutes" role="listbox" aria-label="Minuten"></div>
+              </div>
+              <span class="wheel-sep" aria-hidden="true">:</span>
+              <div class="wheel-wrapper">
+                <div class="wheel" id="wheel-seconds" role="listbox" aria-label="Sekunden"></div>
+              </div>
+            </div>
+          </div>
+          <div class="timer-display hidden" id="timer-display">
+            <span id="timer-countdown" aria-live="polite">00:00</span>
+          </div>
+          <div class="timer-btns">
+            <button class="btn-sw btn-sw--primary" id="btn-timer-start">Start</button>
+            <button class="btn-sw hidden" id="btn-timer-pause">Pause</button>
+            <button class="btn-sw hidden" id="btn-timer-resume">Weiter</button>
+            <button class="btn-sw hidden" id="btn-timer-reset">Reset</button>
+            <button class="btn-sw" id="btn-timer-save-preset">Als Preset</button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ═══ Screen: Verlauf ═══ -->
+    <section id="screen-history" class="screen">
+      <header class="screen-header">
+        <h1>Verlauf</h1>
+        <button class="btn-icon" id="btn-export" aria-label="Exportieren">&#x2193;</button>
+      </header>
+      <div class="history-tabs" role="tablist">
+        <button class="history-tab active" data-tab="matches" role="tab" aria-selected="true">Matches</button>
+        <button class="history-tab" data-tab="stopwatches" role="tab" aria-selected="false">Stoppuhren</button>
+        <button class="history-tab" data-tab="timers" role="tab" aria-selected="false">Timer</button>
+      </div>
+      <div class="history-list" id="history-list" role="list"></div>
+    </section>
+
+    <!-- ═══ Screen: Einstellungen ═══ -->
+    <section id="screen-settings" class="screen">
+      <header class="screen-header">
+        <button class="btn-back" id="btn-settings-back" aria-label="Zurück">&#x2190;</button>
+        <h1>Einstellungen</h1>
+      </header>
+      <div class="screen-body">
+        <div class="setting-row">
+          <label for="toggle-sound">Sound</label>
+          <input type="checkbox" id="toggle-sound" role="switch">
+        </div>
+        <div class="setting-row">
+          <label for="toggle-vibration">Vibration</label>
+          <input type="checkbox" id="toggle-vibration" role="switch">
+        </div>
+        <hr>
+        <button class="btn-danger btn-full" id="btn-clear-all">Alle Daten l&#xF6;schen</button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Tab-Bar -->
+  <nav class="tab-bar" aria-label="Navigation">
+    <button class="tab tab--active" data-screen="screen-match-hub" aria-label="Match">
+      <span class="tab-icon" aria-hidden="true">&#x26BD;</span>
+      <span class="tab-label">Match</span>
+    </button>
+    <button class="tab" data-screen="screen-tools" aria-label="Werkzeuge">
+      <span class="tab-icon" aria-hidden="true">&#x23F1;</span>
+      <span class="tab-label">Werkzeuge</span>
+    </button>
+    <button class="tab" data-screen="screen-history" aria-label="Verlauf">
+      <span class="tab-icon" aria-hidden="true">&#x1F4CB;</span>
+      <span class="tab-label">Verlauf</span>
+    </button>
+  </nav>
+
+  <!-- Modal -->
+  <div id="modal-backdrop" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="modal" id="modal">
+      <button class="modal-close" id="modal-close" aria-label="Schlie&#xDF;en">&#x2715;</button>
+      <div id="modal-content"></div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+  <!-- Modal-Templates (kein JavaScript-innerHTML für User-Daten nötig) -->
+  <template id="tmpl-modal-match-end">
+    <h2>Match beenden</h2>
+    <p class="detail-score" id="m-score"></p>
+    <p class="detail-meta" id="m-teams"></p>
+    <div class="modal-actions">
+      <button class="btn-primary" id="m-save">Speichern</button>
+      <button class="btn-danger" id="m-discard">Verwerfen</button>
+      <button class="btn-secondary" id="m-cancel">Weiter spielen</button>
+    </div>
+  </template>
+
+  <template id="tmpl-modal-sw-save">
+    <h2>Stoppuhr speichern</h2>
+    <label class="modal-label" for="sw-save-input">Bezeichnung</label>
+    <input class="modal-input" id="sw-save-input" type="text" maxlength="40" autocomplete="off">
+    <div class="modal-actions">
+      <button class="btn-secondary" id="sw-save-cancel">Abbrechen</button>
+      <button class="btn-primary" id="sw-save-ok">Speichern</button>
+    </div>
+  </template>
+
+  <template id="tmpl-modal-timer-preset">
+    <h2>Timer-Preset speichern</h2>
+    <label class="modal-label" for="timer-preset-input">Name</label>
+    <input class="modal-input" id="timer-preset-input" type="text" placeholder="z.B. Pause" maxlength="30" autocomplete="off">
+    <div class="modal-actions">
+      <button class="btn-secondary" id="tp-cancel">Abbrechen</button>
+      <button class="btn-primary" id="tp-ok">Speichern</button>
+    </div>
+  </template>
+
+  <template id="tmpl-modal-confirm">
+    <h2>Best&#xe4;tigung</h2>
+    <p class="detail-meta" id="confirm-msg"></p>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="confirm-cancel">Abbrechen</button>
+      <button class="btn-danger" id="confirm-ok">Fortfahren</button>
+    </div>
+  </template>
+
+  <template id="tmpl-modal-export">
+    <h2>Daten exportieren</h2>
+    <div class="modal-actions export-actions">
+      <button class="btn-secondary" id="exp-matches-csv">Matches als CSV</button>
+      <button class="btn-secondary" id="exp-sw-csv">Stoppuhren als CSV</button>
+      <button class="btn-secondary" id="exp-json">Alles als JSON</button>
+    </div>
+  </template>
+
+  <template id="tmpl-modal-match-detail">
+    <h2 id="md-title"></h2>
+    <p class="detail-meta" id="md-date"></p>
+    <div class="detail-score" id="md-score"></div>
+    <p class="detail-meta" id="md-duration"></p>
+    <div class="detail-note">
+      <label class="modal-label" for="md-note">Notiz</label>
+      <textarea class="modal-input" id="md-note" rows="3"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="md-save-note">Notiz speichern</button>
+      <button class="btn-danger" id="md-delete">L&#xF6;schen</button>
+    </div>
+  </template>
+
+  <template id="tmpl-modal-sw-detail">
+    <h2 id="sd-title"></h2>
+    <p class="detail-meta" id="sd-date"></p>
+    <p class="detail-meta" id="sd-total"></p>
+    <ol class="lap-list-detail" id="sd-laps"></ol>
+    <div class="modal-actions">
+      <button class="btn-danger" id="sd-delete">L&#xF6;schen</button>
+    </div>
+  </template>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
