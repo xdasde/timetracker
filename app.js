@@ -62,6 +62,12 @@ document.getElementById('btn-goto-tools').addEventListener('click', () =>
 document.getElementById('btn-open-teambuilder').addEventListener('click', () =>
   router.navigateTo('screen-teambuilder'));
 
+document.getElementById('btn-goto-log').addEventListener('click', () =>
+  router.navigateTo('screen-history'));
+
+document.getElementById('btn-goto-settings').addEventListener('click', () =>
+  router.navigateTo('screen-settings'));
+
 // ═══════════════════════════════════════════════════════════
 // TEAMBILDUNG
 // ═══════════════════════════════════════════════════════════
@@ -1369,7 +1375,12 @@ function _syncInstallSettings() {
     status.classList.remove('hidden');
     status.textContent = 'Teilen → „Zum Home-Bildschirm"';
   } else {
-    row.classList.add('hidden');
+    // Android/Desktop, aber beforeinstallprompt wurde (noch) nicht ausgelöst:
+    // manuelle Anleitung zeigen statt die Zeile zu verstecken.
+    row.classList.remove('hidden');
+    btn.classList.add('hidden');
+    status.classList.remove('hidden');
+    status.textContent = 'Browser-Menü ⋮ → „App installieren" bzw. „Zum Startbildschirm"';
   }
 }
 
