@@ -69,22 +69,22 @@
             <div class="home-tile-label">Match starten</div>
             <div class="home-tile-sub">Neues Spiel anpfeifen</div>
           </div>
-          <span class="home-tile-icon">
+          <span class="home-tile-icon home-icon-anim home-icon-play">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <circle cx="12" cy="12" r="10"/>
+              <circle cx="12" cy="12" r="10" class="anim-ping-ring"/>
               <polygon points="10,8.5 17,12 10,15.5" fill="currentColor" stroke="none"/>
             </svg>
           </span>
         </button>
         <button class="home-tile" id="btn-open-presets" aria-label="Presets verwalten">
-          <span class="home-tile-icon">
+          <span class="home-tile-icon home-icon-anim home-icon-presets">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
               <line x1="4" y1="6" x2="20" y2="6"/>
               <line x1="4" y1="12" x2="20" y2="12"/>
               <line x1="4" y1="18" x2="20" y2="18"/>
-              <circle cx="8" cy="6" r="2.5" fill="currentColor" stroke="none"/>
-              <circle cx="16" cy="12" r="2.5" fill="currentColor" stroke="none"/>
-              <circle cx="10" cy="18" r="2.5" fill="currentColor" stroke="none"/>
+              <circle cx="8" cy="6" r="2.5" fill="currentColor" stroke="none" class="anim-dot anim-dot-1"/>
+              <circle cx="16" cy="12" r="2.5" fill="currentColor" stroke="none" class="anim-dot anim-dot-2"/>
+              <circle cx="10" cy="18" r="2.5" fill="currentColor" stroke="none" class="anim-dot anim-dot-3"/>
             </svg>
           </span>
           <div class="home-tile-text">
@@ -93,10 +93,10 @@
           </div>
         </button>
         <button class="home-tile home-tile--wide home-tile--accent" id="btn-goto-tools" aria-label="Werkzeuge öffnen">
-          <span class="home-tile-icon">
+          <span class="home-tile-icon home-icon-anim home-icon-clock">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <circle cx="12" cy="13" r="8"/>
-              <polyline points="12,9 12,13 15,15"/>
+              <polyline points="12,9 12,13 15,15" class="anim-clock-hand" style="transform-origin:12px 13px"/>
               <line x1="10" y1="3" x2="14" y2="3"/>
               <line x1="12" y1="3" x2="12" y2="5"/>
             </svg>
@@ -107,10 +107,10 @@
           </div>
         </button>
         <button class="home-tile home-tile--wide home-tile--accent" id="btn-open-teambuilder" aria-label="Teams zufällig einteilen">
-          <span class="home-tile-icon">
+          <span class="home-tile-icon home-icon-anim home-icon-team">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <circle cx="9" cy="7" r="3"/>
-              <circle cx="15" cy="7" r="3"/>
+              <circle cx="9" cy="7" r="3" class="anim-team-a"/>
+              <circle cx="15" cy="7" r="3" class="anim-team-b"/>
               <path d="M3 21v-1a6 6 0 0 1 6-6h6a6 6 0 0 1 6 6v1"/>
             </svg>
           </span>
@@ -120,12 +120,12 @@
           </div>
         </button>
         <button class="home-tile" id="btn-goto-log" aria-label="Verlauf öffnen">
-          <span class="home-tile-icon">
+          <span class="home-tile-icon home-icon-anim home-icon-log">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <rect x="5" y="3" width="14" height="18" rx="2"/>
-              <line x1="9" y1="8" x2="15" y2="8"/>
-              <line x1="9" y1="12" x2="15" y2="12"/>
-              <line x1="9" y1="16" x2="13" y2="16"/>
+              <line x1="9" y1="8"  x2="15" y2="8"  class="anim-log-line anim-log-1"/>
+              <line x1="9" y1="12" x2="15" y2="12" class="anim-log-line anim-log-2"/>
+              <line x1="9" y1="16" x2="13" y2="16" class="anim-log-line anim-log-3"/>
             </svg>
           </span>
           <div class="home-tile-text">
@@ -137,7 +137,7 @@
     </section>
 
     <!-- ═══ Screen: Presets ═══ -->
-    <section id="screen-presets" class="screen">
+    <section id="screen-presets" class="screen screen-deco">
       <div class="sub-header">
         <button class="btn-back" id="btn-presets-back" aria-label="Zurück">&#x2190;</button>
         <h2>Presets</h2>
@@ -147,7 +147,7 @@
     </section>
 
     <!-- ═══ Screen: Match-Setup ═══ -->
-    <section id="screen-match-setup" class="screen">
+    <section id="screen-match-setup" class="screen screen-deco">
       <div class="sub-header">
         <button class="btn-back" id="btn-setup-back" aria-label="Zurück">&#x2190;</button>
         <h2>Match einrichten</h2>
@@ -164,7 +164,19 @@
           <input type="text" id="team-b-name" placeholder="Name" maxlength="20" autocomplete="off">
           <div class="color-picker" id="color-picker-b" role="group" aria-label="Farbe Team B"></div>
         </div>
-        <button class="btn-primary btn-full" id="btn-start-match">Match starten</button>
+        <div class="setup-team">
+          <label>Spieldauer</label>
+          <div class="duration-chips" id="setup-duration-chips" role="group" aria-label="Spieldauer wählen"></div>
+        </div>
+        <button class="btn-primary btn-full btn-anim" id="btn-start-match">
+          <span class="btn-anim-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="9" class="anim-whistle-ring"/>
+              <polygon points="10,8 16,12 10,16" fill="currentColor" stroke="none"/>
+            </svg>
+          </span>
+          <span>Match starten</span>
+        </button>
       </div>
     </section>
 
@@ -179,8 +191,22 @@
             <button class="btn-score btn-plus" id="btn-plus-a" aria-label="Punkt hinzufügen Team A">+1</button>
           </div>
         </div>
-        <div class="match-timer-pill" id="match-timer-pill" role="button" aria-label="Spielzeit starten / pausieren">
-          <span id="match-time">00:00</span>
+        <div class="match-center">
+          <div class="match-timer-pill" id="match-timer-pill" role="button" aria-label="Spielzeit starten / pausieren">
+            <span id="match-time">00:00</span>
+          </div>
+          <div class="match-center-meta">
+            <button class="btn-timeout" id="btn-timeout" aria-label="Auszeit starten oder beenden">
+              <span class="btn-timeout-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                  <rect class="anim-pause-bar" x="6"  y="5" width="4" height="14" rx="1.5"/>
+                  <rect class="anim-pause-bar" x="14" y="5" width="4" height="14" rx="1.5"/>
+                </svg>
+              </span>
+              <span class="btn-timeout-label">Auszeit</span>
+            </button>
+            <span class="timeout-sum hidden" id="timeout-sum" aria-live="polite">Auszeit&nbsp;00:00</span>
+          </div>
         </div>
         <div class="team-card" id="card-team-b">
           <div class="team-name" id="live-team-b-name">Team B</div>
@@ -196,7 +222,7 @@
     </section>
 
     <!-- ═══ Screen: Tools ═══ -->
-    <section id="screen-tools" class="screen">
+    <section id="screen-tools" class="screen screen-deco">
       <div class="screen-body">
 
         <!-- Stoppuhr-Header mit "+" Schaltfläche -->
@@ -252,7 +278,7 @@
     </section>
 
     <!-- ═══ Screen: Verlauf / Log ═══ -->
-    <section id="screen-history" class="screen">
+    <section id="screen-history" class="screen screen-deco">
       <div class="history-tabs" role="tablist">
         <button class="history-tab active" data-tab="matches" role="tab" aria-selected="true">Matches</button>
         <button class="history-tab" data-tab="stopwatches" role="tab" aria-selected="false">Stoppuhren</button>
@@ -265,7 +291,7 @@
     </section>
 
     <!-- ═══ Screen: Teambildung Setup ═══ -->
-    <section id="screen-teambuilder" class="screen">
+    <section id="screen-teambuilder" class="screen screen-deco">
       <div class="sub-header">
         <button class="btn-back" id="btn-teambuilder-back" aria-label="Zurück">&#x2190;</button>
         <h2>Teambildung</h2>
@@ -288,7 +314,17 @@
           </div>
         </div>
         <div class="tb-preview" id="tb-preview"></div>
-        <button class="btn-primary btn-full" id="btn-teambuilder-start">Einteilung starten</button>
+        <button class="btn-primary btn-full btn-anim" id="btn-teambuilder-start">
+          <span class="btn-anim-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="8" cy="8" r="3" class="anim-team-a"/>
+              <circle cx="16" cy="8" r="3" class="anim-team-b"/>
+              <path d="M3 20v-1a5 5 0 0 1 5-5"/>
+              <path d="M21 20v-1a5 5 0 0 0-5-5"/>
+            </svg>
+          </span>
+          <span>Einteilung starten</span>
+        </button>
       </div>
     </section>
 
@@ -305,13 +341,21 @@
     </section>
 
     <!-- ═══ Screen: Teambildung Aufstellung ═══ -->
-    <section id="screen-teambuilder-lineup" class="screen">
+    <section id="screen-teambuilder-lineup" class="screen screen-deco">
       <div class="sub-header">
         <h2>Team-Aufstellung</h2>
       </div>
       <div class="tb-lineup" id="tb-lineup"></div>
       <div class="tb-lineup-footer">
-        <button class="btn-primary btn-full" id="btn-lineup-match">Match starten</button>
+        <button class="btn-primary btn-full btn-anim" id="btn-lineup-match">
+          <span class="btn-anim-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="9" class="anim-whistle-ring"/>
+              <polygon points="10,8 16,12 10,16" fill="currentColor" stroke="none"/>
+            </svg>
+          </span>
+          <span>Match starten</span>
+        </button>
         <button class="btn-secondary btn-full" id="btn-lineup-done">Fertig</button>
       </div>
     </section>
@@ -330,7 +374,7 @@
     </section>
 
     <!-- ═══ Screen: Einstellungen ═══ -->
-    <section id="screen-settings" class="screen">
+    <section id="screen-settings" class="screen screen-deco">
       <div class="sub-header">
         <button class="btn-back" id="btn-settings-back" aria-label="Zurück">&#x2190;</button>
         <h2>Einstellungen</h2>
@@ -394,6 +438,8 @@
     <p class="detail-score" id="ht-score"></p>
     <p class="detail-meta" id="ht-teams"></p>
     <p class="detail-meta" id="ht-time"></p>
+    <p class="detail-meta" id="ht-timeout"></p>
+    <p class="detail-meta hidden" id="ht-break"></p>
     <div class="modal-actions">
       <button class="btn-secondary" id="ht-back">Weiter spielen</button>
       <button class="btn-primary" id="ht-next">2. Halbzeit</button>
@@ -404,6 +450,8 @@
     <h2>Match beenden</h2>
     <p class="detail-score" id="m-score"></p>
     <p class="detail-meta" id="m-teams"></p>
+    <p class="detail-meta" id="m-time"></p>
+    <p class="detail-meta" id="m-timeout"></p>
     <div class="modal-actions">
       <button class="btn-primary" id="m-save">Speichern</button>
       <button class="btn-danger" id="m-discard">Verwerfen</button>
@@ -502,6 +550,14 @@
     <div class="modal-field">
       <span class="modal-label">Farbe</span>
       <div class="color-row" id="pm-colors"></div>
+    </div>
+    <div class="modal-field">
+      <span class="modal-label">Spieldauer</span>
+      <div class="duration-chips" id="pm-duration"></div>
+    </div>
+    <div class="modal-field">
+      <span class="modal-label">Pausendauer (Halbzeit)</span>
+      <div class="duration-chips" id="pm-break"></div>
     </div>
     <div class="modal-actions" id="pm-actions">
       <button class="btn-secondary" id="pm-cancel">Abbrechen</button>

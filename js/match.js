@@ -7,11 +7,11 @@ export const COLORS = [
   { a: '#374151', aName: 'gray',   b: '#059669', bName: 'green'  },
 ];
 
-let setup = { teamAName: '', teamBName: '', colorIndex: 0 };
+let setup = { teamAName: '', teamBName: '', colorIndex: 0, durationMs: null, breakMs: null };
 let live = null;
 
 export function initSetup() {
-  setup = { teamAName: '', teamBName: '', colorIndex: 0 };
+  setup = { teamAName: '', teamBName: '', colorIndex: 0, durationMs: null, breakMs: null };
 }
 
 export function setTeamName(team, name) {
@@ -21,9 +21,14 @@ export function setTeamName(team, name) {
 
 export function setColorIndex(i) { setup.colorIndex = i; }
 
+// durationMs = geplante Spieldauer (null = kein Limit, Uhr zählt hoch)
+export function setDuration(ms) { setup.durationMs = ms || null; }
+// breakMs = Pausendauer der Halbzeit (null = keine geführte Pause)
+export function setBreak(ms) { setup.breakMs = ms || null; }
+
 export function getSetup() { return { ...setup }; }
 
-export function startMatch(nameA, nameB, colorIndex) {
+export function startMatch(nameA, nameB, colorIndex, durationMs = setup.durationMs, breakMs = setup.breakMs) {
   const pair = COLORS[colorIndex] ?? COLORS[0];
   live = {
     id: `m_${Date.now()}`,
@@ -33,6 +38,12 @@ export function startMatch(nameA, nameB, colorIndex) {
     startedAt: null,
     accMs: 0,
     running: false,
+    durationMs: durationMs || null,
+    breakMs: breakMs || null,
+    timeoutMs: 0,
+    timeoutRunning: false,
+    timeoutStartedAt: null,
+    timeoutResumeClock: false,
     halfTimeScore: null,
     halfTimeMs: null,
   };
@@ -69,6 +80,51 @@ export function getElapsedMs() {
   return live.running ? live.accMs + (Date.now() - live.startedAt) : live.accMs;
 }
 
+// Verbleibende Spielzeit (null = kein Limit). Kann negativ werden (Nachspielzeit).
+export function getRemainingMs() {
+  if (!live || !live.durationMs) return null;
+  return live.durationMs - getElapsedMs();
+}
+
+export function getDurationMs() { return live ? (live.durationMs || null) : null; }
+export function getBreakMs() { return live ? (live.breakMs || null) : null; }
+
+// Aufsummierte Auszeit-Zeit (inkl. laufender Auszeit)
+export function getTimeoutMs() {
+  if (!live) return 0;
+  return live.timeoutRunning
+    ? live.timeoutMs + (Date.now() - live.timeoutStartedAt)
+    : live.timeoutMs;
+}
+
+export function isTimeoutRunning() { return !!(live && live.timeoutRunning); }
+
+// Auszeit Start/Stop. Beim Start pausiert die Spieluhr und merkt sich,
+// ob sie danach fortgesetzt werden soll. Die Auszeit-Dauer wird dokumentiert.
+export function toggleTimeout() {
+  if (!live) return false;
+  if (live.timeoutRunning) {
+    live.timeoutMs += Date.now() - live.timeoutStartedAt;
+    live.timeoutRunning = false;
+    live.timeoutStartedAt = null;
+    if (live.timeoutResumeClock) {
+      live.startedAt = Date.now();
+      live.running = true;
+      live.timeoutResumeClock = false;
+    }
+  } else {
+    live.timeoutResumeClock = live.running;
+    if (live.running) {
+      live.accMs += Date.now() - live.startedAt;
+      live.running = false;
+    }
+    live.timeoutRunning = true;
+    live.timeoutStartedAt = Date.now();
+  }
+  _saveSession();
+  return live.timeoutRunning;
+}
+
 export function resetTimer() {
   if (!live) return;
   live.accMs = 0;
@@ -91,6 +147,8 @@ export function saveMatch() {
     teamA: { name: live.teamA.name, color: live.teamA.color, score: live.teamA.score },
     teamB: { name: live.teamB.name, color: live.teamB.color, score: live.teamB.score },
     durationMs: getElapsedMs(),
+    plannedMs: live.durationMs || null,
+    timeoutMs: getTimeoutMs(),
     halfTimeScore: live.halfTimeScore || null,
     halfTimeMs: live.halfTimeMs || null,
     note: '',
@@ -115,9 +173,19 @@ export function checkSession() {
 
 export function restoreSession(s) {
   live = s.state;
+  // Abwärtskompatibilität für ältere Sessions ohne Auszeit-Felder
+  live.timeoutMs = live.timeoutMs || 0;
+  live.timeoutRunning = !!live.timeoutRunning;
+  live.timeoutResumeClock = !!live.timeoutResumeClock;
+  live.durationMs = live.durationMs || null;
+  live.breakMs = live.breakMs || null;
   if (live.running) {
     live.accMs += Date.now() - s.savedAt;
     live.startedAt = Date.now();
+  }
+  if (live.timeoutRunning) {
+    live.timeoutMs += Date.now() - s.savedAt;
+    live.timeoutStartedAt = Date.now();
   }
 }
 

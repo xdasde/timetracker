@@ -3,6 +3,46 @@ import * as ui from './ui.js';
 
 const ICONS = ['⚽', '🏀', '🏐', '🏈', '🎾', '🏓', '🥊', '🏒'];
 
+const DURATION_OPTIONS = [
+  { label: 'Kein Limit', ms: null },
+  { label: '10 Min',     ms: 10 * 60000 },
+  { label: '15 Min',     ms: 15 * 60000 },
+  { label: '20 Min',     ms: 20 * 60000 },
+  { label: '30 Min',     ms: 30 * 60000 },
+  { label: '40 Min',     ms: 40 * 60000 },
+  { label: '45 Min',     ms: 45 * 60000 },
+  { label: '60 Min',     ms: 60 * 60000 },
+  { label: '90 Min',     ms: 90 * 60000 },
+];
+const BREAK_OPTIONS = [
+  { label: 'Keine',  ms: null },
+  { label: '1 Min',  ms: 1 * 60000 },
+  { label: '5 Min',  ms: 5 * 60000 },
+  { label: '10 Min', ms: 10 * 60000 },
+  { label: '15 Min', ms: 15 * 60000 },
+];
+
+// Baut eine Auswahl von Zeit-Chips; ruft onPick(ms) beim Tippen auf.
+function buildTimeChips(container, options, selectedMs, onPick) {
+  container.replaceChildren();
+  const chips = [];
+  const setActive = ms => {
+    const norm = ms || null;
+    chips.forEach(({ btn, ms: cms }) =>
+      btn.classList.toggle('duration-chip--active', (cms || null) === norm));
+  };
+  options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'duration-chip';
+    btn.textContent = opt.label;
+    btn.addEventListener('click', () => { setActive(opt.ms); onPick(opt.ms); });
+    container.appendChild(btn);
+    chips.push({ btn, ms: opt.ms });
+  });
+  setActive(selectedMs || null);
+}
+
 // colorIndex maps to COLORS array in match.js: 0=teal/coral, 1=blue/red, 2=purple/amber, 3=gray/green
 const BUILT_IN_PRESETS = [
   {
@@ -186,6 +226,7 @@ export function openModal(preset, onSaved, onDeleted) {
       teamB: { name: '' },
       colorIndex: 0,
       durationMs: null,
+      breakMs: null,
       builtIn: false,
     };
 
@@ -244,6 +285,12 @@ export function openModal(preset, onSaved, onDeleted) {
       });
       colorRow.appendChild(dot2);
     });
+
+    // Spieldauer + Pausendauer
+    buildTimeChips(document.getElementById('pm-duration'), DURATION_OPTIONS,
+      editing.durationMs, ms => { editing.durationMs = ms; });
+    buildTimeChips(document.getElementById('pm-break'), BREAK_OPTIONS,
+      editing.breakMs, ms => { editing.breakMs = ms; });
 
     const actions = document.getElementById('pm-actions');
     if (!isNew) {

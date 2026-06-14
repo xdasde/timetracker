@@ -1764,6 +1764,227 @@ textarea.modal-input { resize: vertical; min-height: 80px; }
 }
 
 /* ═══════════════════════════════════════════
+   DESIGN-ROLLOUT — Start-Screen-Sprache überall
+   (Glas-Sheen + obere Lichtkante + animierte Welle)
+═══════════════════════════════════════════ */
+.preset-card,
+.setup-team,
+.tool-card,
+.sw-section-header,
+.history-card,
+.setting-row,
+.tb-counter-row,
+.tb-lineup-team,
+.tbm-team-card {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0) 55%),
+    var(--color-surface);
+  box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,0.08);
+}
+.preset-card, .history-card, .setting-row { border-radius: 16px; }
+
+/* Akzent-Kacheln (Timer/Teambildung): dunkles Icon auf Amber sichtbar machen.
+   Überschreibt die globale Amber-SVG-Regel, die sonst Amber-auf-Amber erzeugt. */
+.home-tile.home-tile--accent .home-tile-icon svg { color: #111827; }
+
+/* Dezente, animierte Welle im Hintergrund aller Unterseiten */
+.screen-deco { position: relative; z-index: 0; }
+.screen-deco::before {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 200px;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.06;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='720' height='200' viewBox='0 0 720 200' preserveAspectRatio='none'%3E%3Cpath d='M0,80 C120,30 240,130 360,80 C480,30 600,130 720,80 L720,200 L0,200 Z' fill='%23f59e0b'/%3E%3C/svg%3E");
+  background-size: 720px 200px;
+  background-repeat: repeat-x;
+  background-position: 0 100%;
+  will-change: background-position;
+  animation: wave-scroll-bg 26s linear infinite;
+}
+@keyframes wave-scroll-bg {
+  from { background-position: 0 100%; }
+  to   { background-position: -720px 100%; }
+}
+
+/* ═══════════════════════════════════════════
+   ANIMIERTE SVG-ICONS (Home-Kacheln)
+═══════════════════════════════════════════ */
+/* Play/Pfeife — pulsierender Ring */
+.anim-ping-ring,
+.anim-whistle-ring {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: anim-pulse-ring 2s ease-in-out infinite;
+}
+@keyframes anim-pulse-ring {
+  0%, 100% { transform: scale(1);    opacity: 0.9; }
+  50%      { transform: scale(1.08); opacity: 1; }
+}
+
+/* Timer — rotierender Zeiger */
+.anim-clock-hand {
+  transform-box: view-box;
+  animation: anim-rotate 8s linear infinite;
+}
+@keyframes anim-rotate { to { transform: rotate(360deg); } }
+
+/* Presets — Punkte „tippen" nacheinander */
+.anim-dot { animation: anim-blink 1.8s ease-in-out infinite; }
+.anim-dot-2 { animation-delay: 0.3s; }
+.anim-dot-3 { animation-delay: 0.6s; }
+@keyframes anim-blink {
+  0%, 100% { opacity: 0.35; }
+  50%      { opacity: 1; }
+}
+
+/* Teambildung — Köpfe „mischen" leicht */
+.anim-team-a, .anim-team-b {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: anim-shuffle-a 2.2s ease-in-out infinite;
+}
+.anim-team-b { animation-name: anim-shuffle-b; }
+@keyframes anim-shuffle-a {
+  0%, 100% { transform: translateX(0); }
+  50%      { transform: translateX(2px); }
+}
+@keyframes anim-shuffle-b {
+  0%, 100% { transform: translateX(0); }
+  50%      { transform: translateX(-2px); }
+}
+
+/* Verlauf — Zeilen werden „geschrieben" */
+.anim-log-line {
+  stroke-dasharray: 8;
+  stroke-dashoffset: 8;
+  animation: anim-draw 2.6s ease-in-out infinite;
+}
+.anim-log-2 { animation-delay: 0.25s; }
+.anim-log-3 { animation-delay: 0.5s; }
+@keyframes anim-draw {
+  0%        { stroke-dashoffset: 8; }
+  45%, 100% { stroke-dashoffset: 0; }
+}
+
+/* ═══════════════════════════════════════════
+   PRIMARY-BUTTON MIT ANIMIERTEM SVG
+═══════════════════════════════════════════ */
+.btn-anim {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.btn-anim-icon { width: 22px; height: 22px; display: inline-flex; flex-shrink: 0; }
+.btn-anim-icon svg { width: 22px; height: 22px; display: block; }
+
+/* ═══════════════════════════════════════════
+   SPIELDAUER-CHIPS (Setup + Preset-Modal)
+═══════════════════════════════════════════ */
+.duration-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.duration-chip {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  padding: 8px 14px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-text);
+  transition: background 0.12s, border-color 0.12s, color 0.12s, transform 0.1s;
+}
+.duration-chip:active { transform: scale(0.95); }
+.duration-chip--active {
+  background: var(--color-amber);
+  border-color: var(--color-amber);
+  color: #111827;
+}
+
+/* ═══════════════════════════════════════════
+   MATCH-LIVE — Zentrum (Restzeit + Auszeit)
+═══════════════════════════════════════════ */
+.match-center {
+  align-self: center;
+  z-index: 2;
+  flex-shrink: 0;
+  margin: -12px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.match-center .match-timer-pill { margin: 0; align-self: center; }
+
+/* Restzeit-Endphase / Abpfiff */
+.match-timer-pill.ending   { background: var(--color-danger); color: #fff; }
+.match-timer-pill.finished { background: var(--color-danger); color: #fff; animation: pulse 1.2s ease-in-out infinite; }
+
+.match-center-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.btn-timeout {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: var(--radius-pill);
+  padding: 7px 16px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: background 0.15s, color 0.15s, transform 0.1s;
+}
+.btn-timeout:active { transform: scale(0.96); }
+.btn-timeout-icon { width: 15px; height: 15px; display: inline-flex; }
+.btn-timeout-icon svg { width: 15px; height: 15px; display: block; }
+.btn-timeout--active {
+  background: var(--color-amber);
+  color: #111827;
+  border-color: var(--color-amber);
+}
+.btn-timeout--active .anim-pause-bar { animation: anim-blink 0.9s ease-in-out infinite; }
+.btn-timeout--active .anim-pause-bar:nth-child(2) { animation-delay: 0.25s; }
+
+.timeout-sum {
+  font-size: 0.72rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: rgba(255,255,255,0.9);
+  background: rgba(0,0,0,0.3);
+  border-radius: var(--radius-pill);
+  padding: 2px 12px;
+}
+
+/* ═══════════════════════════════════════════
+   REDUCED MOTION — alle Deko-Animationen aus
+═══════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  .home-wave,
+  .screen-deco::before,
+  .anim-ping-ring,
+  .anim-whistle-ring,
+  .anim-clock-hand,
+  .anim-dot,
+  .anim-team-a,
+  .anim-team-b,
+  .anim-log-line,
+  .match-timer-pill.finished,
+  .btn-timeout--active .anim-pause-bar {
+    animation: none !important;
+  }
+  .anim-log-line { stroke-dashoffset: 0; }
+}
+
+/* ═══════════════════════════════════════════
    UTILITIES
 ═══════════════════════════════════════════ */
 .hidden { display: none !important; }

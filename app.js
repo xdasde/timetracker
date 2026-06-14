@@ -591,11 +591,67 @@ document.getElementById('btn-preset-add').addEventListener('click', () => {
 // ═══════════════════════════════════════════════════════════
 // MATCH SETUP
 // ═══════════════════════════════════════════════════════════
+// Auswahl für Spieldauer (null = kein Limit). Wird in Setup + Preset-Modal genutzt.
+const DURATION_OPTIONS = [
+  { label: 'Kein Limit', ms: null },
+  { label: '10 Min',     ms: 10 * 60000 },
+  { label: '15 Min',     ms: 15 * 60000 },
+  { label: '20 Min',     ms: 20 * 60000 },
+  { label: '30 Min',     ms: 30 * 60000 },
+  { label: '40 Min',     ms: 40 * 60000 },
+  { label: '45 Min',     ms: 45 * 60000 },
+  { label: '60 Min',     ms: 60 * 60000 },
+  { label: '90 Min',     ms: 90 * 60000 },
+];
+// Auswahl für die Pausendauer (Halbzeit). null = keine geführte Pause.
+const BREAK_OPTIONS = [
+  { label: 'Keine',   ms: null },
+  { label: '1 Min',   ms: 1 * 60000 },
+  { label: '5 Min',   ms: 5 * 60000 },
+  { label: '10 Min',  ms: 10 * 60000 },
+  { label: '15 Min',  ms: 15 * 60000 },
+];
+
+// Baut eine Chip-Reihe für Zeit-Optionen. onPick(ms) wird beim Tippen aufgerufen.
+// Gibt eine setActive(ms)-Funktion zurück, um die Auswahl programmgesteuert zu setzen.
+function buildDurationChips(container, options, selectedMs, onPick) {
+  container.replaceChildren();
+  const chips = [];
+  options.forEach(opt => {
+    const chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'duration-chip';
+    chip.textContent = opt.label;
+    chip.dataset.ms = opt.ms == null ? '' : String(opt.ms);
+    chip.addEventListener('click', () => {
+      setActive(opt.ms);
+      onPick(opt.ms);
+    });
+    container.appendChild(chip);
+    chips.push({ chip, ms: opt.ms });
+  });
+  function setActive(ms) {
+    const norm = ms || null;
+    chips.forEach(({ chip, ms: cms }) =>
+      chip.classList.toggle('duration-chip--active', (cms || null) === norm));
+  }
+  setActive(selectedMs || null);
+  return setActive;
+}
+
+let _setupDurationSetActive = null;
+
 function enterSetup() {
   match.initSetup();
   document.getElementById('team-a-name').value = '';
   document.getElementById('team-b-name').value = '';
   const selectColorIdx = buildColorPickers();
+  _setupDurationSetActive = buildDurationChips(
+    document.getElementById('setup-duration-chips'),
+    DURATION_OPTIONS,
+    null,
+    ms => match.setDuration(ms)
+  );
   buildPresetChips(selectColorIdx);
 }
 
@@ -651,6 +707,10 @@ function buildPresetChips(selectColorIdx) {
     match.setTeamName('a', preset.teamA.name);
     match.setTeamName('b', preset.teamB.name);
     selectColorIdx(preset.colorIndex ?? 0);
+    // Spieldauer + Pausendauer aus dem Preset übernehmen
+    match.setDuration(preset.durationMs ?? null);
+    match.setBreak(preset.breakMs ?? null);
+    _setupDurationSetActive?.(preset.durationMs ?? null);
   });
 }
 
@@ -675,16 +735,31 @@ document.getElementById('btn-start-match').addEventListener('click', () => {
 // ═══════════════════════════════════════════════════════════
 // MATCH LIVE
 // ═══════════════════════════════════════════════════════════
-let _matchRaf = null;
+let _matchRaf   = null;
+let _matchEnded = false;     // Restzeit auf 0 erreicht (Abpfiff-Signal nur einmal)
+let _breakActive = false;    // Halbzeit-Pause läuft
+let _breakEndsAt = 0;
+
+// ms → "MM:SS" (negative Werte werden mit Minus dargestellt)
+function fmtClock(ms) {
+  const neg = ms < 0;
+  const total = Math.floor(Math.abs(ms) / 1000);
+  const str = `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`;
+  return neg ? `-${str}` : str;
+}
 
 function enterLive() {
   const s = match.getLive();
   if (!s) return;
+  _matchEnded  = false;
+  _breakActive = false;
   document.getElementById('card-team-a').style.background = s.teamA.colorHex;
   document.getElementById('card-team-b').style.background = s.teamB.colorHex;
   document.getElementById('live-team-a-name').textContent = s.teamA.name;
   document.getElementById('live-team-b-name').textContent = s.teamB.name;
+  pill.classList.toggle('running', s.running);
   updateScores();
+  updateTimeoutUI();
   startMatchRaf();
   acquireWakeLock();
   const cfg = storage.getItem('settings') || {};
@@ -694,20 +769,94 @@ function enterLive() {
 function leaveLive() {
   cancelAnimationFrame(_matchRaf);
   _matchRaf = null;
+  _breakActive = false;
+  pill.classList.remove('running', 'ending', 'finished', 'break');
   releaseWakeLock();
 }
 
 function startMatchRaf() {
   cancelAnimationFrame(_matchRaf);
+  const timeEl = document.getElementById('match-time');
   const tick = () => {
-    const ms = match.getElapsedMs();
-    const s = Math.floor(ms / 1000);
-    document.getElementById('match-time').textContent =
-      `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
+    if (_breakActive) {
+      // Halbzeit-Pause: Countdown bis Pausenende
+      const rem = _breakEndsAt - Date.now();
+      timeEl.textContent = fmtClock(Math.max(0, rem));
+      if (rem <= 0) endBreak(true);
+    } else {
+      const remaining = match.getRemainingMs();
+      if (remaining == null) {
+        // Kein Limit → klassisch hochzählen
+        timeEl.textContent = fmtClock(match.getElapsedMs());
+        pill.classList.remove('ending', 'finished');
+      } else {
+        // Restzeit herunterzählen
+        const shown = Math.max(0, remaining);
+        timeEl.textContent = fmtClock(shown);
+        pill.classList.toggle('ending', shown > 0 && shown <= 10000);
+        if (remaining <= 0 && !_matchEnded) {
+          _matchEnded = true;
+          if (match.getLive()?.running) { match.toggleTimer(); }
+          pill.classList.remove('running', 'ending');
+          pill.classList.add('finished');
+          const cfg = storage.getItem('settings') || {};
+          if (cfg.sound !== false) playWhistle();
+          if (cfg.vibration !== false && navigator.vibrate) navigator.vibrate([200, 100, 200]);
+          ui.showToast('Spielzeit abgelaufen!');
+        }
+      }
+    }
+    updateTimeoutUI();
     _matchRaf = requestAnimationFrame(tick);
   };
   _matchRaf = requestAnimationFrame(tick);
 }
+
+// Auszeit-Summe + Button-Status aktualisieren
+function updateTimeoutUI() {
+  const total = match.getTimeoutMs();
+  const running = match.isTimeoutRunning();
+  const sumEl = document.getElementById('timeout-sum');
+  const btn   = document.getElementById('btn-timeout');
+  btn.classList.toggle('btn-timeout--active', running);
+  btn.querySelector('.btn-timeout-label').textContent = running ? 'Auszeit läuft' : 'Auszeit';
+  if (total > 0 || running) {
+    sumEl.classList.remove('hidden');
+    sumEl.textContent = `Auszeit ${fmtClock(total)}`;
+  } else {
+    sumEl.classList.add('hidden');
+  }
+}
+
+// Halbzeit-Pause starten (Countdown auf der Pill)
+function startBreak(ms) {
+  _breakActive = true;
+  _breakEndsAt = Date.now() + ms;
+  pill.classList.remove('running', 'ending', 'finished');
+  pill.classList.add('break');
+}
+
+// Pause beenden (auto = automatisch bei 0 → Signal). Danach 2. Halbzeit ab 00:00.
+function endBreak(auto) {
+  if (!_breakActive) return;
+  _breakActive = false;
+  pill.classList.remove('break');
+  match.resetTimer();
+  _matchEnded = false;
+  if (auto) {
+    const cfg = storage.getItem('settings') || {};
+    if (cfg.sound !== false) playWhistle();
+    if (cfg.vibration !== false && navigator.vibrate) navigator.vibrate([200, 100, 200]);
+    ui.showToast('2. Halbzeit – los!');
+  }
+}
+
+document.getElementById('btn-timeout').addEventListener('click', () => {
+  if (_breakActive) return;
+  match.toggleTimeout();
+  pill.classList.toggle('running', !!match.getLive()?.running);
+  updateTimeoutUI();
+});
 
 function updateScores() {
   const s = match.getLive();
@@ -725,14 +874,22 @@ function updateScores() {
 const pill = document.getElementById('match-timer-pill');
 let _lp = null;
 pill.addEventListener('pointerdown', () => {
+  if (_breakActive) return;
   _lp = setTimeout(async () => {
     const ok = await ui.confirmAction('Spielzeit auf 00:00 zurücksetzen?');
-    if (ok) match.resetTimer();
+    if (ok) {
+      match.resetTimer();
+      _matchEnded = false;
+      pill.classList.remove('finished', 'ending');
+    }
   }, 700);
 });
 ['pointerup', 'pointercancel', 'pointerleave'].forEach(ev =>
   pill.addEventListener(ev, () => clearTimeout(_lp)));
 pill.addEventListener('click', () => {
+  if (_breakActive) { endBreak(false); return; }   // Pause überspringen → 2. Halbzeit
+  if (match.isTimeoutRunning()) return;            // während Auszeit über den Auszeit-Button steuern
+  if (_matchEnded) return;                          // abgepfiffen → Reset/2. Halbzeit nötig
   const running = match.toggleTimer();
   pill.classList.toggle('running', running);
 });
@@ -765,19 +922,36 @@ document.getElementById('btn-halftime').addEventListener('click', () => {
   const elSec = Math.floor((elMs % 60000) / 1000);
   const elStr = `${String(elMin).padStart(2, '0')}:${String(elSec).padStart(2, '0')}`;
 
+  const breakMs = match.getBreakMs();
+
   ui.openModal('tmpl-modal-halftime', () => {
     document.getElementById('ht-score').textContent = `${s.teamA.score} : ${s.teamB.score}`;
     document.getElementById('ht-teams').textContent = `${s.teamA.name} vs. ${s.teamB.name}`;
     document.getElementById('ht-time').textContent  = `1. Halbzeit: ${elStr}`;
+
+    const toMs = match.getTimeoutMs();
+    document.getElementById('ht-timeout').textContent = toMs > 0 ? `Auszeiten: ${fmtClock(toMs)}` : '';
+
+    const breakEl = document.getElementById('ht-break');
+    const nextBtn = document.getElementById('ht-next');
+    if (breakMs) {
+      breakEl.textContent = `Pause: ${fmtClock(breakMs)}`;
+      breakEl.classList.remove('hidden');
+      nextBtn.textContent = 'Pause starten';
+    } else {
+      breakEl.classList.add('hidden');
+      nextBtn.textContent = '2. Halbzeit';
+    }
 
     document.getElementById('ht-back').onclick = () => {
       if (wasRunning) { match.toggleTimer(); pill.classList.add('running'); }
       ui.closeModal();
     };
 
-    document.getElementById('ht-next').onclick = () => {
-      match.resetTimer();
+    nextBtn.onclick = () => {
       ui.closeModal();
+      if (breakMs) startBreak(breakMs);   // Countdown läuft, danach 2. Halbzeit ab 00:00
+      else { match.resetTimer(); _matchEnded = false; pill.classList.remove('finished', 'ending'); }
     };
   });
 });
@@ -787,6 +961,9 @@ document.getElementById('btn-end-match').addEventListener('click', () => {
   ui.openModal('tmpl-modal-match-end', () => {
     document.getElementById('m-score').textContent = `${s.teamA.score} : ${s.teamB.score}`;
     document.getElementById('m-teams').textContent = `${s.teamA.name} vs. ${s.teamB.name}`;
+    document.getElementById('m-time').textContent  = `Spielzeit: ${fmtClock(match.getElapsedMs())}`;
+    const toMs = match.getTimeoutMs();
+    document.getElementById('m-timeout').textContent = toMs > 0 ? `davon Auszeiten: ${fmtClock(toMs)}` : '';
 
     document.getElementById('m-save').onclick = () => {
       const cfg2 = storage.getItem('settings') || {};
