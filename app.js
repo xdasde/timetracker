@@ -7,7 +7,7 @@ import { Stopwatch, fmtMs } from './js/stopwatch.js';
 import * as timer from './js/timer.js';
 import * as historyMod from './js/history.js';
 import * as exportMod from './js/export.js';
-import { playBeep } from './js/audio.js';
+import { playBeep, playWhistle, playGoal, playMatchEnd, playCountdownTick } from './js/audio.js';
 import { acquireWakeLock, releaseWakeLock } from './js/wakelock.js';
 import * as teambuilder from './js/teambuilder.js';
 
@@ -449,6 +449,8 @@ function enterLive() {
   updateScores();
   startMatchRaf();
   acquireWakeLock();
+  const cfg = storage.getItem('settings') || {};
+  if (cfg.sound !== false) playWhistle();
 }
 
 function leaveLive() {
@@ -497,9 +499,16 @@ pill.addEventListener('click', () => {
   pill.classList.toggle('running', running);
 });
 
-document.getElementById('btn-plus-a').addEventListener('click', () => { match.changeScore('a', 1); updateScores(); });
+function _scoreUp(team) {
+  match.changeScore(team, 1);
+  updateScores();
+  const cfg = storage.getItem('settings') || {};
+  if (cfg.sound !== false) playGoal();
+  if (cfg.vibration !== false && navigator.vibrate) navigator.vibrate(60);
+}
+document.getElementById('btn-plus-a').addEventListener('click', () => _scoreUp('a'));
 document.getElementById('btn-minus-a').addEventListener('click', () => { match.changeScore('a', -1); updateScores(); });
-document.getElementById('btn-plus-b').addEventListener('click', () => { match.changeScore('b', 1); updateScores(); });
+document.getElementById('btn-plus-b').addEventListener('click', () => _scoreUp('b'));
 document.getElementById('btn-minus-b').addEventListener('click', () => { match.changeScore('b', -1); updateScores(); });
 
 document.getElementById('btn-end-match').addEventListener('click', () => {
@@ -509,6 +518,8 @@ document.getElementById('btn-end-match').addEventListener('click', () => {
     document.getElementById('m-teams').textContent = `${s.teamA.name} vs. ${s.teamB.name}`;
 
     document.getElementById('m-save').onclick = () => {
+      const cfg2 = storage.getItem('settings') || {};
+      if (cfg2.sound !== false) playMatchEnd();
       match.saveMatch();
       ui.closeModal();
       currentHistoryTab = 'matches';
@@ -672,9 +683,17 @@ function syncTimerUI() {
   document.getElementById('btn-timer-reset').classList.toggle('hidden', picking);
 }
 
+let _lastTickSec = -1;
 function onTimerTick(ms) {
   document.getElementById('timer-countdown').textContent = timer.fmtMs(ms);
   document.getElementById('timer-display').classList.toggle('ending', ms < 10000);
+  const sec = Math.ceil(ms / 1000);
+  if (sec <= 5 && sec > 0 && sec !== _lastTickSec) {
+    _lastTickSec = sec;
+    const cfg = storage.getItem('settings') || {};
+    if (cfg.sound !== false) playCountdownTick(sec === 1);
+  }
+  if (ms > 5000) _lastTickSec = -1;
 }
 
 function onTimerDone() {
@@ -835,26 +854,107 @@ function checkSession() {
 // INSTALL-BANNER
 // ═══════════════════════════════════════════════════════════
 let _deferredInstall = null;
+
+function _isStandalone() {
+  return window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+}
+
+function _isIOS() {
+  return /iPhone|iPad|iPod/.test(navigator.userAgent) && !window.MSStream;
+}
+
+function _showInstallBanner() {
+  if (_isStandalone()) return;
+  const banner = document.getElementById('install-banner');
+  if (_isIOS()) {
+    document.getElementById('install-banner-ios').classList.remove('hidden');
+    document.getElementById('install-banner-pwa').classList.add('hidden');
+    banner.classList.remove('hidden');
+  } else if (_deferredInstall) {
+    document.getElementById('install-banner-pwa').classList.remove('hidden');
+    document.getElementById('install-banner-ios').classList.add('hidden');
+    banner.classList.remove('hidden');
+  }
+}
+
 window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault();
   _deferredInstall = e;
+  _syncInstallSettings();
   if (!storage.getItem('installDismissed')) {
-    document.getElementById('install-banner').classList.remove('hidden');
+    _showInstallBanner();
   }
+});
+
+window.addEventListener('appinstalled', () => {
+  document.getElementById('install-banner').classList.add('hidden');
+  _deferredInstall = null;
+  _syncInstallSettings();
 });
 
 document.getElementById('btn-install').addEventListener('click', async () => {
   if (!_deferredInstall) return;
   _deferredInstall.prompt();
-  await _deferredInstall.userChoice;
+  const { outcome } = await _deferredInstall.userChoice;
   _deferredInstall = null;
   document.getElementById('install-banner').classList.add('hidden');
+  if (outcome === 'accepted') storage.setItem('installDismissed', true);
 });
 
 document.getElementById('btn-dismiss-install').addEventListener('click', () => {
   document.getElementById('install-banner').classList.add('hidden');
   storage.setItem('installDismissed', true);
 });
+
+// iOS Banner: nur schließen (kein Prompt möglich)
+document.getElementById('btn-dismiss-install-ios').addEventListener('click', () => {
+  document.getElementById('install-banner').classList.add('hidden');
+  storage.setItem('installDismissed', true);
+});
+
+function _syncInstallSettings() {
+  const row = document.getElementById('install-settings-row');
+  const btn = document.getElementById('btn-settings-install');
+  const status = document.getElementById('install-status');
+  if (!row) return;
+  if (_isStandalone()) {
+    row.classList.remove('hidden');
+    btn.classList.add('hidden');
+    status.classList.remove('hidden');
+    status.textContent = '✓ App ist installiert';
+  } else if (_deferredInstall) {
+    row.classList.remove('hidden');
+    btn.classList.remove('hidden');
+    status.classList.add('hidden');
+  } else if (_isIOS()) {
+    row.classList.remove('hidden');
+    btn.classList.add('hidden');
+    status.classList.remove('hidden');
+    status.textContent = 'Teilen → „Zum Home-Bildschirm"';
+  } else {
+    row.classList.add('hidden');
+  }
+}
+
+document.getElementById('btn-settings-install').addEventListener('click', async () => {
+  if (!_deferredInstall) return;
+  _deferredInstall.prompt();
+  const { outcome } = await _deferredInstall.userChoice;
+  _deferredInstall = null;
+  if (outcome === 'accepted') {
+    storage.setItem('installDismissed', true);
+    document.getElementById('install-banner').classList.add('hidden');
+  }
+  _syncInstallSettings();
+});
+
+// Direkt beim Start: iOS-Banner anzeigen wenn sinnvoll
+if (_isIOS() && !_isStandalone() && !storage.getItem('installDismissed')) {
+  document.getElementById('install-banner-ios').classList.remove('hidden');
+  document.getElementById('install-banner-pwa').classList.add('hidden');
+  document.getElementById('install-banner').classList.remove('hidden');
+}
+_syncInstallSettings();
 
 // ═══════════════════════════════════════════════════════════
 // SERVICE WORKER

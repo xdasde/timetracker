@@ -961,18 +961,20 @@ textarea.modal-input { resize: vertical; min-height: 80px; }
   top: var(--nav-height); left: 0; right: 0;
   background: var(--color-amber);
   color: #111827;
+  z-index: 150;
+  box-shadow: var(--shadow);
+}
+.session-banner {
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 10px 14px;
-  z-index: 150;
   font-size: 0.83rem;
   font-weight: 600;
-  box-shadow: var(--shadow);
 }
-.session-banner p, .install-banner span { flex: 1; }
+.session-banner p { flex: 1; }
 .session-banner.hidden, .install-banner.hidden { display: none; }
-.session-banner button, .install-banner button {
+.session-banner button {
   background: rgba(17,24,39,0.15);
   color: #111827;
   border-radius: var(--radius-pill);
@@ -982,8 +984,64 @@ textarea.modal-input { resize: vertical; min-height: 80px; }
   border: 1px solid rgba(17,24,39,0.2);
   white-space: nowrap;
 }
-.session-banner button:active, .install-banner button:active {
-  background: rgba(17,24,39,0.25);
+.session-banner button:active { background: rgba(17,24,39,0.25); }
+
+/* Install-Banner */
+.install-banner-inner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+}
+.install-banner-inner.hidden { display: none; }
+.install-banner-icon { font-size: 1.5rem; flex-shrink: 0; }
+.install-banner-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  font-size: 0.8rem;
+  line-height: 1.3;
+  gap: 1px;
+}
+.install-banner-text strong { font-size: 0.85rem; }
+.install-banner-text span  { font-weight: 500; opacity: 0.85; }
+.btn-install-action {
+  background: #111827;
+  color: #fef3c7;
+  border-radius: var(--radius-pill);
+  padding: 7px 14px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  border: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.btn-install-action:active { opacity: 0.85; }
+.btn-install-close {
+  background: transparent;
+  border: none;
+  color: #111827;
+  font-size: 1.1rem;
+  padding: 4px 6px;
+  flex-shrink: 0;
+  opacity: 0.6;
+}
+.btn-install-close:active { opacity: 1; }
+
+/* Install in Einstellungen */
+.btn-install-settings {
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-pill);
+  padding: 6px 16px;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+.install-status-text {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-primary);
 }
 
 /* ═══════════════════════════════════════════
