@@ -123,6 +123,7 @@
             <button class="btn-score btn-plus" id="btn-plus-b" aria-label="Punkt hinzufügen Team B">+1</button>
           </div>
         </div>
+        <button class="btn-halftime" id="btn-halftime">Halbzeit</button>
         <button class="fab" id="btn-end-match">Match beenden</button>
       </div>
     </section>
@@ -270,6 +271,7 @@
           <input type="checkbox" id="toggle-tb-photos" role="switch">
         </div>
         <hr>
+        <button class="btn-secondary btn-full" id="btn-restore-presets">Standard-Presets wiederherstellen</button>
         <button class="btn-danger btn-full" id="btn-clear-all">Alle Daten l&#xF6;schen</button>
       </div>
     </section>
@@ -288,6 +290,17 @@
   <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
 
   <!-- ═══ Modal-Templates ═══ -->
+
+  <template id="tmpl-modal-halftime">
+    <h2>Halbzeit!</h2>
+    <p class="detail-score" id="ht-score"></p>
+    <p class="detail-meta" id="ht-teams"></p>
+    <p class="detail-meta" id="ht-time"></p>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="ht-back">Weiter spielen</button>
+      <button class="btn-primary" id="ht-next">2. Halbzeit</button>
+    </div>
+  </template>
 
   <template id="tmpl-modal-match-end">
     <h2>Match beenden</h2>
@@ -347,6 +360,7 @@
     <p class="detail-meta" id="md-date"></p>
     <div class="detail-score" id="md-score"></div>
     <p class="detail-meta" id="md-duration"></p>
+    <p class="detail-meta hidden" id="md-halftime"></p>
     <div class="detail-note">
       <label class="modal-label" for="md-note">Notiz</label>
       <textarea class="modal-input" id="md-note" rows="3"></textarea>

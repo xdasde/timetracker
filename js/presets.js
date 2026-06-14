@@ -252,7 +252,10 @@ export function openModal(preset, onSaved, onDeleted) {
       delBtn.style.flex = '0 0 auto';
       delBtn.textContent = 'Löschen';
       delBtn.addEventListener('click', async () => {
-        const ok = await ui.confirmAction(`"${editing.name}" wirklich löschen?`);
+        const msg = editing.builtIn
+          ? `"${editing.name}" ausblenden? (Kann unter Einstellungen wiederhergestellt werden)`
+          : `"${editing.name}" wirklich löschen?`;
+        const ok = await ui.confirmAction(msg);
         if (!ok) return;
         remove(editing.id);
         ui.closeModal();

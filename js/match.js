@@ -33,7 +33,16 @@ export function startMatch(nameA, nameB, colorIndex) {
     startedAt: null,
     accMs: 0,
     running: false,
+    halfTimeScore: null,
+    halfTimeMs: null,
   };
+  _saveSession();
+}
+
+export function markHalfTime() {
+  if (!live) return;
+  live.halfTimeScore = { a: live.teamA.score, b: live.teamB.score };
+  live.halfTimeMs = live.running ? live.accMs + (Date.now() - live.startedAt) : live.accMs;
   _saveSession();
 }
 
@@ -82,6 +91,8 @@ export function saveMatch() {
     teamA: { name: live.teamA.name, color: live.teamA.color, score: live.teamA.score },
     teamB: { name: live.teamB.name, color: live.teamB.color, score: live.teamB.score },
     durationMs: getElapsedMs(),
+    halfTimeScore: live.halfTimeScore || null,
+    halfTimeMs: live.halfTimeMs || null,
     note: '',
   };
   storage.addToCollection('matches', m);

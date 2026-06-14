@@ -506,6 +506,22 @@ body.live-active #app { top: 0; }
 .match-timer-pill:active { background: var(--color-amber-dark); }
 .match-timer-pill.running { background: var(--color-success); color: white; }
 
+.btn-halftime {
+  position: absolute;
+  bottom: 20px; left: 20px;
+  background: rgba(255,255,255,0.12);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: var(--radius-pill);
+  padding: 12px 22px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  z-index: 10;
+  transition: background 0.15s;
+}
+.btn-halftime:active { background: rgba(255,255,255,0.24); }
+
 .fab {
   position: absolute;
   bottom: 20px; right: 20px;

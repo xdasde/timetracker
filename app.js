@@ -502,6 +502,39 @@ document.getElementById('btn-minus-a').addEventListener('click', () => { match.c
 document.getElementById('btn-plus-b').addEventListener('click', () => { match.changeScore('b', 1); updateScores(); });
 document.getElementById('btn-minus-b').addEventListener('click', () => { match.changeScore('b', -1); updateScores(); });
 
+document.getElementById('btn-halftime').addEventListener('click', () => {
+  const s = match.getLive();
+  if (!s) return;
+
+  const wasRunning = s.running;
+  if (wasRunning) {
+    match.toggleTimer();
+    pill.classList.remove('running');
+  }
+
+  match.markHalfTime();
+  const elMs  = match.getElapsedMs();
+  const elMin = Math.floor(elMs / 60000);
+  const elSec = Math.floor((elMs % 60000) / 1000);
+  const elStr = `${String(elMin).padStart(2, '0')}:${String(elSec).padStart(2, '0')}`;
+
+  ui.openModal('tmpl-modal-halftime', () => {
+    document.getElementById('ht-score').textContent = `${s.teamA.score} : ${s.teamB.score}`;
+    document.getElementById('ht-teams').textContent = `${s.teamA.name} vs. ${s.teamB.name}`;
+    document.getElementById('ht-time').textContent  = `1. Halbzeit: ${elStr}`;
+
+    document.getElementById('ht-back').onclick = () => {
+      if (wasRunning) { match.toggleTimer(); pill.classList.add('running'); }
+      ui.closeModal();
+    };
+
+    document.getElementById('ht-next').onclick = () => {
+      match.resetTimer();
+      ui.closeModal();
+    };
+  });
+});
+
 document.getElementById('btn-end-match').addEventListener('click', () => {
   const s = match.getLive();
   ui.openModal('tmpl-modal-match-end', () => {
@@ -788,6 +821,11 @@ function initSettings() {
     const c = storage.getItem('settings') || {};
     c.tbPhotos = e.target.checked;
     storage.setItem('settings', c);
+  });
+
+  document.getElementById('btn-restore-presets').addEventListener('click', () => {
+    storage.removeItem('hiddenPresets');
+    ui.showToast('Standard-Presets wiederhergestellt!');
   });
 
   document.getElementById('btn-clear-all').addEventListener('click', async () => {
