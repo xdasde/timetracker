@@ -1,4 +1,4 @@
-const CACHE = 'sportzaehler-v4';
+const CACHE = 'sportzaehler-v6';
 const ASSETS = [
   './',
   './index.html',
@@ -38,5 +38,17 @@ self.addEventListener('fetch', e => {
   e.respondWith(
     caches.match(e.request)
       .then(hit => hit || fetch(e.request).catch(() => caches.match('./index.html')))
+  );
+});
+
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  e.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(cs => {
+      for (const c of cs) {
+        if ('focus' in c) return c.focus();
+      }
+      if (clients.openWindow) return clients.openWindow('./');
+    })
   );
 });

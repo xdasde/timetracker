@@ -1056,12 +1056,52 @@ function onTimerTick(ms) {
   if (ms > 5000) _lastTickSec = -1;
 }
 
+// ─── Benachrichtigungen / Notifications ───
+function notificationsSupported() {
+  return 'Notification' in window;
+}
+
+function requestNotificationPermission() {
+  if (!notificationsSupported()) return Promise.resolve('denied');
+  try {
+    return Promise.resolve(Notification.requestPermission());
+  } catch (_) {
+    return Promise.resolve('denied');
+  }
+}
+
+function showNotification(title, opts) {
+  if (!notificationsSupported() || Notification.permission !== 'granted') return;
+  if (navigator.serviceWorker && navigator.serviceWorker.getRegistration) {
+    navigator.serviceWorker.getRegistration().then(reg => {
+      if (reg) {
+        reg.showNotification(title, opts);
+      } else {
+        try { new Notification(title, opts); } catch (_) {}
+      }
+    }).catch(() => {
+      try { new Notification(title, opts); } catch (_) {}
+    });
+  } else {
+    try { new Notification(title, opts); } catch (_) {}
+  }
+}
+
 function onTimerDone() {
   const cfg = storage.getItem('settings') || {};
   if (cfg.sound !== false) playBeep();
   if (cfg.vibration !== false && navigator.vibrate) navigator.vibrate([200, 100, 200]);
   releaseWakeLock();
   ui.showToast('Timer abgelaufen!', 3000);
+  if (cfg.notifications === true && notificationsSupported() && Notification.permission === 'granted') {
+    showNotification('Timer abgelaufen!', {
+      body: 'Dein Countdown ist beendet.',
+      tag: 'timer-done',
+      icon: 'icons/icon-192.png',
+      vibrate: [200, 100, 200],
+      renotify: true,
+    });
+  }
   syncTimerUI();
   setTimeout(() => { timer.reset(); syncTimerUI(); }, 3000);
 }
@@ -1168,6 +1208,38 @@ function initSettings() {
     c.tbPhotos = e.target.checked;
     storage.setItem('settings', c);
   });
+
+  const notifToggle = document.getElementById('toggle-notifications');
+  if (!notificationsSupported()) {
+    // Notification API nicht verfügbar (z. B. ältere iOS-Safari): Zeile ausblenden
+    notifToggle.checked = false;
+    notifToggle.disabled = true;
+    const row = notifToggle.closest('.setting-row');
+    if (row) row.classList.add('hidden');
+  } else {
+    notifToggle.checked = cfg.notifications === true && Notification.permission === 'granted';
+
+    notifToggle.addEventListener('change', e => {
+      const c = storage.getItem('settings') || {};
+      if (e.target.checked) {
+        requestNotificationPermission().then(perm => {
+          if (perm === 'granted') {
+            c.notifications = true;
+            storage.setItem('settings', c);
+            ui.showToast('Benachrichtigungen aktiviert');
+          } else {
+            e.target.checked = false;
+            c.notifications = false;
+            storage.setItem('settings', c);
+            ui.showToast('Im Browser blockiert');
+          }
+        });
+      } else {
+        c.notifications = false;
+        storage.setItem('settings', c);
+      }
+    });
+  }
 
   document.getElementById('btn-restore-presets').addEventListener('click', () => {
     storage.removeItem('hiddenPresets');
