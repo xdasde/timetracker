@@ -9,6 +9,7 @@ import * as historyMod from './js/history.js';
 import * as exportMod from './js/export.js';
 import { playBeep } from './js/audio.js';
 import { acquireWakeLock, releaseWakeLock } from './js/wakelock.js';
+import * as teambuilder from './js/teambuilder.js';
 
 // ═══════════════════════════════════════════════════════════
 // SCREEN-REGISTRIERUNG
@@ -20,6 +21,8 @@ router.register('screen-match-live', enterLive, leaveLive);
 router.register('screen-tools');
 router.register('screen-history', () => historyMod.render(currentHistoryTab));
 router.register('screen-settings');
+router.register('screen-teambuilder', enterTeamBuilder);
+router.register('screen-teambuilder-reveal', enterTeamBuilderReveal);
 
 // ═══════════════════════════════════════════════════════════
 // TOP-NAV
@@ -53,6 +56,114 @@ document.getElementById('btn-open-presets').addEventListener('click', () =>
 
 document.getElementById('btn-goto-tools').addEventListener('click', () =>
   router.navigateTo('screen-tools'));
+
+document.getElementById('btn-open-teambuilder').addEventListener('click', () =>
+  router.navigateTo('screen-teambuilder'));
+
+// ═══════════════════════════════════════════════════════════
+// TEAMBILDUNG
+// ═══════════════════════════════════════════════════════════
+function tbUpdateCounterUI() {
+  document.getElementById('tb-persons-val').textContent = teambuilder.getPersonCount();
+  document.getElementById('tb-teams-val').textContent   = teambuilder.getTeamCount();
+  document.getElementById('tb-persons-dec').disabled    = teambuilder.getPersonCount() <= 2;
+  document.getElementById('tb-teams-dec').disabled      = teambuilder.getTeamCount() <= 2;
+  document.getElementById('tb-persons-inc').disabled    = teambuilder.getPersonCount() >= 50;
+  document.getElementById('tb-teams-inc').disabled      = teambuilder.getTeamCount() >= 10;
+  tbUpdatePreview();
+}
+
+function tbUpdatePreview() {
+  const preview = document.getElementById('tb-preview');
+  preview.replaceChildren();
+  teambuilder.getPreviewDistribution().forEach(t => {
+    const chip = document.createElement('div');
+    chip.className = 'tb-preview-chip';
+    chip.style.background = t.color;
+    chip.textContent = `${t.name} – ${t.count}×`;
+    preview.appendChild(chip);
+  });
+}
+
+function enterTeamBuilder() {
+  tbUpdateCounterUI();
+}
+
+document.getElementById('btn-teambuilder-back').addEventListener('click', () =>
+  router.navigateTo('screen-home'));
+
+document.getElementById('tb-persons-inc').addEventListener('click', () => {
+  teambuilder.setPersonCount(teambuilder.getPersonCount() + 1);
+  tbUpdateCounterUI();
+});
+document.getElementById('tb-persons-dec').addEventListener('click', () => {
+  teambuilder.setPersonCount(teambuilder.getPersonCount() - 1);
+  tbUpdateCounterUI();
+});
+document.getElementById('tb-teams-inc').addEventListener('click', () => {
+  teambuilder.setTeamCount(teambuilder.getTeamCount() + 1);
+  tbUpdateCounterUI();
+});
+document.getElementById('tb-teams-dec').addEventListener('click', () => {
+  teambuilder.setTeamCount(teambuilder.getTeamCount() - 1);
+  tbUpdateCounterUI();
+});
+
+document.getElementById('btn-teambuilder-start').addEventListener('click', () => {
+  teambuilder.generateAssignments();
+  router.navigateTo('screen-teambuilder-reveal');
+});
+
+function enterTeamBuilderReveal() {
+  tbUpdateRevealUI();
+}
+
+function tbUpdateRevealUI() {
+  const rs        = teambuilder.getRevealState();
+  const revealEl  = document.getElementById('tb-reveal');
+  const counterEl = document.getElementById('tb-reveal-counter');
+  const promptEl  = document.getElementById('tb-reveal-prompt');
+  const teamEl    = document.getElementById('tb-reveal-team');
+
+  if (rs.done) {
+    counterEl.classList.add('hidden');
+    promptEl.classList.add('hidden');
+    teamEl.classList.remove('hidden');
+    teamEl.className = 'tb-reveal-done';
+    teamEl.innerHTML = 'Alle eingeteilt!<br>Einteilung abgeschlossen.';
+    revealEl.style.background = '';
+    return;
+  }
+
+  counterEl.classList.remove('hidden');
+  counterEl.textContent = `${rs.current + 1} / ${rs.total}`;
+
+  if (rs.revealed) {
+    const color = teambuilder.getTeamColor(rs.teamIdx);
+    const name  = teambuilder.getTeamName(rs.teamIdx);
+    promptEl.classList.add('hidden');
+    teamEl.classList.remove('hidden');
+    teamEl.className = 'tb-reveal-team';
+    teamEl.innerHTML =
+      `<div class="tb-reveal-team-name">${name}</div>` +
+      `<div class="tb-reveal-team-sub">Das ist dein Team!</div>`;
+    revealEl.style.background = color;
+  } else {
+    promptEl.classList.remove('hidden');
+    teamEl.classList.add('hidden');
+    revealEl.style.background = '';
+  }
+}
+
+document.getElementById('tb-reveal').addEventListener('click', () => {
+  teambuilder.tap();
+  tbUpdateRevealUI();
+});
+
+document.getElementById('btn-teambuilder-exit').addEventListener('click', e => {
+  e.stopPropagation();
+  router.navigateTo('screen-teambuilder');
+});
 
 // ═══════════════════════════════════════════════════════════
 // PRESETS SCREEN

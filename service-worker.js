@@ -1,4 +1,4 @@
-const CACHE = 'sportzaehler-v2';
+const CACHE = 'sportzaehler-v3';
 const ASSETS = [
   './',
   './index.html',
@@ -15,6 +15,7 @@ const ASSETS = [
   './js/export.js',
   './js/audio.js',
   './js/wakelock.js',
+  './js/teambuilder.js',
   './manifest.webmanifest',
   './icons/icon-192.png',
   './icons/icon-512.png',
