@@ -57,26 +57,57 @@
 
     <!-- ═══ Screen: Home ═══ -->
     <section id="screen-home" class="screen screen--active">
+      <!-- Animierte SVG-Welle im Hintergrund -->
+      <svg class="home-wave" viewBox="0 0 2880 300" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0,150 C240,60 480,240 720,150 C960,60 1200,240 1440,150 C1680,60 1920,240 2160,150 C2400,60 2640,240 2880,150 L2880,300 L0,300 Z" fill="#f59e0b"/>
+      </svg>
       <div class="home-grid">
         <button class="home-tile home-tile--primary" id="btn-new-match" aria-label="Neues Match starten">
           <div>
             <div class="home-tile-label">Match starten</div>
             <div class="home-tile-sub">Neues Spiel</div>
           </div>
-          <span class="home-tile-icon">⚽</span>
+          <span class="home-tile-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/>
+              <polygon points="10,8.5 17,12 10,15.5" fill="currentColor" stroke="none"/>
+            </svg>
+          </span>
         </button>
         <button class="home-tile" id="btn-open-presets" aria-label="Presets verwalten">
-          <span class="home-tile-icon">🎮</span>
+          <span class="home-tile-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+              <line x1="4" y1="6" x2="20" y2="6"/>
+              <line x1="4" y1="12" x2="20" y2="12"/>
+              <line x1="4" y1="18" x2="20" y2="18"/>
+              <circle cx="8" cy="6" r="2.5" fill="currentColor" stroke="none"/>
+              <circle cx="16" cy="12" r="2.5" fill="currentColor" stroke="none"/>
+              <circle cx="10" cy="18" r="2.5" fill="currentColor" stroke="none"/>
+            </svg>
+          </span>
           <div class="home-tile-label">Presets</div>
           <div id="home-preset-badge" class="home-tile-badge">0 gespeichert</div>
         </button>
         <button class="home-tile" id="btn-goto-tools" aria-label="Werkzeuge öffnen">
-          <span class="home-tile-icon">⏱️</span>
+          <span class="home-tile-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="13" r="8"/>
+              <polyline points="12,9 12,13 15,15"/>
+              <line x1="10" y1="3" x2="14" y2="3"/>
+              <line x1="12" y1="3" x2="12" y2="5"/>
+            </svg>
+          </span>
           <div class="home-tile-label">Timer</div>
           <div class="home-tile-sub">Stoppuhr &amp; Countdown</div>
         </button>
         <button class="home-tile home-tile--full" id="btn-open-teambuilder" aria-label="Teams zufällig einteilen">
-          <span class="home-tile-icon">🎲</span>
+          <span class="home-tile-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="9" cy="7" r="3"/>
+              <circle cx="15" cy="7" r="3"/>
+              <path d="M3 21v-1a6 6 0 0 1 6-6h6a6 6 0 0 1 6 6v1"/>
+            </svg>
+          </span>
           <div>
             <div class="home-tile-label">Teambildung</div>
             <div class="home-tile-sub">Zufällige Teameinteilung</div>
@@ -148,31 +179,14 @@
     <section id="screen-tools" class="screen">
       <div class="screen-body">
 
-        <!-- Stoppuhr 1 -->
-        <div class="tool-card" id="stopwatch-1">
-          <input type="text" class="sw-label" placeholder="Bezeichnung" maxlength="30" autocomplete="off" aria-label="Bezeichnung Stoppuhr 1">
-          <div class="sw-time" aria-live="polite">00:00.00</div>
-          <div class="sw-btns">
-            <button class="btn-sw btn-sw-startstop">Start</button>
-            <button class="btn-sw btn-sw-lap" disabled>Runde</button>
-            <button class="btn-sw btn-sw-save">Speichern</button>
-            <button class="btn-sw btn-sw-reset">Reset</button>
-          </div>
-          <ol class="lap-list" aria-label="Rundenzeiten"></ol>
+        <!-- Stoppuhr-Header mit "+" Schaltfläche -->
+        <div class="sw-section-header">
+          <span class="sw-section-title">Stoppuhren</span>
+          <button class="btn-icon" id="btn-add-stopwatch" aria-label="Stoppuhr hinzufügen">+</button>
         </div>
 
-        <!-- Stoppuhr 2 -->
-        <div class="tool-card" id="stopwatch-2">
-          <input type="text" class="sw-label" placeholder="Bezeichnung" maxlength="30" autocomplete="off" aria-label="Bezeichnung Stoppuhr 2">
-          <div class="sw-time" aria-live="polite">00:00.00</div>
-          <div class="sw-btns">
-            <button class="btn-sw btn-sw-startstop">Start</button>
-            <button class="btn-sw btn-sw-lap" disabled>Runde</button>
-            <button class="btn-sw btn-sw-save">Speichern</button>
-            <button class="btn-sw btn-sw-reset">Reset</button>
-          </div>
-          <ol class="lap-list" aria-label="Rundenzeiten"></ol>
-        </div>
+        <!-- Dynamische Stoppuhr-Liste -->
+        <div id="sw-list"></div>
 
         <!-- Countdown-Timer -->
         <div class="tool-card" id="countdown-timer">
