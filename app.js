@@ -23,6 +23,7 @@ router.register('screen-history', () => historyMod.render(currentHistoryTab));
 router.register('screen-settings');
 router.register('screen-teambuilder', enterTeamBuilder);
 router.register('screen-teambuilder-reveal', enterTeamBuilderReveal);
+router.register('screen-teambuilder-lineup', enterLineup, leaveLineup);
 
 // ═══════════════════════════════════════════════════════════
 // TOP-NAV
@@ -63,6 +64,65 @@ document.getElementById('btn-open-teambuilder').addEventListener('click', () =>
 // ═══════════════════════════════════════════════════════════
 // TEAMBILDUNG
 // ═══════════════════════════════════════════════════════════
+
+// ── Kamera ──────────────────────────────────────────────────
+let _tbStream = null;
+const _tbVideo  = document.getElementById('tb-camera');
+const _tbCanvas = document.getElementById('tb-canvas');
+
+function _tbPhotosEnabled() {
+  return (storage.getItem('settings') || {}).tbPhotos !== false;
+}
+
+async function _tbStartCamera() {
+  if (!_tbPhotosEnabled()) return;
+  try {
+    _tbStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'user', width: { ideal: 480 }, height: { ideal: 480 } },
+      audio: false,
+    });
+    _tbVideo.srcObject = _tbStream;
+    await _tbVideo.play();
+  } catch {
+    _tbStream = null;
+  }
+}
+
+function _tbStopCamera() {
+  if (_tbStream) {
+    _tbStream.getTracks().forEach(t => t.stop());
+    _tbStream = null;
+    _tbVideo.srcObject = null;
+  }
+}
+
+async function _tbCapturePhoto() {
+  if (!_tbStream || !_tbVideo.videoWidth) return null;
+  const size = 240;
+  _tbCanvas.width  = size;
+  _tbCanvas.height = size;
+  const ctx  = _tbCanvas.getContext('2d');
+  const vw   = _tbVideo.videoWidth;
+  const vh   = _tbVideo.videoHeight;
+  const side = Math.min(vw, vh);
+  const sx   = (vw - side) / 2;
+  const sy   = (vh - side) / 2;
+  ctx.save();
+  ctx.translate(size, 0);
+  ctx.scale(-1, 1); // Frontkamera spiegeln
+  ctx.drawImage(_tbVideo, sx, sy, side, side, 0, 0, size, size);
+  ctx.restore();
+  return new Promise(resolve => _tbCanvas.toBlob(resolve, 'image/jpeg', 0.8));
+}
+
+function _tbFlash() {
+  const el = document.createElement('div');
+  el.className = 'tb-flash';
+  document.body.appendChild(el);
+  el.addEventListener('animationend', () => el.remove(), { once: true });
+}
+
+// ── Zähler & Vorschau ────────────────────────────────────────
 function tbUpdateCounterUI() {
   document.getElementById('tb-persons-val').textContent = teambuilder.getPersonCount();
   document.getElementById('tb-teams-val').textContent   = teambuilder.getTeamCount();
@@ -89,8 +149,11 @@ function enterTeamBuilder() {
   tbUpdateCounterUI();
 }
 
-document.getElementById('btn-teambuilder-back').addEventListener('click', () =>
-  router.navigateTo('screen-home'));
+document.getElementById('btn-teambuilder-back').addEventListener('click', () => {
+  teambuilder.clearPhotos();
+  _tbStopCamera();
+  router.navigateTo('screen-home');
+});
 
 document.getElementById('tb-persons-inc').addEventListener('click', () => {
   teambuilder.setPersonCount(teambuilder.getPersonCount() + 1);
@@ -109,11 +172,14 @@ document.getElementById('tb-teams-dec').addEventListener('click', () => {
   tbUpdateCounterUI();
 });
 
-document.getElementById('btn-teambuilder-start').addEventListener('click', () => {
+document.getElementById('btn-teambuilder-start').addEventListener('click', async () => {
   teambuilder.generateAssignments();
+  teambuilder.clearPhotos();
+  await _tbStartCamera();
   router.navigateTo('screen-teambuilder-reveal');
 });
 
+// ── Reveal ───────────────────────────────────────────────────
 function enterTeamBuilderReveal() {
   tbUpdateRevealUI();
 }
@@ -124,16 +190,6 @@ function tbUpdateRevealUI() {
   const counterEl = document.getElementById('tb-reveal-counter');
   const promptEl  = document.getElementById('tb-reveal-prompt');
   const teamEl    = document.getElementById('tb-reveal-team');
-
-  if (rs.done) {
-    counterEl.classList.add('hidden');
-    promptEl.classList.add('hidden');
-    teamEl.classList.remove('hidden');
-    teamEl.className = 'tb-reveal-done';
-    teamEl.innerHTML = 'Alle eingeteilt!<br>Einteilung abgeschlossen.';
-    revealEl.style.background = '';
-    return;
-  }
 
   counterEl.classList.remove('hidden');
   counterEl.textContent = `${rs.current + 1} / ${rs.total}`;
@@ -155,13 +211,114 @@ function tbUpdateRevealUI() {
   }
 }
 
-document.getElementById('tb-reveal').addEventListener('click', () => {
-  teambuilder.tap();
-  tbUpdateRevealUI();
+document.getElementById('tb-reveal').addEventListener('click', async () => {
+  const rs = teambuilder.getRevealState();
+  if (rs.done) return;
+
+  if (!rs.revealed) {
+    // Foto aufnehmen beim ersten Tippen (TIPPEN! → Team anzeigen)
+    _tbFlash();
+    const blob = await _tbCapturePhoto();
+    if (blob) {
+      teambuilder.addPhoto(rs.current, rs.teamIdx, URL.createObjectURL(blob));
+    }
+    teambuilder.tap();
+    tbUpdateRevealUI();
+  } else {
+    // Zweites Tippen: weiter oder Einteilung abschließen
+    teambuilder.tap();
+    if (teambuilder.getRevealState().done) {
+      _tbStopCamera();
+      router.navigateTo('screen-teambuilder-lineup');
+    } else {
+      tbUpdateRevealUI();
+    }
+  }
 });
 
 document.getElementById('btn-teambuilder-exit').addEventListener('click', e => {
   e.stopPropagation();
+  teambuilder.clearPhotos();
+  _tbStopCamera();
+  router.navigateTo('screen-teambuilder');
+});
+
+// ── Lineup ───────────────────────────────────────────────────
+function enterLineup() {
+  const container = document.getElementById('tb-lineup');
+  container.replaceChildren();
+
+  teambuilder.getLineup().forEach(team => {
+    const teamEl = document.createElement('div');
+    teamEl.className = 'tb-lineup-team';
+
+    const header = document.createElement('div');
+    header.className = 'tb-lineup-team-header';
+    header.style.background = team.color;
+    header.textContent = team.name;
+    teamEl.appendChild(header);
+
+    const photosEl = document.createElement('div');
+    photosEl.className = 'tb-lineup-photos';
+
+    if (team.photos.length > 0) {
+      team.photos.forEach((p, idx) => {
+        const wrap = document.createElement('div');
+        wrap.className = 'tb-lineup-photo-wrap';
+        wrap.addEventListener('contextmenu', e => e.preventDefault());
+
+        const photoDiv = document.createElement('div');
+        photoDiv.className = 'tb-lineup-photo';
+
+        const cnv = document.createElement('canvas');
+        cnv.width  = 120;
+        cnv.height = 120;
+        cnv.addEventListener('contextmenu', e => e.preventDefault());
+
+        const img = new Image();
+        img.onload = () => {
+          cnv.getContext('2d').drawImage(img, 0, 0, 120, 120);
+        };
+        img.src = p.blobUrl;
+
+        photoDiv.appendChild(cnv);
+        wrap.appendChild(photoDiv);
+
+        const num = document.createElement('div');
+        num.className = 'tb-lineup-person-num';
+        num.textContent = `#${idx + 1}`;
+        wrap.appendChild(num);
+        photosEl.appendChild(wrap);
+      });
+    } else {
+      // Kamera nicht verfügbar / deaktiviert: Platzhalter anzeigen
+      for (let i = 0; i < team.memberCount; i++) {
+        const wrap = document.createElement('div');
+        wrap.className = 'tb-lineup-photo-wrap';
+        const ph = document.createElement('div');
+        ph.className = 'tb-lineup-no-photo';
+        ph.textContent = String(i + 1);
+        wrap.appendChild(ph);
+        const num = document.createElement('div');
+        num.className = 'tb-lineup-person-num';
+        num.textContent = `#${i + 1}`;
+        wrap.appendChild(num);
+        photosEl.appendChild(wrap);
+      }
+    }
+
+    teamEl.appendChild(photosEl);
+    container.appendChild(teamEl);
+  });
+}
+
+function leaveLineup() {
+  // Canvas-Inhalte sofort löschen wenn Screen verlassen wird
+  document.getElementById('tb-lineup').replaceChildren();
+}
+
+document.getElementById('btn-lineup-done').addEventListener('click', () => {
+  teambuilder.clearPhotos();
   router.navigateTo('screen-teambuilder');
 });
 
@@ -610,9 +767,10 @@ document.getElementById('btn-export').addEventListener('click', () => {
 // EINSTELLUNGEN
 // ═══════════════════════════════════════════════════════════
 function initSettings() {
-  const cfg = storage.getItem('settings') || { sound: true, vibration: true };
-  document.getElementById('toggle-sound').checked = cfg.sound !== false;
+  const cfg = storage.getItem('settings') || { sound: true, vibration: true, tbPhotos: true };
+  document.getElementById('toggle-sound').checked     = cfg.sound     !== false;
   document.getElementById('toggle-vibration').checked = cfg.vibration !== false;
+  document.getElementById('toggle-tb-photos').checked = cfg.tbPhotos  !== false;
 
   document.getElementById('toggle-sound').addEventListener('change', e => {
     const c = storage.getItem('settings') || {};
@@ -623,6 +781,12 @@ function initSettings() {
   document.getElementById('toggle-vibration').addEventListener('change', e => {
     const c = storage.getItem('settings') || {};
     c.vibration = e.target.checked;
+    storage.setItem('settings', c);
+  });
+
+  document.getElementById('toggle-tb-photos').addEventListener('change', e => {
+    const c = storage.getItem('settings') || {};
+    c.tbPhotos = e.target.checked;
     storage.setItem('settings', c);
   });
 

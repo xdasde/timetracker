@@ -81,3 +81,26 @@ export function tap() {
     done = true;
   }
 }
+
+// ── In-memory Fotos (niemals persistiert) ──────────────────
+const _photos = []; // { personIdx, teamIdx, blobUrl }
+
+export function addPhoto(personIdx, teamIdx, blobUrl) {
+  _photos.push({ personIdx, teamIdx, blobUrl });
+}
+
+export function getLineup() {
+  const dist = getPreviewDistribution();
+  return Array.from({ length: teamCount }, (_, i) => ({
+    idx:         i,
+    name:        getTeamName(i),
+    color:       getTeamColor(i),
+    memberCount: dist[i].count,
+    photos:      _photos.filter(p => p.teamIdx === i),
+  }));
+}
+
+export function clearPhotos() {
+  _photos.forEach(p => { try { URL.revokeObjectURL(p.blobUrl); } catch {} });
+  _photos.length = 0;
+}

@@ -239,6 +239,17 @@
       </div>
     </section>
 
+    <!-- ═══ Screen: Teambildung Aufstellung ═══ -->
+    <section id="screen-teambuilder-lineup" class="screen">
+      <div class="sub-header">
+        <h2>Team-Aufstellung</h2>
+      </div>
+      <div class="tb-lineup" id="tb-lineup"></div>
+      <div class="tb-lineup-footer">
+        <button class="btn-primary btn-full" id="btn-lineup-done">Fertig</button>
+      </div>
+    </section>
+
     <!-- ═══ Screen: Einstellungen ═══ -->
     <section id="screen-settings" class="screen">
       <div class="sub-header">
@@ -253,6 +264,10 @@
         <div class="setting-row">
           <label for="toggle-vibration">Vibration</label>
           <input type="checkbox" id="toggle-vibration" role="switch">
+        </div>
+        <div class="setting-row">
+          <label for="toggle-tb-photos">Fotos bei Teambildung</label>
+          <input type="checkbox" id="toggle-tb-photos" role="switch">
         </div>
         <hr>
         <button class="btn-danger btn-full" id="btn-clear-all">Alle Daten l&#xF6;schen</button>
@@ -381,6 +396,10 @@
       <button class="btn-primary" id="pm-save">Speichern</button>
     </div>
   </template>
+
+  <!-- Kamera-Elemente für Teambildung (nur im Arbeitsspeicher, kein Speicher) -->
+  <video id="tb-camera" autoplay playsinline muted style="display:none" aria-hidden="true"></video>
+  <canvas id="tb-canvas" style="display:none" aria-hidden="true"></canvas>
 
   <script type="module" src="app.js"></script>
 </body>

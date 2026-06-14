@@ -11,6 +11,7 @@ const TAB_MAP = {
   'screen-settings':           null,
   'screen-teambuilder':        'home',
   'screen-teambuilder-reveal': null,
+  'screen-teambuilder-lineup': null,
 };
 
 const FULLSCREEN = new Set(['screen-match-live']);
