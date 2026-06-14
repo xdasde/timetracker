@@ -7,7 +7,7 @@ import { Stopwatch, fmtMs } from './js/stopwatch.js';
 import * as timer from './js/timer.js';
 import * as historyMod from './js/history.js';
 import * as exportMod from './js/export.js';
-import { playBeep } from './js/audio.js';
+import { playBeep, playWhistle, playGoal, playMatchEnd, playCountdownTick } from './js/audio.js';
 import { acquireWakeLock, releaseWakeLock } from './js/wakelock.js';
 import * as teambuilder from './js/teambuilder.js';
 
@@ -24,6 +24,7 @@ router.register('screen-settings');
 router.register('screen-teambuilder', enterTeamBuilder);
 router.register('screen-teambuilder-reveal', enterTeamBuilderReveal);
 router.register('screen-teambuilder-lineup', enterLineup, leaveLineup);
+router.register('screen-tb-match', enterTbMatch, leaveTbMatch);
 
 // ═══════════════════════════════════════════════════════════
 // TOP-NAV
@@ -322,6 +323,240 @@ document.getElementById('btn-lineup-done').addEventListener('click', () => {
   router.navigateTo('screen-teambuilder');
 });
 
+document.getElementById('btn-lineup-match').addEventListener('click', () => {
+  router.navigateTo('screen-tb-match');
+});
+
+// ── Teambuilder Match ────────────────────────────────────────
+let _tbmScores  = [];
+let _tbmRaf     = null;
+let _tbmMs      = 0;
+let _tbmRunning = false;
+let _tbmTick0   = null;
+
+function enterTbMatch() {
+  const teams = teambuilder.getLineup();
+  _tbmScores  = teams.map(() => 0);
+  _tbmMs      = 0;
+  _tbmRunning = true;
+  _tbmTick0   = Date.now();
+  _tbmRenderTeams(teams);
+  _tbmRafLoop();
+  acquireWakeLock();
+  document.getElementById('tbm-timer-pill').classList.add('running');
+}
+
+function leaveTbMatch() {
+  _tbmRunning = false;
+  cancelAnimationFrame(_tbmRaf);
+  _tbmRaf = null;
+  releaseWakeLock();
+}
+
+function _tbmRafLoop() {
+  cancelAnimationFrame(_tbmRaf);
+  const tick = () => {
+    if (_tbmRunning) _tbmMs = Date.now() - _tbmTick0;
+    const s = Math.floor(_tbmMs / 1000);
+    document.getElementById('tbm-time').textContent =
+      `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
+    _tbmRaf = requestAnimationFrame(tick);
+  };
+  _tbmRaf = requestAnimationFrame(tick);
+}
+
+document.getElementById('tbm-timer-pill').addEventListener('click', () => {
+  _tbmRunning = !_tbmRunning;
+  if (_tbmRunning) _tbmTick0 = Date.now() - _tbmMs;
+  document.getElementById('tbm-timer-pill').classList.toggle('running', _tbmRunning);
+});
+
+function _tbmRenderTeams(teams) {
+  const container = document.getElementById('tbm-teams');
+  container.replaceChildren();
+  teams.forEach((team, ti) => {
+    const card = document.createElement('div');
+    card.className = 'tbm-team-card';
+
+    // Header: name + score
+    const header = document.createElement('div');
+    header.className = 'tbm-team-header';
+    header.style.background = team.color;
+    const nameEl  = document.createElement('div');
+    nameEl.className = 'tbm-team-name';
+    nameEl.textContent = team.name;
+    const scoreEl = document.createElement('div');
+    scoreEl.className = 'tbm-score-display';
+    scoreEl.id = `tbm-score-${ti}`;
+    scoreEl.textContent = '0';
+    header.append(nameEl, scoreEl);
+    card.appendChild(header);
+
+    // Photos row
+    const photosEl = document.createElement('div');
+    photosEl.className = 'tbm-team-photos';
+    if (team.photos.length > 0) {
+      team.photos.forEach(p => {
+        const wrap = document.createElement('div');
+        wrap.className = 'tbm-photo';
+        wrap.addEventListener('contextmenu', e => e.preventDefault());
+        const cnv = document.createElement('canvas');
+        cnv.width = 92; cnv.height = 92;
+        cnv.addEventListener('contextmenu', e => e.preventDefault());
+        const img = new Image();
+        img.onload = () => cnv.getContext('2d').drawImage(img, 0, 0, 92, 92);
+        img.src = p.blobUrl;
+        wrap.appendChild(cnv);
+        photosEl.appendChild(wrap);
+      });
+    } else {
+      for (let i = 0; i < team.memberCount; i++) {
+        const ph = document.createElement('div');
+        ph.className = 'tbm-no-photo';
+        ph.textContent = String(i + 1);
+        photosEl.appendChild(ph);
+      }
+    }
+    card.appendChild(photosEl);
+
+    // Score buttons
+    const btns = document.createElement('div');
+    btns.className = 'tbm-score-btns';
+    const minusBtn = document.createElement('button');
+    minusBtn.className = 'tbm-btn-score';
+    minusBtn.textContent = '−';
+    minusBtn.disabled = true;
+    minusBtn.id = `tbm-minus-${ti}`;
+    minusBtn.addEventListener('click', () => {
+      _tbmScores[ti] = Math.max(0, _tbmScores[ti] - 1);
+      _tbmUpdateScore(ti);
+    });
+    const plusBtn = document.createElement('button');
+    plusBtn.className = 'tbm-btn-score';
+    plusBtn.textContent = '+1';
+    plusBtn.addEventListener('click', () => {
+      _tbmScores[ti]++;
+      _tbmUpdateScore(ti);
+    });
+    btns.append(minusBtn, plusBtn);
+    card.appendChild(btns);
+    container.appendChild(card);
+  });
+}
+
+function _tbmUpdateScore(ti) {
+  const el = document.getElementById(`tbm-score-${ti}`);
+  if (el) el.textContent = _tbmScores[ti];
+  const m = document.getElementById(`tbm-minus-${ti}`);
+  if (m) m.disabled = _tbmScores[ti] === 0;
+}
+
+document.getElementById('btn-tbm-end').addEventListener('click', () => {
+  _tbmRunning = false;
+  cancelAnimationFrame(_tbmRaf);
+  _tbmRaf = null;
+  releaseWakeLock();
+  _tbmShowWinner();
+});
+
+function _tbmShowWinner() {
+  const teams    = teambuilder.getLineup();
+  const maxScore = Math.max(..._tbmScores, 0);
+  const winners  = teams.filter((_, i) => _tbmScores[i] === maxScore);
+
+  const overlay = document.getElementById('tbm-winner-overlay');
+  overlay.classList.remove('hidden');
+
+  // Winner name(s)
+  const nameEl = document.getElementById('tbm-winner-name');
+  if (winners.length === 1) {
+    nameEl.textContent  = winners[0].name;
+    nameEl.style.color  = winners[0].color;
+  } else {
+    nameEl.textContent  = winners.map(w => w.name).join(' & ');
+    nameEl.style.color  = 'white';
+  }
+
+  // Winner photos
+  const photosEl = document.getElementById('tbm-winner-photos');
+  photosEl.replaceChildren();
+  winners.forEach(w => {
+    if (w.photos.length > 0) {
+      w.photos.forEach(p => {
+        const wrap = document.createElement('div');
+        wrap.className = 'tbm-photo';
+        wrap.addEventListener('contextmenu', e => e.preventDefault());
+        const cnv = document.createElement('canvas');
+        cnv.width = 92; cnv.height = 92;
+        cnv.addEventListener('contextmenu', e => e.preventDefault());
+        const img = new Image();
+        img.onload = () => cnv.getContext('2d').drawImage(img, 0, 0, 92, 92);
+        img.src = p.blobUrl;
+        wrap.appendChild(cnv);
+        photosEl.appendChild(wrap);
+      });
+    } else {
+      for (let i = 0; i < w.memberCount; i++) {
+        const ph = document.createElement('div');
+        ph.className = 'tbm-no-photo';
+        ph.style.background = w.color;
+        ph.style.color = 'white';
+        ph.textContent = String(i + 1);
+        photosEl.appendChild(ph);
+      }
+    }
+  });
+
+  // Konfetti-Animation
+  _tbmConfetti(winners.length === 1 ? winners[0].color : '#f59e0b');
+}
+
+function _tbmConfetti(teamColor) {
+  const canvas = document.getElementById('tbm-confetti');
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const ctx    = canvas.getContext('2d');
+  const palette = [teamColor, '#FFD700', '#ffffff', '#FF6B6B', '#74C0FC', '#51CF66'];
+  const pieces  = Array.from({ length: 180 }, () => ({
+    x:    Math.random() * canvas.width,
+    y:    Math.random() * -canvas.height * 0.6,
+    w:    Math.random() * 14 + 5,
+    h:    Math.random() * 7  + 3,
+    col:  palette[Math.floor(Math.random() * palette.length)],
+    vy:   Math.random() * 3.5 + 1.5,
+    vx:   (Math.random() - 0.5) * 2.2,
+    rot:  Math.random() * 360,
+    rotV: (Math.random() - 0.5) * 8,
+  }));
+  const t0 = Date.now();
+  const DURATION = 5000;
+  (function tick() {
+    const elapsed = Date.now() - t0;
+    if (elapsed >= DURATION) { ctx.clearRect(0, 0, canvas.width, canvas.height); return; }
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const alpha = elapsed > 3500 ? 1 - (elapsed - 3500) / 1500 : 1;
+    pieces.forEach(p => {
+      p.y += p.vy; p.x += p.vx; p.rot += p.rotV;
+      if (p.y > canvas.height) { p.y = -20; p.x = Math.random() * canvas.width; }
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.translate(p.x, p.y);
+      ctx.rotate((p.rot * Math.PI) / 180);
+      ctx.fillStyle = p.col;
+      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.restore();
+    });
+    requestAnimationFrame(tick);
+  })();
+}
+
+document.getElementById('btn-tbm-close').addEventListener('click', () => {
+  document.getElementById('tbm-winner-overlay').classList.add('hidden');
+  document.getElementById('tbm-teams').replaceChildren();
+  teambuilder.clearPhotos();
+  router.navigateTo('screen-teambuilder');
+});
+
 // ═══════════════════════════════════════════════════════════
 // PRESETS SCREEN
 // ═══════════════════════════════════════════════════════════
@@ -449,6 +684,8 @@ function enterLive() {
   updateScores();
   startMatchRaf();
   acquireWakeLock();
+  const cfg = storage.getItem('settings') || {};
+  if (cfg.sound !== false) playWhistle();
 }
 
 function leaveLive() {
@@ -497,10 +734,50 @@ pill.addEventListener('click', () => {
   pill.classList.toggle('running', running);
 });
 
-document.getElementById('btn-plus-a').addEventListener('click', () => { match.changeScore('a', 1); updateScores(); });
+function _scoreUp(team) {
+  match.changeScore(team, 1);
+  updateScores();
+  const cfg = storage.getItem('settings') || {};
+  if (cfg.sound !== false) playGoal();
+  if (cfg.vibration !== false && navigator.vibrate) navigator.vibrate(60);
+}
+document.getElementById('btn-plus-a').addEventListener('click', () => _scoreUp('a'));
 document.getElementById('btn-minus-a').addEventListener('click', () => { match.changeScore('a', -1); updateScores(); });
-document.getElementById('btn-plus-b').addEventListener('click', () => { match.changeScore('b', 1); updateScores(); });
+document.getElementById('btn-plus-b').addEventListener('click', () => _scoreUp('b'));
 document.getElementById('btn-minus-b').addEventListener('click', () => { match.changeScore('b', -1); updateScores(); });
+
+document.getElementById('btn-halftime').addEventListener('click', () => {
+  const s = match.getLive();
+  if (!s) return;
+
+  const wasRunning = s.running;
+  if (wasRunning) {
+    match.toggleTimer();
+    pill.classList.remove('running');
+  }
+
+  match.markHalfTime();
+  const elMs  = match.getElapsedMs();
+  const elMin = Math.floor(elMs / 60000);
+  const elSec = Math.floor((elMs % 60000) / 1000);
+  const elStr = `${String(elMin).padStart(2, '0')}:${String(elSec).padStart(2, '0')}`;
+
+  ui.openModal('tmpl-modal-halftime', () => {
+    document.getElementById('ht-score').textContent = `${s.teamA.score} : ${s.teamB.score}`;
+    document.getElementById('ht-teams').textContent = `${s.teamA.name} vs. ${s.teamB.name}`;
+    document.getElementById('ht-time').textContent  = `1. Halbzeit: ${elStr}`;
+
+    document.getElementById('ht-back').onclick = () => {
+      if (wasRunning) { match.toggleTimer(); pill.classList.add('running'); }
+      ui.closeModal();
+    };
+
+    document.getElementById('ht-next').onclick = () => {
+      match.resetTimer();
+      ui.closeModal();
+    };
+  });
+});
 
 document.getElementById('btn-end-match').addEventListener('click', () => {
   const s = match.getLive();
@@ -509,6 +786,8 @@ document.getElementById('btn-end-match').addEventListener('click', () => {
     document.getElementById('m-teams').textContent = `${s.teamA.name} vs. ${s.teamB.name}`;
 
     document.getElementById('m-save').onclick = () => {
+      const cfg2 = storage.getItem('settings') || {};
+      if (cfg2.sound !== false) playMatchEnd();
       match.saveMatch();
       ui.closeModal();
       currentHistoryTab = 'matches';
@@ -764,9 +1043,17 @@ function syncTimerUI() {
   document.getElementById('btn-timer-reset').classList.toggle('hidden', picking);
 }
 
+let _lastTickSec = -1;
 function onTimerTick(ms) {
   document.getElementById('timer-countdown').textContent = timer.fmtMs(ms);
   document.getElementById('timer-display').classList.toggle('ending', ms < 10000);
+  const sec = Math.ceil(ms / 1000);
+  if (sec <= 5 && sec > 0 && sec !== _lastTickSec) {
+    _lastTickSec = sec;
+    const cfg = storage.getItem('settings') || {};
+    if (cfg.sound !== false) playCountdownTick(sec === 1);
+  }
+  if (ms > 5000) _lastTickSec = -1;
 }
 
 function onTimerDone() {
@@ -882,6 +1169,11 @@ function initSettings() {
     storage.setItem('settings', c);
   });
 
+  document.getElementById('btn-restore-presets').addEventListener('click', () => {
+    storage.removeItem('hiddenPresets');
+    ui.showToast('Standard-Presets wiederhergestellt!');
+  });
+
   document.getElementById('btn-clear-all').addEventListener('click', async () => {
     const ok1 = await ui.confirmAction('Wirklich alle gespeicherten Daten löschen?');
     if (!ok1) return;
@@ -927,26 +1219,107 @@ function checkSession() {
 // INSTALL-BANNER
 // ═══════════════════════════════════════════════════════════
 let _deferredInstall = null;
+
+function _isStandalone() {
+  return window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+}
+
+function _isIOS() {
+  return /iPhone|iPad|iPod/.test(navigator.userAgent) && !window.MSStream;
+}
+
+function _showInstallBanner() {
+  if (_isStandalone()) return;
+  const banner = document.getElementById('install-banner');
+  if (_isIOS()) {
+    document.getElementById('install-banner-ios').classList.remove('hidden');
+    document.getElementById('install-banner-pwa').classList.add('hidden');
+    banner.classList.remove('hidden');
+  } else if (_deferredInstall) {
+    document.getElementById('install-banner-pwa').classList.remove('hidden');
+    document.getElementById('install-banner-ios').classList.add('hidden');
+    banner.classList.remove('hidden');
+  }
+}
+
 window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault();
   _deferredInstall = e;
+  _syncInstallSettings();
   if (!storage.getItem('installDismissed')) {
-    document.getElementById('install-banner').classList.remove('hidden');
+    _showInstallBanner();
   }
+});
+
+window.addEventListener('appinstalled', () => {
+  document.getElementById('install-banner').classList.add('hidden');
+  _deferredInstall = null;
+  _syncInstallSettings();
 });
 
 document.getElementById('btn-install').addEventListener('click', async () => {
   if (!_deferredInstall) return;
   _deferredInstall.prompt();
-  await _deferredInstall.userChoice;
+  const { outcome } = await _deferredInstall.userChoice;
   _deferredInstall = null;
   document.getElementById('install-banner').classList.add('hidden');
+  if (outcome === 'accepted') storage.setItem('installDismissed', true);
 });
 
 document.getElementById('btn-dismiss-install').addEventListener('click', () => {
   document.getElementById('install-banner').classList.add('hidden');
   storage.setItem('installDismissed', true);
 });
+
+// iOS Banner: nur schließen (kein Prompt möglich)
+document.getElementById('btn-dismiss-install-ios').addEventListener('click', () => {
+  document.getElementById('install-banner').classList.add('hidden');
+  storage.setItem('installDismissed', true);
+});
+
+function _syncInstallSettings() {
+  const row = document.getElementById('install-settings-row');
+  const btn = document.getElementById('btn-settings-install');
+  const status = document.getElementById('install-status');
+  if (!row) return;
+  if (_isStandalone()) {
+    row.classList.remove('hidden');
+    btn.classList.add('hidden');
+    status.classList.remove('hidden');
+    status.textContent = '✓ App ist installiert';
+  } else if (_deferredInstall) {
+    row.classList.remove('hidden');
+    btn.classList.remove('hidden');
+    status.classList.add('hidden');
+  } else if (_isIOS()) {
+    row.classList.remove('hidden');
+    btn.classList.add('hidden');
+    status.classList.remove('hidden');
+    status.textContent = 'Teilen → „Zum Home-Bildschirm"';
+  } else {
+    row.classList.add('hidden');
+  }
+}
+
+document.getElementById('btn-settings-install').addEventListener('click', async () => {
+  if (!_deferredInstall) return;
+  _deferredInstall.prompt();
+  const { outcome } = await _deferredInstall.userChoice;
+  _deferredInstall = null;
+  if (outcome === 'accepted') {
+    storage.setItem('installDismissed', true);
+    document.getElementById('install-banner').classList.add('hidden');
+  }
+  _syncInstallSettings();
+});
+
+// Direkt beim Start: iOS-Banner anzeigen wenn sinnvoll
+if (_isIOS() && !_isStandalone() && !storage.getItem('installDismissed')) {
+  document.getElementById('install-banner-ios').classList.remove('hidden');
+  document.getElementById('install-banner-pwa').classList.add('hidden');
+  document.getElementById('install-banner').classList.remove('hidden');
+}
+_syncInstallSettings();
 
 // ═══════════════════════════════════════════════════════════
 // SERVICE WORKER

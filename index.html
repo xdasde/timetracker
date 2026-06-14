@@ -21,9 +21,25 @@
 
   <!-- Installations-Banner -->
   <div id="install-banner" class="install-banner hidden">
-    <span>App installieren</span>
-    <button id="btn-install">Installieren</button>
-    <button id="btn-dismiss-install">&#x2715;</button>
+    <!-- PWA (Chrome/Edge/Android) -->
+    <div id="install-banner-pwa" class="install-banner-inner">
+      <span class="install-banner-icon">📲</span>
+      <div class="install-banner-text">
+        <strong>App installieren</strong>
+        <span>Offline nutzen &amp; direkt starten</span>
+      </div>
+      <button id="btn-install" class="btn-install-action">Installieren</button>
+      <button id="btn-dismiss-install" class="btn-install-close" aria-label="Schließen">&#x2715;</button>
+    </div>
+    <!-- iOS Safari -->
+    <div id="install-banner-ios" class="install-banner-inner hidden">
+      <span class="install-banner-icon">📲</span>
+      <div class="install-banner-text">
+        <strong>Zum Startbildschirm</strong>
+        <span>Tippe <strong>Teilen</strong> &#x2197; → „Zum Home-Bildschirm"</span>
+      </div>
+      <button id="btn-dismiss-install-ios" class="btn-install-close" aria-label="Schließen">&#x2715;</button>
+    </div>
   </div>
 
   <!-- Top Navigation -->
@@ -154,6 +170,7 @@
             <button class="btn-score btn-plus" id="btn-plus-b" aria-label="Punkt hinzufügen Team B">+1</button>
           </div>
         </div>
+        <button class="btn-halftime" id="btn-halftime">Halbzeit</button>
         <button class="fab" id="btn-end-match">Match beenden</button>
       </div>
     </section>
@@ -260,7 +277,21 @@
       </div>
       <div class="tb-lineup" id="tb-lineup"></div>
       <div class="tb-lineup-footer">
-        <button class="btn-primary btn-full" id="btn-lineup-done">Fertig</button>
+        <button class="btn-primary btn-full" id="btn-lineup-match">Match starten</button>
+        <button class="btn-secondary btn-full" id="btn-lineup-done">Fertig</button>
+      </div>
+    </section>
+
+    <!-- ═══ Screen: Teambuilder Match ═══ -->
+    <section id="screen-tb-match" class="screen">
+      <div class="tbm-header">
+        <div class="match-timer-pill" id="tbm-timer-pill" role="button" aria-label="Timer starten / pausieren">
+          <span id="tbm-time">00:00</span>
+        </div>
+      </div>
+      <div class="tbm-teams" id="tbm-teams"></div>
+      <div class="tbm-footer">
+        <button class="btn-danger btn-full" id="btn-tbm-end">Match beenden</button>
       </div>
     </section>
 
@@ -283,12 +314,29 @@
           <label for="toggle-tb-photos">Fotos bei Teambildung</label>
           <input type="checkbox" id="toggle-tb-photos" role="switch">
         </div>
+        <div class="setting-row hidden" id="install-settings-row">
+          <label>App installieren</label>
+          <button class="btn-install-settings" id="btn-settings-install">Installieren</button>
+          <span class="install-status-text hidden" id="install-status"></span>
+        </div>
         <hr>
+        <button class="btn-secondary btn-full" id="btn-restore-presets">Standard-Presets wiederherstellen</button>
         <button class="btn-danger btn-full" id="btn-clear-all">Alle Daten l&#xF6;schen</button>
       </div>
     </section>
 
   </main>
+
+  <!-- Gewinner-Overlay (Teambuilder Match) -->
+  <div id="tbm-winner-overlay" class="tbm-winner-overlay hidden">
+    <canvas id="tbm-confetti" class="tbm-confetti-canvas"></canvas>
+    <div class="tbm-winner-box">
+      <div class="tbm-winner-label">Gewinner!</div>
+      <div class="tbm-winner-team" id="tbm-winner-name"></div>
+      <div class="tbm-winner-photos" id="tbm-winner-photos"></div>
+      <button class="btn-primary" id="btn-tbm-close">Fertig</button>
+    </div>
+  </div>
 
   <!-- Modal -->
   <div id="modal-backdrop" class="modal-backdrop hidden" role="dialog" aria-modal="true">
@@ -302,6 +350,17 @@
   <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
 
   <!-- ═══ Modal-Templates ═══ -->
+
+  <template id="tmpl-modal-halftime">
+    <h2>Halbzeit!</h2>
+    <p class="detail-score" id="ht-score"></p>
+    <p class="detail-meta" id="ht-teams"></p>
+    <p class="detail-meta" id="ht-time"></p>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="ht-back">Weiter spielen</button>
+      <button class="btn-primary" id="ht-next">2. Halbzeit</button>
+    </div>
+  </template>
 
   <template id="tmpl-modal-match-end">
     <h2>Match beenden</h2>
@@ -361,6 +420,7 @@
     <p class="detail-meta" id="md-date"></p>
     <div class="detail-score" id="md-score"></div>
     <p class="detail-meta" id="md-duration"></p>
+    <p class="detail-meta hidden" id="md-halftime"></p>
     <div class="detail-note">
       <label class="modal-label" for="md-note">Notiz</label>
       <textarea class="modal-input" id="md-note" rows="3"></textarea>

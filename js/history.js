@@ -61,10 +61,12 @@ function renderMatches(list) {
   const items = storage.getCollection('matches').slice().reverse();
   if (!items.length) return emptyState(list, 'Noch keine Matches gespeichert.');
   items.forEach(m => {
+    let result = `${m.teamA.score} : ${m.teamB.score} · ${fmtDur(m.durationMs)}`;
+    if (m.halfTimeScore != null) result += ` · HZ: ${m.halfTimeScore.a}:${m.halfTimeScore.b}`;
     list.appendChild(makeCard(
       m.createdAt,
       `${m.teamA.name} vs. ${m.teamB.name}`,
-      `${m.teamA.score} : ${m.teamB.score} · ${fmtDur(m.durationMs)}`,
+      result,
       () => openMatchDetail(m)
     ));
   });
@@ -76,6 +78,16 @@ function openMatchDetail(m) {
     document.getElementById('md-date').textContent = absDate(m.createdAt);
     document.getElementById('md-score').textContent = `${m.teamA.score} : ${m.teamB.score}`;
     document.getElementById('md-duration').textContent = `Dauer: ${fmtDur(m.durationMs)}`;
+    const htEl = document.getElementById('md-halftime');
+    if (m.halfTimeScore != null) {
+      const htMs  = m.halfTimeMs ?? 0;
+      const htMin = Math.floor(htMs / 60000);
+      const htSec = Math.floor((htMs % 60000) / 1000);
+      htEl.textContent = `Halbzeitstand: ${m.halfTimeScore.a} : ${m.halfTimeScore.b} (${String(htMin).padStart(2,'0')}:${String(htSec).padStart(2,'0')})`;
+      htEl.classList.remove('hidden');
+    } else {
+      htEl.classList.add('hidden');
+    }
     document.getElementById('md-note').value = m.note || '';
 
     document.getElementById('md-save-note').onclick = () => {

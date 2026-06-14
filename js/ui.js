@@ -1,4 +1,5 @@
-let toastTimer = null;
+let toastTimer    = null;
+let _pendingConfirm = null; // Tracks unresolved confirmAction promise
 
 export function showToast(msg, ms = 2200) {
   const el = document.getElementById('toast');
@@ -17,16 +18,27 @@ export function openModal(templateId, populate = null) {
 }
 
 export function closeModal() {
+  // Resolve any pending confirmAction with false when modal is closed externally
+  if (_pendingConfirm) { _pendingConfirm(false); _pendingConfirm = null; }
   document.getElementById('modal-backdrop').classList.add('hidden');
   document.getElementById('modal-content').replaceChildren();
 }
 
 export function confirmAction(msg) {
   return new Promise(resolve => {
+    _pendingConfirm = resolve;
     openModal('tmpl-modal-confirm', () => {
       document.getElementById('confirm-msg').textContent = msg;
-      document.getElementById('confirm-ok').onclick = () => { closeModal(); resolve(true); };
-      document.getElementById('confirm-cancel').onclick = () => { closeModal(); resolve(false); };
+      document.getElementById('confirm-ok').onclick = () => {
+        _pendingConfirm = null;
+        closeModal();
+        resolve(true);
+      };
+      document.getElementById('confirm-cancel').onclick = () => {
+        _pendingConfirm = null;
+        closeModal();
+        resolve(false);
+      };
     });
   });
 }
