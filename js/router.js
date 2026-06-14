@@ -2,13 +2,15 @@ const screens = new Map();
 
 // Maps screen ID → which nav-tab data-tab value to highlight (null = none)
 const TAB_MAP = {
-  'screen-home':        'home',
-  'screen-presets':     'home',
-  'screen-match-setup': 'home',
-  'screen-match-live':  null,
-  'screen-tools':       'tools',
-  'screen-history':     'history',
-  'screen-settings':    null,
+  'screen-home':               'home',
+  'screen-presets':            'home',
+  'screen-match-setup':        'home',
+  'screen-match-live':         null,
+  'screen-tools':              'tools',
+  'screen-history':            'history',
+  'screen-settings':           null,
+  'screen-teambuilder':        'home',
+  'screen-teambuilder-reveal': null,
 };
 
 const FULLSCREEN = new Set(['screen-match-live']);
