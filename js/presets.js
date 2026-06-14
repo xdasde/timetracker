@@ -17,9 +17,18 @@ const DURATION_OPTIONS = [
 const BREAK_OPTIONS = [
   { label: 'Keine',  ms: null },
   { label: '1 Min',  ms: 1 * 60000 },
+  { label: '2 Min',  ms: 2 * 60000 },
+  { label: '3 Min',  ms: 3 * 60000 },
   { label: '5 Min',  ms: 5 * 60000 },
   { label: '10 Min', ms: 10 * 60000 },
   { label: '15 Min', ms: 15 * 60000 },
+];
+// Anzahl der Spielabschnitte (Halbzeiten/Viertel/Drittel). 1 = durchgehend, kein Wechsel.
+const PERIOD_OPTIONS = [
+  { label: '1',  ms: 1 },
+  { label: '2',  ms: 2 },
+  { label: '3',  ms: 3 },
+  { label: '4',  ms: 4 },
 ];
 
 // Baut eine Auswahl von Zeit-Chips; ruft onPick(ms) beim Tippen auf.
@@ -44,65 +53,102 @@ function buildTimeChips(container, options, selectedMs, onPick) {
 }
 
 // colorIndex maps to COLORS array in match.js: 0=teal/coral, 1=blue/red, 2=purple/amber, 3=gray/green
+//
+// durationMs = Spielzeit pro Abschnitt (Halbzeit/Viertel), nicht die Gesamtzeit.
+//   Die Uhr zählt einen Abschnitt herunter; nach der Pause beginnt der nächste
+//   Abschnitt wieder bei dieser Dauer (siehe Halbzeit-Ablauf in app.js).
+// periods  = Anzahl der Spielabschnitte. breakMs = Pause zwischen den Abschnitten.
+// Werte nach offiziellen Verbandsregeln (FIFA, FIBA, FIVB, IHF) – Stand 2025/26.
 const BUILT_IN_PRESETS = [
   {
+    // FIFA: 2 Halbzeiten à 45 Min., 15 Min. Halbzeitpause.
     id: 'builtin-soccer',
     name: 'Fußball',
     icon: '⚽',
     teamA: { name: 'Heim' },
     teamB: { name: 'Gast' },
     colorIndex: 0,
-    durationMs: 5400000,
+    periods: 2,
+    durationMs: 2700000, // 45 Min. pro Halbzeit
+    breakMs: 900000,     // 15 Min. Halbzeitpause
     builtIn: true,
   },
   {
+    // FIBA: 4 Viertel à 10 Min., 2 Min. Pause zwischen den Vierteln (15 Min. zur Halbzeit).
     id: 'builtin-basketball',
     name: 'Basketball',
     icon: '🏀',
     teamA: { name: 'Heim' },
     teamB: { name: 'Gast' },
     colorIndex: 1,
-    durationMs: 2400000,
+    periods: 4,
+    durationMs: 600000, // 10 Min. pro Viertel
+    breakMs: 120000,    // 2 Min. Viertelpause
     builtIn: true,
   },
   {
+    // Handball (IHF): 2 Halbzeiten à 30 Min., 10 Min. Halbzeitpause.
+    id: 'builtin-handball',
+    name: 'Handball',
+    icon: '🤾',
+    teamA: { name: 'Heim' },
+    teamB: { name: 'Gast' },
+    colorIndex: 2,
+    periods: 2,
+    durationMs: 1800000, // 30 Min. pro Halbzeit
+    breakMs: 600000,     // 10 Min. Halbzeitpause
+    builtIn: true,
+  },
+  {
+    // FIVB: Satzspiel (Best-of-5 bis 25 Punkte), keine feste Spielzeit. 3 Min. Satzpause.
     id: 'builtin-volleyball',
     name: 'Volleyball',
     icon: '🏐',
     teamA: { name: 'Team A' },
     teamB: { name: 'Team B' },
     colorIndex: 2,
-    durationMs: null,
+    periods: 1,
+    durationMs: null,  // punktebasiert, kein Zeitlimit
+    breakMs: 180000,   // 3 Min. Satzpause
     builtIn: true,
   },
   {
+    // Völkerball: kein einheitliches Regelwerk – verbreitet als 10-Min.-Runde.
     id: 'builtin-voelkerball',
     name: 'Völkerball',
     icon: '🎯',
     teamA: { name: 'Team A' },
     teamB: { name: 'Team B' },
     colorIndex: 1,
-    durationMs: 1200000,
+    periods: 1,
+    durationMs: 600000, // 10 Min. Runde
+    breakMs: null,
     builtIn: true,
   },
   {
+    // Laufsport: freie Zeitnahme, kein festes Limit (Uhr zählt hoch).
     id: 'builtin-laufsport',
     name: 'Laufsport',
     icon: '🏃',
     teamA: { name: 'Gruppe A' },
     teamB: { name: 'Gruppe B' },
     colorIndex: 3,
+    periods: 1,
     durationMs: null,
+    breakMs: null,
     builtIn: true,
   },
   {
+    // Schulsport: kein festes Regelwerk, frei konfigurierbar.
     id: 'builtin-schulsport',
     name: 'Schulsport',
     icon: '🏫',
     teamA: { name: 'Team A' },
     teamB: { name: 'Team B' },
     colorIndex: 0,
+    periods: 1,
     durationMs: null,
+    breakMs: null,
     builtIn: true,
   },
 ];
@@ -167,7 +213,11 @@ export function renderList(onEdit) {
     const parts = [];
     if (preset.durationMs) {
       const min = Math.floor(preset.durationMs / 60000);
-      parts.push(`${min} Min.`);
+      const periods = preset.periods || 1;
+      parts.push(periods > 1 ? `${periods} × ${min} Min.` : `${min} Min.`);
+    }
+    if (preset.breakMs) {
+      parts.push(`${Math.floor(preset.breakMs / 60000)} Min. Pause`);
     }
     parts.push(`${preset.teamA.name} vs. ${preset.teamB.name}`);
     meta.textContent = parts.join(' · ');
@@ -225,10 +275,12 @@ export function openModal(preset, onSaved, onDeleted) {
       teamA: { name: '' },
       teamB: { name: '' },
       colorIndex: 0,
+      periods: 1,
       durationMs: null,
       breakMs: null,
       builtIn: false,
     };
+    if (!editing.periods) editing.periods = 1;
 
     document.getElementById('pm-title').textContent = isNew ? 'Neues Preset' : 'Preset bearbeiten';
     document.getElementById('pm-name').value = editing.name;
@@ -286,7 +338,9 @@ export function openModal(preset, onSaved, onDeleted) {
       colorRow.appendChild(dot2);
     });
 
-    // Spieldauer + Pausendauer
+    // Spielabschnitte (Halbzeiten/Viertel) + Spieldauer pro Abschnitt + Pause
+    buildTimeChips(document.getElementById('pm-periods'), PERIOD_OPTIONS,
+      editing.periods, n => { editing.periods = n || 1; });
     buildTimeChips(document.getElementById('pm-duration'), DURATION_OPTIONS,
       editing.durationMs, ms => { editing.durationMs = ms; });
     buildTimeChips(document.getElementById('pm-break'), BREAK_OPTIONS,
