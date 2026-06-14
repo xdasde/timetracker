@@ -533,20 +533,85 @@ document.getElementById('btn-end-match').addEventListener('click', () => {
 });
 
 // ═══════════════════════════════════════════════════════════
-// STOPPUHREN
+// STOPPUHREN (dynamisch via "+" Button, max. 6)
 // ═══════════════════════════════════════════════════════════
-const sw1 = new Stopwatch();
-const sw2 = new Stopwatch();
+const swInstances = [];
+let swNextId = 1;
 
-function initSW(sw, containerId) {
-  const c        = document.getElementById(containerId);
-  const timeEl   = c.querySelector('.sw-time');
-  const ssBtn    = c.querySelector('.btn-sw-startstop');
-  const lapBtn   = c.querySelector('.btn-sw-lap');
-  const saveBtn  = c.querySelector('.btn-sw-save');
-  const resetBtn = c.querySelector('.btn-sw-reset');
-  const lapList  = c.querySelector('.lap-list');
-  const labelEl  = c.querySelector('.sw-label');
+function createSWCard(id) {
+  const card = document.createElement('div');
+  card.className = 'tool-card sw-card';
+  card.id = `sw-card-${id}`;
+
+  const NS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(NS, 'svg');
+  svg.setAttribute('class', 'sw-ring');
+  svg.setAttribute('viewBox', '0 0 100 100');
+  svg.setAttribute('aria-hidden', 'true');
+  const bgCircle = document.createElementNS(NS, 'circle');
+  bgCircle.setAttribute('class', 'sw-ring-bg');
+  bgCircle.setAttribute('cx', '50'); bgCircle.setAttribute('cy', '50'); bgCircle.setAttribute('r', '45');
+  bgCircle.setAttribute('fill', 'none'); bgCircle.setAttribute('stroke-width', '3');
+  const progCircle = document.createElementNS(NS, 'circle');
+  progCircle.setAttribute('class', 'sw-ring-progress');
+  progCircle.setAttribute('cx', '50'); progCircle.setAttribute('cy', '50'); progCircle.setAttribute('r', '45');
+  progCircle.setAttribute('fill', 'none'); progCircle.setAttribute('stroke-width', '3');
+  progCircle.setAttribute('stroke-dasharray', '283');
+  progCircle.setAttribute('stroke-dashoffset', '283');
+  progCircle.setAttribute('transform', 'rotate(-90 50 50)');
+  svg.appendChild(bgCircle);
+  svg.appendChild(progCircle);
+  card.appendChild(svg);
+
+  const header = document.createElement('div');
+  header.className = 'sw-card-header';
+  const labelEl = document.createElement('input');
+  labelEl.type = 'text'; labelEl.className = 'sw-label';
+  labelEl.placeholder = 'Bezeichnung'; labelEl.maxLength = 30;
+  labelEl.autocomplete = 'off';
+  labelEl.setAttribute('aria-label', `Bezeichnung Stoppuhr ${id}`);
+  const removeBtn = document.createElement('button');
+  removeBtn.className = 'btn-sw-remove';
+  removeBtn.setAttribute('aria-label', 'Stoppuhr entfernen');
+  removeBtn.textContent = '✕';
+  header.appendChild(labelEl);
+  header.appendChild(removeBtn);
+  card.appendChild(header);
+
+  const timeEl = document.createElement('div');
+  timeEl.className = 'sw-time';
+  timeEl.setAttribute('aria-live', 'polite');
+  timeEl.textContent = '00:00.00';
+  card.appendChild(timeEl);
+
+  const btnsEl = document.createElement('div');
+  btnsEl.className = 'sw-btns';
+  [['btn-sw-startstop','Start'],['btn-sw-lap','Runde'],['btn-sw-save','Speichern'],['btn-sw-reset','Reset']].forEach(([cls, lbl]) => {
+    const btn = document.createElement('button');
+    btn.className = `btn-sw ${cls}`; btn.textContent = lbl;
+    if (cls === 'btn-sw-lap') btn.disabled = true;
+    btnsEl.appendChild(btn);
+  });
+  card.appendChild(btnsEl);
+
+  const lapList = document.createElement('ol');
+  lapList.className = 'lap-list';
+  lapList.setAttribute('aria-label', 'Rundenzeiten');
+  card.appendChild(lapList);
+
+  return card;
+}
+
+function mountSW(id, cardEl) {
+  const sw       = new Stopwatch();
+  const timeEl   = cardEl.querySelector('.sw-time');
+  const ssBtn    = cardEl.querySelector('.btn-sw-startstop');
+  const lapBtn   = cardEl.querySelector('.btn-sw-lap');
+  const saveBtn  = cardEl.querySelector('.btn-sw-save');
+  const resetBtn = cardEl.querySelector('.btn-sw-reset');
+  const removeBtn = cardEl.querySelector('.btn-sw-remove');
+  const lapList  = cardEl.querySelector('.lap-list');
+  const labelEl  = cardEl.querySelector('.sw-label');
   let raf = null;
 
   const tick = () => {
@@ -559,6 +624,8 @@ function initSW(sw, containerId) {
     ssBtn.textContent = running ? 'Stop' : 'Start';
     ssBtn.classList.toggle('btn-sw--active', running);
     lapBtn.disabled = !running;
+    cardEl.classList.toggle('sw-running', running);
+    removeBtn.disabled = sw.hasContent();
     lapList.replaceChildren();
     sw.laps.slice(-5).forEach((ms, i) => {
       const li = document.createElement('li');
@@ -586,7 +653,6 @@ function initSW(sw, containerId) {
     ui.openModal('tmpl-modal-sw-save', () => {
       const input = document.getElementById('sw-save-input');
       input.value = labelEl.value || def;
-
       document.getElementById('sw-save-ok').onclick = () => {
         const label = input.value.trim() || def;
         storage.addToCollection('stopwatches', {
@@ -620,10 +686,36 @@ function initSW(sw, containerId) {
     timeEl.textContent = fmtMs(0);
     sync();
   });
+
+  removeBtn.addEventListener('click', () => {
+    if (sw.isRunning()) { cancelAnimationFrame(raf); releaseWakeLock(); }
+    const idx = swInstances.findIndex(inst => inst.id === id);
+    if (idx !== -1) swInstances.splice(idx, 1);
+    cardEl.remove();
+    updateAddBtn();
+  });
+
+  swInstances.push({ id, sw, cardEl });
+  sync();
 }
 
-initSW(sw1, 'stopwatch-1');
-initSW(sw2, 'stopwatch-2');
+function updateAddBtn() {
+  const addBtn = document.getElementById('btn-add-stopwatch');
+  if (addBtn) addBtn.disabled = swInstances.length >= 6;
+}
+
+function addStopwatch() {
+  if (swInstances.length >= 6) return;
+  const id = swNextId++;
+  const card = createSWCard(id);
+  document.getElementById('sw-list').appendChild(card);
+  mountSW(id, card);
+  updateAddBtn();
+}
+
+document.getElementById('btn-add-stopwatch').addEventListener('click', addStopwatch);
+addStopwatch();
+addStopwatch();
 
 // ═══════════════════════════════════════════════════════════
 // COUNTDOWN-TIMER

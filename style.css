@@ -1242,6 +1242,130 @@ textarea.modal-input { resize: vertical; min-height: 80px; }
 }
 
 /* ═══════════════════════════════════════════
+   HOME SVG WAVE
+═══════════════════════════════════════════ */
+#screen-home {
+  position: relative;
+  overflow: hidden;
+}
+.home-wave {
+  position: absolute;
+  top: 0; left: 0;
+  width: 200%; height: 100%;
+  pointer-events: none;
+  opacity: 0.07;
+  will-change: transform;
+  animation: wave-scroll 22s linear infinite;
+}
+@keyframes wave-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.home-tile-icon svg {
+  width: 1.8rem; height: 1.8rem;
+  display: block;
+}
+.home-tile--primary .home-tile-icon svg {
+  width: 2.2rem; height: 2.2rem;
+}
+.home-tile:not(.home-tile--primary) .home-tile-icon svg {
+  color: var(--color-amber);
+}
+
+/* ═══════════════════════════════════════════
+   STOPPUHR SECTION HEADER + DYNAMISCHE LISTE
+═══════════════════════════════════════════ */
+.sw-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0;
+}
+.sw-section-title {
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-muted);
+}
+#btn-add-stopwatch {
+  background: var(--color-amber);
+  color: #111827;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+#btn-add-stopwatch:active { background: var(--color-amber-dark); }
+#btn-add-stopwatch:disabled { opacity: 0.35; pointer-events: none; }
+
+#sw-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ═══════════════════════════════════════════
+   STOPPUHR CARD (dynamisch)
+═══════════════════════════════════════════ */
+.sw-card {
+  position: relative;
+  overflow: hidden;
+}
+.sw-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sw-card-header .sw-label { flex: 1; }
+
+.btn-sw-remove {
+  width: 28px; height: 28px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-muted);
+  font-size: 0.85rem;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.1s, color 0.1s;
+  border: 1px solid transparent;
+}
+.btn-sw-remove:not([disabled]):active {
+  background: var(--color-danger);
+  color: white;
+  border-color: var(--color-danger);
+}
+.btn-sw-remove[disabled] { opacity: 0.22; pointer-events: none; }
+
+/* ═══════════════════════════════════════════
+   SVG FORTSCHRITTSRING
+═══════════════════════════════════════════ */
+.sw-ring {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 140px; height: 140px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.sw-card.sw-running .sw-ring { opacity: 1; }
+
+.sw-ring-bg { stroke: var(--color-border); }
+.sw-ring-progress {
+  stroke: var(--color-amber);
+  stroke-linecap: round;
+  will-change: stroke-dashoffset;
+  animation: sw-ring-tick 60s linear infinite;
+  animation-play-state: paused;
+}
+.sw-card.sw-running .sw-ring-progress {
+  animation-play-state: running;
+}
+@keyframes sw-ring-tick {
+  from { stroke-dashoffset: 283; }
+  to   { stroke-dashoffset: 0; }
+}
+
+/* ═══════════════════════════════════════════
    UTILITIES
 ═══════════════════════════════════════════ */
 .hidden { display: none !important; }
