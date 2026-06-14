@@ -21,9 +21,25 @@
 
   <!-- Installations-Banner -->
   <div id="install-banner" class="install-banner hidden">
-    <span>App installieren</span>
-    <button id="btn-install">Installieren</button>
-    <button id="btn-dismiss-install">&#x2715;</button>
+    <!-- PWA (Chrome/Edge/Android) -->
+    <div id="install-banner-pwa" class="install-banner-inner">
+      <span class="install-banner-icon">📲</span>
+      <div class="install-banner-text">
+        <strong>App installieren</strong>
+        <span>Offline nutzen &amp; direkt starten</span>
+      </div>
+      <button id="btn-install" class="btn-install-action">Installieren</button>
+      <button id="btn-dismiss-install" class="btn-install-close" aria-label="Schließen">&#x2715;</button>
+    </div>
+    <!-- iOS Safari -->
+    <div id="install-banner-ios" class="install-banner-inner hidden">
+      <span class="install-banner-icon">📲</span>
+      <div class="install-banner-text">
+        <strong>Zum Startbildschirm</strong>
+        <span>Tippe <strong>Teilen</strong> &#x2197; → „Zum Home-Bildschirm"</span>
+      </div>
+      <button id="btn-dismiss-install-ios" class="btn-install-close" aria-label="Schließen">&#x2715;</button>
+    </div>
   </div>
 
   <!-- Top Navigation -->
@@ -283,6 +299,11 @@
         <div class="setting-row">
           <label for="toggle-tb-photos">Fotos bei Teambildung</label>
           <input type="checkbox" id="toggle-tb-photos" role="switch">
+        </div>
+        <div class="setting-row hidden" id="install-settings-row">
+          <label>App installieren</label>
+          <button class="btn-install-settings" id="btn-settings-install">Installieren</button>
+          <span class="install-status-text hidden" id="install-status"></span>
         </div>
         <hr>
         <button class="btn-secondary btn-full" id="btn-restore-presets">Standard-Presets wiederherstellen</button>
