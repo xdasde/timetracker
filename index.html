@@ -247,7 +247,21 @@
       </div>
       <div class="tb-lineup" id="tb-lineup"></div>
       <div class="tb-lineup-footer">
-        <button class="btn-primary btn-full" id="btn-lineup-done">Fertig</button>
+        <button class="btn-primary btn-full" id="btn-lineup-match">Match starten</button>
+        <button class="btn-secondary btn-full" id="btn-lineup-done">Fertig</button>
+      </div>
+    </section>
+
+    <!-- ═══ Screen: Teambuilder Match ═══ -->
+    <section id="screen-tb-match" class="screen">
+      <div class="tbm-header">
+        <div class="match-timer-pill" id="tbm-timer-pill" role="button" aria-label="Timer starten / pausieren">
+          <span id="tbm-time">00:00</span>
+        </div>
+      </div>
+      <div class="tbm-teams" id="tbm-teams"></div>
+      <div class="tbm-footer">
+        <button class="btn-danger btn-full" id="btn-tbm-end">Match beenden</button>
       </div>
     </section>
 
@@ -277,6 +291,17 @@
     </section>
 
   </main>
+
+  <!-- Gewinner-Overlay (Teambuilder Match) -->
+  <div id="tbm-winner-overlay" class="tbm-winner-overlay hidden">
+    <canvas id="tbm-confetti" class="tbm-confetti-canvas"></canvas>
+    <div class="tbm-winner-box">
+      <div class="tbm-winner-label">Gewinner!</div>
+      <div class="tbm-winner-team" id="tbm-winner-name"></div>
+      <div class="tbm-winner-photos" id="tbm-winner-photos"></div>
+      <button class="btn-primary" id="btn-tbm-close">Fertig</button>
+    </div>
+  </div>
 
   <!-- Modal -->
   <div id="modal-backdrop" class="modal-backdrop hidden" role="dialog" aria-modal="true">

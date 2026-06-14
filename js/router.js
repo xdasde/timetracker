@@ -12,9 +12,10 @@ const TAB_MAP = {
   'screen-teambuilder':        'home',
   'screen-teambuilder-reveal': null,
   'screen-teambuilder-lineup': null,
+  'screen-tb-match':           null,
 };
 
-const FULLSCREEN = new Set(['screen-match-live']);
+const FULLSCREEN = new Set(['screen-match-live', 'screen-tb-match']);
 let current = null;
 
 export function register(id, onEnter = null, onLeave = null) {

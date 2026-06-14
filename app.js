@@ -24,6 +24,7 @@ router.register('screen-settings');
 router.register('screen-teambuilder', enterTeamBuilder);
 router.register('screen-teambuilder-reveal', enterTeamBuilderReveal);
 router.register('screen-teambuilder-lineup', enterLineup, leaveLineup);
+router.register('screen-tb-match', enterTbMatch, leaveTbMatch);
 
 // ═══════════════════════════════════════════════════════════
 // TOP-NAV
@@ -318,6 +319,240 @@ function leaveLineup() {
 }
 
 document.getElementById('btn-lineup-done').addEventListener('click', () => {
+  teambuilder.clearPhotos();
+  router.navigateTo('screen-teambuilder');
+});
+
+document.getElementById('btn-lineup-match').addEventListener('click', () => {
+  router.navigateTo('screen-tb-match');
+});
+
+// ── Teambuilder Match ────────────────────────────────────────
+let _tbmScores  = [];
+let _tbmRaf     = null;
+let _tbmMs      = 0;
+let _tbmRunning = false;
+let _tbmTick0   = null;
+
+function enterTbMatch() {
+  const teams = teambuilder.getLineup();
+  _tbmScores  = teams.map(() => 0);
+  _tbmMs      = 0;
+  _tbmRunning = true;
+  _tbmTick0   = Date.now();
+  _tbmRenderTeams(teams);
+  _tbmRafLoop();
+  acquireWakeLock();
+  document.getElementById('tbm-timer-pill').classList.add('running');
+}
+
+function leaveTbMatch() {
+  _tbmRunning = false;
+  cancelAnimationFrame(_tbmRaf);
+  _tbmRaf = null;
+  releaseWakeLock();
+}
+
+function _tbmRafLoop() {
+  cancelAnimationFrame(_tbmRaf);
+  const tick = () => {
+    if (_tbmRunning) _tbmMs = Date.now() - _tbmTick0;
+    const s = Math.floor(_tbmMs / 1000);
+    document.getElementById('tbm-time').textContent =
+      `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
+    _tbmRaf = requestAnimationFrame(tick);
+  };
+  _tbmRaf = requestAnimationFrame(tick);
+}
+
+document.getElementById('tbm-timer-pill').addEventListener('click', () => {
+  _tbmRunning = !_tbmRunning;
+  if (_tbmRunning) _tbmTick0 = Date.now() - _tbmMs;
+  document.getElementById('tbm-timer-pill').classList.toggle('running', _tbmRunning);
+});
+
+function _tbmRenderTeams(teams) {
+  const container = document.getElementById('tbm-teams');
+  container.replaceChildren();
+  teams.forEach((team, ti) => {
+    const card = document.createElement('div');
+    card.className = 'tbm-team-card';
+
+    // Header: name + score
+    const header = document.createElement('div');
+    header.className = 'tbm-team-header';
+    header.style.background = team.color;
+    const nameEl  = document.createElement('div');
+    nameEl.className = 'tbm-team-name';
+    nameEl.textContent = team.name;
+    const scoreEl = document.createElement('div');
+    scoreEl.className = 'tbm-score-display';
+    scoreEl.id = `tbm-score-${ti}`;
+    scoreEl.textContent = '0';
+    header.append(nameEl, scoreEl);
+    card.appendChild(header);
+
+    // Photos row
+    const photosEl = document.createElement('div');
+    photosEl.className = 'tbm-team-photos';
+    if (team.photos.length > 0) {
+      team.photos.forEach(p => {
+        const wrap = document.createElement('div');
+        wrap.className = 'tbm-photo';
+        wrap.addEventListener('contextmenu', e => e.preventDefault());
+        const cnv = document.createElement('canvas');
+        cnv.width = 92; cnv.height = 92;
+        cnv.addEventListener('contextmenu', e => e.preventDefault());
+        const img = new Image();
+        img.onload = () => cnv.getContext('2d').drawImage(img, 0, 0, 92, 92);
+        img.src = p.blobUrl;
+        wrap.appendChild(cnv);
+        photosEl.appendChild(wrap);
+      });
+    } else {
+      for (let i = 0; i < team.memberCount; i++) {
+        const ph = document.createElement('div');
+        ph.className = 'tbm-no-photo';
+        ph.textContent = String(i + 1);
+        photosEl.appendChild(ph);
+      }
+    }
+    card.appendChild(photosEl);
+
+    // Score buttons
+    const btns = document.createElement('div');
+    btns.className = 'tbm-score-btns';
+    const minusBtn = document.createElement('button');
+    minusBtn.className = 'tbm-btn-score';
+    minusBtn.textContent = '−';
+    minusBtn.disabled = true;
+    minusBtn.id = `tbm-minus-${ti}`;
+    minusBtn.addEventListener('click', () => {
+      _tbmScores[ti] = Math.max(0, _tbmScores[ti] - 1);
+      _tbmUpdateScore(ti);
+    });
+    const plusBtn = document.createElement('button');
+    plusBtn.className = 'tbm-btn-score';
+    plusBtn.textContent = '+1';
+    plusBtn.addEventListener('click', () => {
+      _tbmScores[ti]++;
+      _tbmUpdateScore(ti);
+    });
+    btns.append(minusBtn, plusBtn);
+    card.appendChild(btns);
+    container.appendChild(card);
+  });
+}
+
+function _tbmUpdateScore(ti) {
+  const el = document.getElementById(`tbm-score-${ti}`);
+  if (el) el.textContent = _tbmScores[ti];
+  const m = document.getElementById(`tbm-minus-${ti}`);
+  if (m) m.disabled = _tbmScores[ti] === 0;
+}
+
+document.getElementById('btn-tbm-end').addEventListener('click', () => {
+  _tbmRunning = false;
+  cancelAnimationFrame(_tbmRaf);
+  _tbmRaf = null;
+  releaseWakeLock();
+  _tbmShowWinner();
+});
+
+function _tbmShowWinner() {
+  const teams    = teambuilder.getLineup();
+  const maxScore = Math.max(..._tbmScores, 0);
+  const winners  = teams.filter((_, i) => _tbmScores[i] === maxScore);
+
+  const overlay = document.getElementById('tbm-winner-overlay');
+  overlay.classList.remove('hidden');
+
+  // Winner name(s)
+  const nameEl = document.getElementById('tbm-winner-name');
+  if (winners.length === 1) {
+    nameEl.textContent  = winners[0].name;
+    nameEl.style.color  = winners[0].color;
+  } else {
+    nameEl.textContent  = winners.map(w => w.name).join(' & ');
+    nameEl.style.color  = 'white';
+  }
+
+  // Winner photos
+  const photosEl = document.getElementById('tbm-winner-photos');
+  photosEl.replaceChildren();
+  winners.forEach(w => {
+    if (w.photos.length > 0) {
+      w.photos.forEach(p => {
+        const wrap = document.createElement('div');
+        wrap.className = 'tbm-photo';
+        wrap.addEventListener('contextmenu', e => e.preventDefault());
+        const cnv = document.createElement('canvas');
+        cnv.width = 92; cnv.height = 92;
+        cnv.addEventListener('contextmenu', e => e.preventDefault());
+        const img = new Image();
+        img.onload = () => cnv.getContext('2d').drawImage(img, 0, 0, 92, 92);
+        img.src = p.blobUrl;
+        wrap.appendChild(cnv);
+        photosEl.appendChild(wrap);
+      });
+    } else {
+      for (let i = 0; i < w.memberCount; i++) {
+        const ph = document.createElement('div');
+        ph.className = 'tbm-no-photo';
+        ph.style.background = w.color;
+        ph.style.color = 'white';
+        ph.textContent = String(i + 1);
+        photosEl.appendChild(ph);
+      }
+    }
+  });
+
+  // Konfetti-Animation
+  _tbmConfetti(winners.length === 1 ? winners[0].color : '#f59e0b');
+}
+
+function _tbmConfetti(teamColor) {
+  const canvas = document.getElementById('tbm-confetti');
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const ctx    = canvas.getContext('2d');
+  const palette = [teamColor, '#FFD700', '#ffffff', '#FF6B6B', '#74C0FC', '#51CF66'];
+  const pieces  = Array.from({ length: 180 }, () => ({
+    x:    Math.random() * canvas.width,
+    y:    Math.random() * -canvas.height * 0.6,
+    w:    Math.random() * 14 + 5,
+    h:    Math.random() * 7  + 3,
+    col:  palette[Math.floor(Math.random() * palette.length)],
+    vy:   Math.random() * 3.5 + 1.5,
+    vx:   (Math.random() - 0.5) * 2.2,
+    rot:  Math.random() * 360,
+    rotV: (Math.random() - 0.5) * 8,
+  }));
+  const t0 = Date.now();
+  const DURATION = 5000;
+  (function tick() {
+    const elapsed = Date.now() - t0;
+    if (elapsed >= DURATION) { ctx.clearRect(0, 0, canvas.width, canvas.height); return; }
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const alpha = elapsed > 3500 ? 1 - (elapsed - 3500) / 1500 : 1;
+    pieces.forEach(p => {
+      p.y += p.vy; p.x += p.vx; p.rot += p.rotV;
+      if (p.y > canvas.height) { p.y = -20; p.x = Math.random() * canvas.width; }
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.translate(p.x, p.y);
+      ctx.rotate((p.rot * Math.PI) / 180);
+      ctx.fillStyle = p.col;
+      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.restore();
+    });
+    requestAnimationFrame(tick);
+  })();
+}
+
+document.getElementById('btn-tbm-close').addEventListener('click', () => {
+  document.getElementById('tbm-winner-overlay').classList.add('hidden');
+  document.getElementById('tbm-teams').replaceChildren();
   teambuilder.clearPhotos();
   router.navigateTo('screen-teambuilder');
 });
