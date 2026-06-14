@@ -4,7 +4,7 @@ import * as storage from './js/storage.js';
 import * as match from './js/match.js';
 import * as presets from './js/presets.js';
 import { Stopwatch, fmtMs } from './js/stopwatch.js';
-import * as timer from './js/timer.js';
+import { Countdown } from './js/timer.js';
 import * as historyMod from './js/history.js';
 import * as exportMod from './js/export.js';
 import { playBeep, playWhistle, playGoal, playMatchEnd, playCountdownTick } from './js/audio.js';
@@ -64,9 +64,6 @@ document.getElementById('btn-open-teambuilder').addEventListener('click', () =>
 
 document.getElementById('btn-goto-log').addEventListener('click', () =>
   router.navigateTo('screen-history'));
-
-document.getElementById('btn-goto-settings').addEventListener('click', () =>
-  router.navigateTo('screen-settings'));
 
 // ═══════════════════════════════════════════════════════════
 // TEAMBILDUNG
@@ -1030,38 +1027,6 @@ function getWheelVal(el) {
   return Math.min(59, Math.round(el.scrollTop / ITEM_H));
 }
 
-const wMin = document.getElementById('wheel-minutes');
-const wSec = document.getElementById('wheel-seconds');
-buildWheel(wMin, 60);
-buildWheel(wSec, 60);
-setTimeout(() => { wMin.scrollTop = 0; wSec.scrollTop = 0; }, 80);
-
-function syncTimerUI() {
-  const s = timer.getState();
-  const picking = s === 'picking';
-  const running = s === 'running';
-  const paused  = s === 'paused';
-  document.getElementById('timer-picker').classList.toggle('hidden', !picking);
-  document.getElementById('timer-display').classList.toggle('hidden', picking);
-  document.getElementById('btn-timer-start').classList.toggle('hidden', !picking);
-  document.getElementById('btn-timer-pause').classList.toggle('hidden', !running);
-  document.getElementById('btn-timer-resume').classList.toggle('hidden', !paused);
-  document.getElementById('btn-timer-reset').classList.toggle('hidden', picking);
-}
-
-let _lastTickSec = -1;
-function onTimerTick(ms) {
-  document.getElementById('timer-countdown').textContent = timer.fmtMs(ms);
-  document.getElementById('timer-display').classList.toggle('ending', ms < 10000);
-  const sec = Math.ceil(ms / 1000);
-  if (sec <= 5 && sec > 0 && sec !== _lastTickSec) {
-    _lastTickSec = sec;
-    const cfg = storage.getItem('settings') || {};
-    if (cfg.sound !== false) playCountdownTick(sec === 1);
-  }
-  if (ms > 5000) _lastTickSec = -1;
-}
-
 // ─── Benachrichtigungen / Notifications ───
 function notificationsSupported() {
   return 'Notification' in window;
@@ -1093,74 +1058,161 @@ function showNotification(title, opts) {
   }
 }
 
-function onTimerDone() {
-  const cfg = storage.getItem('settings') || {};
-  if (cfg.sound !== false) playBeep();
-  if (cfg.vibration !== false && navigator.vibrate) navigator.vibrate([200, 100, 200]);
-  releaseWakeLock();
-  ui.showToast('Timer abgelaufen!', 3000);
-  if (cfg.notifications === true && notificationsSupported() && Notification.permission === 'granted') {
-    showNotification('Timer abgelaufen!', {
-      body: 'Dein Countdown ist beendet.',
-      tag: 'timer-done',
-      icon: 'icons/icon-192.png',
-      vibrate: [200, 100, 200],
-      renotify: true,
-    });
-  }
-  syncTimerUI();
-  setTimeout(() => { timer.reset(); syncTimerUI(); }, 3000);
+// ─── Countdown-Karten (dynamisch via "+" Button, max. 6) ───
+const cdInstances = [];
+let cdNextId = 1;
+
+function createCDCard(id) {
+  const tmpl = document.getElementById('tmpl-cd-card');
+  const card = tmpl.content.firstElementChild.cloneNode(true);
+  card.id = `cd-card-${id}`;
+  return card;
 }
 
-document.getElementById('btn-timer-start').addEventListener('click', () => {
-  const ms = (getWheelVal(wMin) * 60 + getWheelVal(wSec)) * 1000;
-  if (ms === 0) return;
-  timer.setDuration(ms);
-  timer.start(onTimerTick, onTimerDone);
-  acquireWakeLock();
-  syncTimerUI();
-});
+function mountCD(id, cardEl) {
+  const cd        = new Countdown();
+  const wMin      = cardEl.querySelector('.cd-wheel-minutes');
+  const wSec      = cardEl.querySelector('.cd-wheel-seconds');
+  const pickerEl  = cardEl.querySelector('.cd-picker');
+  const displayEl = cardEl.querySelector('.cd-display');
+  const countEl   = cardEl.querySelector('.cd-countdown');
+  const startBtn  = cardEl.querySelector('.btn-cd-start');
+  const pauseBtn  = cardEl.querySelector('.btn-cd-pause');
+  const resumeBtn = cardEl.querySelector('.btn-cd-resume');
+  const resetBtn  = cardEl.querySelector('.btn-cd-reset');
+  const saveBtn   = cardEl.querySelector('.btn-cd-save');
+  const removeBtn = cardEl.querySelector('.btn-cd-remove');
 
-document.getElementById('btn-timer-pause').addEventListener('click', () => {
-  timer.pause();
-  releaseWakeLock();
-  syncTimerUI();
-});
+  buildWheel(wMin, 60);
+  buildWheel(wSec, 60);
+  setTimeout(() => { wMin.scrollTop = 0; wSec.scrollTop = 0; }, 80);
 
-document.getElementById('btn-timer-resume').addEventListener('click', () => {
-  timer.resume(onTimerTick, onTimerDone);
-  acquireWakeLock();
-  syncTimerUI();
-});
+  let _lastTickSec = -1;
 
-document.getElementById('btn-timer-reset').addEventListener('click', () => {
-  timer.reset();
-  releaseWakeLock();
-  syncTimerUI();
-});
+  const sync = () => {
+    const s = cd.getState();
+    const picking = s === 'picking';
+    const running = s === 'running';
+    const paused  = s === 'paused';
+    pickerEl.classList.toggle('hidden', !picking);
+    displayEl.classList.toggle('hidden', picking);
+    startBtn.classList.toggle('hidden', !picking);
+    pauseBtn.classList.toggle('hidden', !running);
+    resumeBtn.classList.toggle('hidden', !paused);
+    resetBtn.classList.toggle('hidden', picking);
+    removeBtn.disabled = !picking;
+  };
 
-document.getElementById('btn-timer-save-preset').addEventListener('click', () => {
-  const s = timer.getState();
-  const ms = s === 'picking'
-    ? (getWheelVal(wMin) * 60 + getWheelVal(wSec)) * 1000
-    : timer.getTargetMs();
-  if (ms === 0) return;
+  const onTick = (ms) => {
+    countEl.textContent = fmtMs(ms);
+    displayEl.classList.toggle('ending', ms < 10000);
+    const sec = Math.ceil(ms / 1000);
+    if (sec <= 5 && sec > 0 && sec !== _lastTickSec) {
+      _lastTickSec = sec;
+      const cfg = storage.getItem('settings') || {};
+      if (cfg.sound !== false) playCountdownTick(sec === 1);
+    }
+    if (ms > 5000) _lastTickSec = -1;
+  };
 
-  ui.openModal('tmpl-modal-timer-preset', () => {
-    document.getElementById('tp-ok').onclick = () => {
-      const label = document.getElementById('timer-preset-input').value.trim() || 'Timer';
-      storage.addToCollection('timers', {
-        id: `tm_${Date.now()}`,
-        createdAt: Date.now(),
-        label,
-        durationMs: ms,
+  const onDone = () => {
+    const cfg = storage.getItem('settings') || {};
+    if (cfg.sound !== false) playBeep();
+    if (cfg.vibration !== false && navigator.vibrate) navigator.vibrate([200, 100, 200]);
+    releaseWakeLock();
+    ui.showToast('Timer abgelaufen!', 3000);
+    if (cfg.notifications === true && notificationsSupported() && Notification.permission === 'granted') {
+      showNotification('Timer abgelaufen!', {
+        body: 'Dein Countdown ist beendet.',
+        tag: 'timer-done',
+        icon: 'icons/icon-192.png',
+        vibrate: [200, 100, 200],
+        renotify: true,
       });
-      ui.closeModal();
-      ui.showToast('Preset gespeichert!');
-    };
-    document.getElementById('tp-cancel').onclick = ui.closeModal;
+    }
+    sync();
+    setTimeout(() => { cd.reset(); sync(); }, 3000);
+  };
+
+  startBtn.addEventListener('click', () => {
+    const ms = (getWheelVal(wMin) * 60 + getWheelVal(wSec)) * 1000;
+    if (ms === 0) return;
+    cd.setDuration(ms);
+    cd.start(onTick, onDone);
+    acquireWakeLock();
+    sync();
   });
-});
+
+  pauseBtn.addEventListener('click', () => {
+    cd.pause();
+    releaseWakeLock();
+    sync();
+  });
+
+  resumeBtn.addEventListener('click', () => {
+    cd.resume(onTick, onDone);
+    acquireWakeLock();
+    sync();
+  });
+
+  resetBtn.addEventListener('click', () => {
+    cd.reset();
+    releaseWakeLock();
+    sync();
+  });
+
+  saveBtn.addEventListener('click', () => {
+    const s = cd.getState();
+    const ms = s === 'picking'
+      ? (getWheelVal(wMin) * 60 + getWheelVal(wSec)) * 1000
+      : cd.getTargetMs();
+    if (ms === 0) return;
+
+    ui.openModal('tmpl-modal-timer-preset', () => {
+      document.getElementById('tp-ok').onclick = () => {
+        const label = document.getElementById('timer-preset-input').value.trim() || 'Timer';
+        storage.addToCollection('timers', {
+          id: `tm_${Date.now()}`,
+          createdAt: Date.now(),
+          label,
+          durationMs: ms,
+        });
+        ui.closeModal();
+        ui.showToast('Preset gespeichert!');
+      };
+      document.getElementById('tp-cancel').onclick = ui.closeModal;
+    });
+  });
+
+  removeBtn.addEventListener('click', () => {
+    if (cd.getState() === 'running') releaseWakeLock();
+    cd.reset();
+    const idx = cdInstances.findIndex(inst => inst.id === id);
+    if (idx !== -1) cdInstances.splice(idx, 1);
+    cardEl.remove();
+    updateCdAddBtn();
+  });
+
+  cdInstances.push({ id, cd, cardEl });
+  sync();
+}
+
+function updateCdAddBtn() {
+  const addBtn = document.getElementById('btn-add-countdown');
+  if (addBtn) addBtn.disabled = cdInstances.length >= 6;
+}
+
+function addCountdown() {
+  if (cdInstances.length >= 6) return;
+  const id = cdNextId++;
+  const card = createCDCard(id);
+  document.getElementById('cd-list').appendChild(card);
+  mountCD(id, card);
+  updateCdAddBtn();
+}
+
+document.getElementById('btn-add-countdown').addEventListener('click', addCountdown);
+addCountdown();
 
 // ═══════════════════════════════════════════════════════════
 // VERLAUF / LOG
@@ -1335,16 +1387,30 @@ window.addEventListener('appinstalled', () => {
   _syncInstallSettings();
 });
 
-document.getElementById('btn-install').addEventListener('click', async () => {
+async function _triggerInstall() {
   if (!_deferredInstall) return;
   _deferredInstall.prompt();
   const { outcome } = await _deferredInstall.userChoice;
   _deferredInstall = null;
   document.getElementById('install-banner').classList.add('hidden');
   if (outcome === 'accepted') storage.setItem('installDismissed', true);
+  _syncInstallSettings();
+}
+
+document.getElementById('btn-install').addEventListener('click', e => {
+  e.stopPropagation();
+  _triggerInstall();
 });
 
-document.getElementById('btn-dismiss-install').addEventListener('click', () => {
+// Tippen auf das ganze Banner löst die Installation direkt aus
+const _bannerPwa = document.getElementById('install-banner-pwa');
+_bannerPwa.addEventListener('click', _triggerInstall);
+_bannerPwa.addEventListener('keydown', e => {
+  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); _triggerInstall(); }
+});
+
+document.getElementById('btn-dismiss-install').addEventListener('click', e => {
+  e.stopPropagation();
   document.getElementById('install-banner').classList.add('hidden');
   storage.setItem('installDismissed', true);
 });
@@ -1408,8 +1474,29 @@ _syncInstallSettings();
 // SERVICE WORKER
 // ═══════════════════════════════════════════════════════════
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () =>
-    navigator.serviceWorker.register('./service-worker.js').catch(console.error));
+  // Beim Aktivieren eines neuen Service Workers automatisch neu laden,
+  // damit immer die aktuelle Version läuft (nur bei echtem Update,
+  // nicht bei der Erstinstallation).
+  const _hadController = !!navigator.serviceWorker.controller;
+  let _swReloading = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    // Erstübernahme (kein vorheriger Controller) nicht neu laden.
+    if (_swReloading || !_hadController) return;
+    _swReloading = true;
+    window.location.reload();
+  });
+
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js').then(reg => {
+      // Beim Laden sofort auf neue Dateien prüfen …
+      reg.update();
+      // … und regelmäßig sowie beim Zurückkehren in die App.
+      setInterval(() => reg.update(), 60 * 60 * 1000);
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') reg.update();
+      });
+    }).catch(console.error);
+  });
 }
 
 // ═══════════════════════════════════════════════════════════

@@ -236,7 +236,7 @@ body.live-active #app { top: 0; }
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-auto-rows: 1fr;
-  grid-template-rows: 1.5fr 1fr 1fr 1fr;
+  grid-template-rows: 1.3fr 1fr 1fr 1.05fr;
   gap: 14px;
   padding: 18px;
   overflow-y: auto;
@@ -276,7 +276,36 @@ body.live-active #app { top: 0; }
 .home-tile:active { transform: scale(0.97); }
 .home-tile:hover { border-color: #4b5563; }
 
-.home-tile--wide { grid-column: 1 / -1; }
+.home-tile--wide {
+  grid-column: 1 / -1;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 16px;
+}
+
+/* Hervorgehobene Kacheln (Timer, Teambildung) */
+.home-tile--accent {
+  border-color: rgba(245, 158, 11, 0.5);
+  background:
+    linear-gradient(135deg, rgba(245, 158, 11, 0.16), rgba(245, 158, 11, 0.03) 60%),
+    var(--color-surface);
+}
+.home-tile--accent .home-tile-icon {
+  width: 52px; height: 52px;
+  background: var(--color-amber);
+  border-color: transparent;
+  color: #111827;
+}
+.home-tile--accent .home-tile-icon svg { width: 28px; height: 28px; }
+.home-tile--accent .home-tile-label { font-size: 0.95rem; }
+
+/* Reihenfolge: Hero, Timer, Teambildung, Presets, Verlauf */
+#btn-new-match        { order: 0; }
+#btn-goto-tools       { order: 1; }
+#btn-open-teambuilder { order: 2; }
+#btn-open-presets     { order: 3; }
+#btn-goto-log         { order: 4; }
 
 .home-tile--primary {
   grid-column: 1 / -1;
@@ -1093,6 +1122,8 @@ textarea.modal-input { resize: vertical; min-height: 80px; }
   padding: 10px 14px;
 }
 .install-banner-inner.hidden { display: none; }
+.install-banner-inner--tap { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.install-banner-inner--tap:active { background: rgba(255, 255, 255, 0.06); }
 .install-banner-icon { font-size: 1.5rem; flex-shrink: 0; }
 .install-banner-text {
   flex: 1;
@@ -1469,6 +1500,22 @@ textarea.modal-input { resize: vertical; min-height: 80px; }
   flex-direction: column;
   gap: 14px;
 }
+
+#btn-add-countdown {
+  background: var(--color-amber);
+  color: #111827;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+#btn-add-countdown:active { background: var(--color-amber-dark); }
+#btn-add-countdown:disabled { opacity: 0.35; pointer-events: none; }
+
+#cd-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.cd-card .cd-title { flex: 1; }
 
 /* ═══════════════════════════════════════════
    TEAMBUILDER MATCH

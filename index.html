@@ -23,7 +23,7 @@
   <!-- Installations-Banner -->
   <div id="install-banner" class="install-banner hidden">
     <!-- PWA (Chrome/Edge/Android) -->
-    <div id="install-banner-pwa" class="install-banner-inner">
+    <div id="install-banner-pwa" class="install-banner-inner install-banner-inner--tap" role="button" tabindex="0" aria-label="App installieren">
       <span class="install-banner-icon">📲</span>
       <div class="install-banner-text">
         <strong>App installieren</strong>
@@ -76,7 +76,7 @@
             </svg>
           </span>
         </button>
-        <button class="home-tile home-tile--wide" id="btn-open-presets" aria-label="Presets verwalten">
+        <button class="home-tile" id="btn-open-presets" aria-label="Presets verwalten">
           <span class="home-tile-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
               <line x1="4" y1="6" x2="20" y2="6"/>
@@ -92,7 +92,7 @@
             <div id="home-preset-badge" class="home-tile-badge">0 gespeichert</div>
           </div>
         </button>
-        <button class="home-tile" id="btn-goto-tools" aria-label="Werkzeuge öffnen">
+        <button class="home-tile home-tile--wide home-tile--accent" id="btn-goto-tools" aria-label="Werkzeuge öffnen">
           <span class="home-tile-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <circle cx="12" cy="13" r="8"/>
@@ -106,7 +106,7 @@
             <div class="home-tile-sub">Stoppuhr &amp; Countdown</div>
           </div>
         </button>
-        <button class="home-tile" id="btn-open-teambuilder" aria-label="Teams zufällig einteilen">
+        <button class="home-tile home-tile--wide home-tile--accent" id="btn-open-teambuilder" aria-label="Teams zufällig einteilen">
           <span class="home-tile-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <circle cx="9" cy="7" r="3"/>
@@ -131,18 +131,6 @@
           <div class="home-tile-text">
             <div class="home-tile-label">Verlauf</div>
             <div class="home-tile-sub">Gespielte Matches</div>
-          </div>
-        </button>
-        <button class="home-tile" id="btn-goto-settings" aria-label="Einstellungen öffnen">
-          <span class="home-tile-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <circle cx="12" cy="12" r="3"/>
-              <path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>
-            </svg>
-          </span>
-          <div class="home-tile-text">
-            <div class="home-tile-label">Einstellungen</div>
-            <div class="home-tile-sub">App konfigurieren</div>
           </div>
         </button>
       </div>
@@ -220,31 +208,45 @@
         <!-- Dynamische Stoppuhr-Liste -->
         <div id="sw-list"></div>
 
-        <!-- Countdown-Timer -->
-        <div class="tool-card" id="countdown-timer">
-          <h3 class="tool-card-title">Countdown</h3>
-          <div id="timer-picker">
-            <div class="wheel-picker" aria-label="Zeit wählen">
-              <div class="wheel-wrapper">
-                <div class="wheel" id="wheel-minutes" role="listbox" aria-label="Minuten"></div>
-              </div>
-              <span class="wheel-sep" aria-hidden="true">:</span>
-              <div class="wheel-wrapper">
-                <div class="wheel" id="wheel-seconds" role="listbox" aria-label="Sekunden"></div>
+        <!-- Countdown-Header mit "+" Schaltfläche -->
+        <div class="sw-section-header">
+          <span class="sw-section-title">Countdown</span>
+          <button class="btn-icon" id="btn-add-countdown" aria-label="Countdown hinzufügen">+</button>
+        </div>
+
+        <!-- Dynamische Countdown-Liste -->
+        <div id="cd-list"></div>
+
+        <!-- Vorlage für eine Countdown-Karte -->
+        <template id="tmpl-cd-card">
+          <div class="tool-card cd-card">
+            <div class="sw-card-header">
+              <h3 class="tool-card-title cd-title">Countdown</h3>
+              <button class="btn-sw-remove btn-cd-remove" aria-label="Countdown entfernen">✕</button>
+            </div>
+            <div class="cd-picker">
+              <div class="wheel-picker" aria-label="Zeit wählen">
+                <div class="wheel-wrapper">
+                  <div class="wheel cd-wheel-minutes" role="listbox" aria-label="Minuten"></div>
+                </div>
+                <span class="wheel-sep" aria-hidden="true">:</span>
+                <div class="wheel-wrapper">
+                  <div class="wheel cd-wheel-seconds" role="listbox" aria-label="Sekunden"></div>
+                </div>
               </div>
             </div>
+            <div class="timer-display cd-display hidden">
+              <span class="cd-countdown" aria-live="polite">00:00</span>
+            </div>
+            <div class="timer-btns">
+              <button class="btn-sw btn-sw--primary btn-cd-start">Start</button>
+              <button class="btn-sw hidden btn-cd-pause">Pause</button>
+              <button class="btn-sw hidden btn-cd-resume">Weiter</button>
+              <button class="btn-sw hidden btn-cd-reset">Reset</button>
+              <button class="btn-sw btn-cd-save">Als Preset</button>
+            </div>
           </div>
-          <div class="timer-display hidden" id="timer-display">
-            <span id="timer-countdown" aria-live="polite">00:00</span>
-          </div>
-          <div class="timer-btns">
-            <button class="btn-sw btn-sw--primary" id="btn-timer-start">Start</button>
-            <button class="btn-sw hidden" id="btn-timer-pause">Pause</button>
-            <button class="btn-sw hidden" id="btn-timer-resume">Weiter</button>
-            <button class="btn-sw hidden" id="btn-timer-reset">Reset</button>
-            <button class="btn-sw" id="btn-timer-save-preset">Als Preset</button>
-          </div>
-        </div>
+        </template>
 
       </div>
     </section>

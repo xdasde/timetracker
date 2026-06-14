@@ -1,63 +1,67 @@
-let state = 'picking';
-let targetMs = 0;
-let remaining = 0;
-let t0 = 0;
-let _raf = null;
-let _onTick = null;
-let _onDone = null;
+export class Countdown {
+  constructor() {
+    this.state = 'picking';
+    this.targetMs = 0;
+    this.remaining = 0;
+    this.t0 = 0;
+    this._raf = null;
+    this._onTick = null;
+    this._onDone = null;
+  }
 
-export function getState() { return state; }
-export function getTargetMs() { return targetMs; }
-export function getRemaining() { return remaining; }
+  getState() { return this.state; }
+  getTargetMs() { return this.targetMs; }
+  getRemaining() { return this.remaining; }
 
-export function setDuration(ms) {
-  targetMs = ms;
-  remaining = ms;
-}
+  setDuration(ms) {
+    this.targetMs = ms;
+    this.remaining = ms;
+  }
 
-export function start(onTick, onDone) {
-  if (remaining <= 0) return;
-  _onTick = onTick;
-  _onDone = onDone;
-  t0 = performance.now();
-  state = 'running';
-  _tick();
-}
+  start(onTick, onDone) {
+    if (this.remaining <= 0) return;
+    this._onTick = onTick;
+    this._onDone = onDone;
+    this.t0 = performance.now();
+    this.state = 'running';
+    this._tick();
+  }
 
-export function pause() {
-  if (state !== 'running') return;
-  remaining -= performance.now() - t0;
-  state = 'paused';
-  cancelAnimationFrame(_raf);
-}
+  pause() {
+    if (this.state !== 'running') return;
+    this.remaining -= performance.now() - this.t0;
+    this.state = 'paused';
+    cancelAnimationFrame(this._raf);
+  }
 
-export function resume(onTick, onDone) {
-  if (state !== 'paused') return;
-  _onTick = onTick;
-  _onDone = onDone;
-  t0 = performance.now();
-  state = 'running';
-  _tick();
-}
+  resume(onTick, onDone) {
+    if (this.state !== 'paused') return;
+    this._onTick = onTick;
+    this._onDone = onDone;
+    this.t0 = performance.now();
+    this.state = 'running';
+    this._tick();
+  }
 
-export function reset() {
-  cancelAnimationFrame(_raf);
-  state = 'picking';
-  remaining = targetMs;
+  reset() {
+    cancelAnimationFrame(this._raf);
+    this.state = 'picking';
+    this.remaining = this.targetMs;
+  }
+
+  _tick() {
+    const r = Math.max(0, this.remaining - (performance.now() - this.t0));
+    this._onTick?.(r);
+    if (r <= 0) {
+      this.state = 'done';
+      this._onDone?.();
+      return;
+    }
+    this._raf = requestAnimationFrame(() => this._tick());
+  }
 }
 
 export function fmtMs(ms) {
   const s = Math.ceil(ms / 1000);
   return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
-}
-
-function _tick() {
-  const r = Math.max(0, remaining - (performance.now() - t0));
-  _onTick?.(r);
-  if (r <= 0) {
-    state = 'done';
-    _onDone?.();
-    return;
-  }
-  _raf = requestAnimationFrame(_tick);
 }
