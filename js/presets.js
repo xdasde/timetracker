@@ -69,7 +69,8 @@ const BUILT_IN_PRESETS = [
 
 export function getAll() {
   const custom = storage.getCollection('presets');
-  return [...BUILT_IN_PRESETS, ...custom];
+  const hidden = new Set(storage.getItem('hiddenPresets') || []);
+  return [...BUILT_IN_PRESETS.filter(p => !hidden.has(p.id)), ...custom];
 }
 
 export function save(data) {
@@ -91,9 +92,13 @@ export function save(data) {
 }
 
 export function remove(id) {
-  // Cannot delete built-ins (only custom)
-  if (BUILT_IN_PRESETS.some(p => p.id === id)) return;
-  storage.setCollection('presets', storage.getCollection('presets').filter(p => p.id !== id));
+  if (BUILT_IN_PRESETS.some(p => p.id === id)) {
+    // Built-ins are hidden (not permanently deleted, restored on data-clear)
+    const hidden = storage.getItem('hiddenPresets') || [];
+    if (!hidden.includes(id)) { hidden.push(id); storage.setItem('hiddenPresets', hidden); }
+  } else {
+    storage.setCollection('presets', storage.getCollection('presets').filter(p => p.id !== id));
+  }
 }
 
 export function renderList(onEdit) {
@@ -240,9 +245,8 @@ export function openModal(preset, onSaved, onDeleted) {
       colorRow.appendChild(dot2);
     });
 
-    // Delete button for non-built-in custom presets
     const actions = document.getElementById('pm-actions');
-    if (!isNew && !editing.builtIn) {
+    if (!isNew) {
       const delBtn = document.createElement('button');
       delBtn.className = 'btn-danger';
       delBtn.style.flex = '0 0 auto';
