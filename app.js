@@ -88,7 +88,7 @@ const _tbVideo  = document.getElementById('tb-camera');
 const _tbCanvas = document.getElementById('tb-canvas');
 
 function _tbPhotosEnabled() {
-  return (storage.getItem('settings') || {}).tbPhotos !== false;
+  return (storage.getItem('settings') || {}).tbPhotos === true;
 }
 
 async function _tbStartCamera() {
@@ -1828,10 +1828,10 @@ function renderRouletteExclusion() {
 }
 
 function initSettings() {
-  const cfg = storage.getItem('settings') || { sound: true, vibration: true, tbPhotos: true };
+  const cfg = storage.getItem('settings') || { sound: true, vibration: true, tbPhotos: false };
   document.getElementById('toggle-sound').checked     = cfg.sound     !== false;
   document.getElementById('toggle-vibration').checked = cfg.vibration !== false;
-  document.getElementById('toggle-tb-photos').checked = cfg.tbPhotos  !== false;
+  document.getElementById('toggle-tb-photos').checked = cfg.tbPhotos  === true;
 
   document.getElementById('toggle-sound').addEventListener('change', e => {
     const c = storage.getItem('settings') || {};
