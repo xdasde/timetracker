@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#1f2937">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Sportzähler</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+</head>
+<body>
+
+  <!-- Session-Recovery-Banner -->
+  <div id="session-banner" class="session-banner hidden">
+    <p>Letztes Match wiederherstellen?</p>
+    <button id="btn-restore">Wiederherstellen</button>
+    <button id="btn-discard-session">Verwerfen</button>
+  </div>
+
+  <!-- Installations-Banner -->
+  <div id="install-banner" class="install-banner hidden">
+    <!-- PWA (Chrome/Edge/Android) -->
+    <div id="install-banner-pwa" class="install-banner-inner install-banner-inner--tap" role="button" tabindex="0" aria-label="App installieren">
+      <span class="install-banner-icon">📲</span>
+      <div class="install-banner-text">
+        <strong>App installieren</strong>
+        <span>Offline nutzen &amp; direkt starten</span>
+      </div>
+      <button id="btn-install" class="btn-install-action">Installieren</button>
+      <button id="btn-dismiss-install" class="btn-install-close" aria-label="Schließen">&#x2715;</button>
+    </div>
+    <!-- iOS Safari -->
+    <div id="install-banner-ios" class="install-banner-inner hidden">
+      <span class="install-banner-icon">📲</span>
+      <div class="install-banner-text">
+        <strong>Zum Startbildschirm</strong>
+        <span>Tippe <strong>Teilen</strong> &#x2197; → „Zum Home-Bildschirm"</span>
+      </div>
+      <button id="btn-dismiss-install-ios" class="btn-install-close" aria-label="Schließen">&#x2715;</button>
+    </div>
+  </div>
+
+  <!-- Top Navigation -->
+  <nav class="top-nav" aria-label="Hauptnavigation">
+    <span class="nav-logo">Sportzähler</span>
+    <div class="nav-tabs" role="tablist">
+      <button class="nav-tab nav-tab--active" data-tab="home" aria-label="Home">HOME</button>
+      <button class="nav-tab" data-tab="tools" aria-label="Tools">TOOLS</button>
+      <button class="nav-tab" data-tab="history" aria-label="Verlauf">LOG</button>
+    </div>
+    <button class="nav-settings-btn" id="btn-open-settings" aria-label="Einstellungen">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06-.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </button>
+  </nav>
+
+  <main id="app">
+
+    <!-- ═══ Screen: Home ═══ -->
+    <section id="screen-home" class="screen screen--active">
+      <!-- Animierte SVG-Welle im Hintergrund -->
+      <svg class="home-wave" viewBox="0 0 2880 300" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0,150 C240,60 480,240 720,150 C960,60 1200,240 1440,150 C1680,60 1920,240 2160,150 C2400,60 2640,240 2880,150 L2880,300 L0,300 Z" fill="#f59e0b"/>
+      </svg>
+      <div class="home-grid">
+        <button class="home-tile home-tile--primary" id="btn-new-match" aria-label="Neues Match starten">
+          <div class="home-tile-text">
+            <div class="home-tile-eyebrow">Los geht's</div>
+            <div class="home-tile-label">Match starten</div>
+            <div class="home-tile-sub">Neues Spiel anpfeifen</div>
+          </div>
+          <span class="home-tile-icon home-icon-anim home-icon-play">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10" class="anim-ping-ring"/>
+              <polygon points="10,8.5 17,12 10,15.5" fill="currentColor" stroke="none"/>
+            </svg>
+          </span>
+        </button>
+        <button class="home-tile" id="btn-open-presets" aria-label="Presets verwalten">
+          <span class="home-tile-icon home-icon-anim home-icon-presets">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+              <line x1="4" y1="6" x2="20" y2="6"/>
+              <line x1="4" y1="12" x2="20" y2="12"/>
+              <line x1="4" y1="18" x2="20" y2="18"/>
+              <circle cx="8" cy="6" r="2.5" fill="currentColor" stroke="none" class="anim-dot anim-dot-1"/>
+              <circle cx="16" cy="12" r="2.5" fill="currentColor" stroke="none" class="anim-dot anim-dot-2"/>
+              <circle cx="10" cy="18" r="2.5" fill="currentColor" stroke="none" class="anim-dot anim-dot-3"/>
+            </svg>
+          </span>
+          <div class="home-tile-text">
+            <div class="home-tile-label">Presets</div>
+            <div id="home-preset-badge" class="home-tile-badge">0 gespeichert</div>
+          </div>
+        </button>
+        <button class="home-tile home-tile--wide home-tile--accent" id="btn-goto-tools" aria-label="Werkzeuge öffnen">
+          <span class="home-tile-icon home-icon-anim home-icon-clock">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="13" r="8"/>
+              <polyline points="12,9 12,13 15,15" class="anim-clock-hand" style="transform-origin:12px 13px"/>
+              <line x1="10" y1="3" x2="14" y2="3"/>
+              <line x1="12" y1="3" x2="12" y2="5"/>
+            </svg>
+          </span>
+          <div class="home-tile-text">
+            <div class="home-tile-label">Timer</div>
+            <div class="home-tile-sub">Stoppuhr &amp; Countdown</div>
+          </div>
+        </button>
+        <button class="home-tile home-tile--wide home-tile--accent" id="btn-open-teambuilder" aria-label="Teams zufällig einteilen">
+          <span class="home-tile-icon home-icon-anim home-icon-team">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="9" cy="7" r="3" class="anim-team-a"/>
+              <circle cx="15" cy="7" r="3" class="anim-team-b"/>
+              <path d="M3 21v-1a6 6 0 0 1 6-6h6a6 6 0 0 1 6 6v1"/>
+            </svg>
+          </span>
+          <div class="home-tile-text">
+            <div class="home-tile-label">Teambildung</div>
+            <div class="home-tile-sub">Zufällige Teams</div>
+          </div>
+        </button>
+        <button class="home-tile" id="btn-open-rules" aria-label="Regelwerk öffnen">
+          <span class="home-tile-icon home-icon-anim home-icon-rules">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M4 5a2 2 0 0 1 2-2h9l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/>
+              <polyline points="14,3 14,8 19,8"/>
+              <line x1="8" y1="13" x2="15" y2="13" class="anim-log-line anim-log-1"/>
+              <line x1="8" y1="16" x2="13" y2="16" class="anim-log-line anim-log-2"/>
+            </svg>
+          </span>
+          <div class="home-tile-text">
+            <div class="home-tile-label">Regelwerk</div>
+            <div class="home-tile-sub">Regeln &amp; Tipps</div>
+          </div>
+        </button>
+        <button class="home-tile" id="btn-goto-log" aria-label="Verlauf öffnen">
+          <span class="home-tile-icon home-icon-anim home-icon-log">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="5" y="3" width="14" height="18" rx="2"/>
+              <line x1="9" y1="8"  x2="15" y2="8"  class="anim-log-line anim-log-1"/>
+              <line x1="9" y1="12" x2="15" y2="12" class="anim-log-line anim-log-2"/>
+              <line x1="9" y1="16" x2="13" y2="16" class="anim-log-line anim-log-3"/>
+            </svg>
+          </span>
+          <div class="home-tile-text">
+            <div class="home-tile-label">Verlauf</div>
+            <div class="home-tile-sub">Gespielte Matches</div>
+          </div>
+        </button>
+      </div>
+    </section>
+
+    <!-- ═══ Screen: Presets ═══ -->
+    <section id="screen-presets" class="screen screen-deco">
+      <div class="sub-header">
+        <button class="btn-back" id="btn-presets-back" aria-label="Zurück"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg></button>
+        <h2>Presets</h2>
+        <button class="btn-icon" id="btn-preset-add" aria-label="Preset hinzufügen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+      </div>
+      <div class="preset-list" id="preset-list" role="list"></div>
+    </section>
+
+    <!-- ═══ Screen: Match-Setup ═══ -->
+    <section id="screen-match-setup" class="screen screen-deco">
+      <div class="sub-header">
+        <button class="btn-back" id="btn-setup-back" aria-label="Zurück"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg></button>
+        <h2>Match einrichten</h2>
+      </div>
+      <div class="setup-preset-strip" id="setup-preset-strip" aria-label="Preset wählen"></div>
+      <div class="setup-form">
+        <div class="setup-team">
+          <label for="team-a-name">Team A</label>
+          <input type="text" id="team-a-name" placeholder="Name" maxlength="20" autocomplete="off">
+          <div class="color-picker" id="color-picker-a" role="group" aria-label="Farbe Team A"></div>
+        </div>
+        <div class="setup-team">
+          <label for="team-b-name">Team B</label>
+          <input type="text" id="team-b-name" placeholder="Name" maxlength="20" autocomplete="off">
+          <div class="color-picker" id="color-picker-b" role="group" aria-label="Farbe Team B"></div>
+        </div>
+        <div class="setup-team">
+          <label>Spieldauer</label>
+          <div class="duration-chips" id="setup-duration-chips" role="group" aria-label="Spieldauer wählen"></div>
+        </div>
+        <button class="btn-primary btn-full btn-anim" id="btn-start-match">
+          <span class="btn-anim-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="9" class="anim-whistle-ring"/>
+              <polygon points="10,8 16,12 10,16" fill="currentColor" stroke="none"/>
+            </svg>
+          </span>
+          <span>Match starten</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ═══ Screen: Match-Live ═══ -->
+    <section id="screen-match-live" class="screen">
+      <div class="match-live">
+        <div class="team-card" id="card-team-a">
+          <div class="team-name" id="live-team-a-name">Team A</div>
+          <div class="team-score" id="live-score-a">0</div>
+          <div class="score-btns">
+            <button class="btn-score btn-minus" id="btn-minus-a" aria-label="Punkt abziehen Team A">&#x2212;</button>
+            <button class="btn-score btn-plus" id="btn-plus-a" aria-label="Punkt hinzufügen Team A">+1</button>
+          </div>
+        </div>
+        <div class="match-center">
+          <div class="match-timer-pill" id="match-timer-pill" role="button" aria-label="Spielzeit starten / pausieren">
+            <span id="match-time">00:00</span>
+          </div>
+          <div id="live-period-label" class="live-period-label">1. Halbzeit</div>
+          <div class="match-center-meta">
+            <button class="btn-timeout" id="btn-timeout" aria-label="Auszeit starten oder beenden">
+              <span class="btn-timeout-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                  <rect class="anim-pause-bar" x="6"  y="5" width="4" height="14" rx="1.5"/>
+                  <rect class="anim-pause-bar" x="14" y="5" width="4" height="14" rx="1.5"/>
+                </svg>
+              </span>
+              <span class="btn-timeout-label">Auszeit</span>
+            </button>
+            <span class="timeout-sum hidden" id="timeout-sum" aria-live="polite">Auszeit&nbsp;00:00</span>
+          </div>
+        </div>
+        <div class="team-card" id="card-team-b">
+          <div class="team-name" id="live-team-b-name">Team B</div>
+          <div class="team-score" id="live-score-b">0</div>
+          <div class="score-btns">
+            <button class="btn-score btn-minus" id="btn-minus-b" aria-label="Punkt abziehen Team B">&#x2212;</button>
+            <button class="btn-score btn-plus" id="btn-plus-b" aria-label="Punkt hinzufügen Team B">+1</button>
+          </div>
+        </div>
+        <button class="btn-halftime" id="btn-halftime">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+          <span class="btn-halftime-label">Halbzeit</span>
+        </button>
+        <button class="fab" id="btn-end-match">
+          <svg viewBox="0 0 24 24" fill="none" stroke="none" aria-hidden="true"><rect x="5" y="5" width="14" height="14" rx="2.5" fill="currentColor"/></svg>
+          Match beenden
+        </button>
+      </div>
+    </section>
+
+    <!-- ═══ Screen: Tools ═══ -->
+    <section id="screen-tools" class="screen screen-deco">
+      <div class="screen-body">
+
+        <!-- Stoppuhr-Header mit "+" Schaltfläche -->
+        <div class="sw-section-header">
+          <span class="sw-section-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="7"/><polyline points="12,9 12,13 15,15" class="anim-clock-hand" style="transform-origin:12px 13px"/><line x1="9" y1="3" x2="15" y2="3"/><line x1="12" y1="3" x2="12" y2="6"/></svg>
+          </span>
+          <span class="sw-section-title">Stoppuhren</span>
+          <button class="btn-icon" id="btn-add-stopwatch" aria-label="Stoppuhr hinzufügen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+        </div>
+
+        <!-- Dynamische Stoppuhr-Liste -->
+        <div id="sw-list"></div>
+
+        <!-- Countdown-Header mit "+" Schaltfläche -->
+        <div class="sw-section-header">
+          <span class="sw-section-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" class="anim-ping-ring"/><polyline points="12,6 12,12 15.5,14"/></svg>
+          </span>
+          <span class="sw-section-title">Countdown</span>
+          <button class="btn-icon" id="btn-add-countdown" aria-label="Countdown hinzufügen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+        </div>
+
+        <!-- Dynamische Countdown-Liste -->
+        <div id="cd-list"></div>
+
+        <!-- Vorlage für eine Countdown-Karte -->
+        <template id="tmpl-cd-card">
+          <div class="tool-card cd-card">
+            <div class="sw-card-header">
+              <h3 class="tool-card-title cd-title">Countdown</h3>
+              <button class="btn-sw-remove btn-cd-remove" aria-label="Countdown entfernen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+            </div>
+            <div class="cd-picker">
+              <div class="wheel-picker" aria-label="Zeit wählen">
+                <div class="wheel-wrapper">
+                  <div class="wheel cd-wheel-minutes" role="listbox" aria-label="Minuten"></div>
+                </div>
+                <span class="wheel-sep" aria-hidden="true">:</span>
+                <div class="wheel-wrapper">
+                  <div class="wheel cd-wheel-seconds" role="listbox" aria-label="Sekunden"></div>
+                </div>
+              </div>
+            </div>
+            <div class="timer-display cd-display hidden">
+              <span class="cd-countdown" aria-live="polite">00:00</span>
+            </div>
+            <div class="timer-btns">
+              <button class="btn-sw btn-sw--primary btn-cd-start"><span class="btn-sw-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="8,5 20,12 8,19"/></svg></span>Start</button>
+              <button class="btn-sw hidden btn-cd-pause"><span class="btn-sw-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><rect x="5" y="4" width="4" height="16" rx="1"/><rect x="15" y="4" width="4" height="16" rx="1"/></svg></span>Pause</button>
+              <button class="btn-sw hidden btn-cd-resume"><span class="btn-sw-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="8,5 20,12 8,19"/></svg></span>Weiter</button>
+              <button class="btn-sw hidden btn-cd-reset"><span class="btn-sw-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.04"/></svg></span>Reset</button>
+              <button class="btn-sw btn-cd-save"><span class="btn-sw-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></span>Als Preset</button>
+            </div>
+          </div>
+        </template>
+
+      </div>
+    </section>
+
+    <!-- ═══ Screen: Verlauf / Log ═══ -->
+    <section id="screen-history" class="screen screen-deco">
+      <div class="history-tabs" role="tablist">
+        <button class="history-tab active" data-tab="matches" role="tab" aria-selected="true">
+          <span class="history-tab-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10,8.5 17,12 10,15.5" fill="currentColor" stroke="none"/></svg></span>
+          Matches
+        </button>
+        <button class="history-tab" data-tab="stopwatches" role="tab" aria-selected="false">
+          <span class="history-tab-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="7"/><polyline points="12,9 12,13 14.5,14.5"/><line x1="9" y1="3" x2="15" y2="3"/></svg></span>
+          Stoppuhren
+        </button>
+        <button class="history-tab" data-tab="timers" role="tab" aria-selected="false">
+          <span class="history-tab-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12,6 12,12 15.5,14"/></svg></span>
+          Timer
+        </button>
+      </div>
+      <div class="history-actions" style="display:flex;justify-content:flex-end;padding:10px 14px 0;flex-shrink:0">
+        <button class="btn-icon" id="btn-export" aria-label="Exportieren"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+      </div>
+      <div class="history-list" id="history-list" role="list"></div>
+    </section>
+
+    <!-- ═══ Screen: Teambildung Setup ═══ -->
+    <section id="screen-teambuilder" class="screen screen-deco">
+      <div class="sub-header">
+        <button class="btn-back" id="btn-teambuilder-back" aria-label="Zurück"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg></button>
+        <h2>Teambildung</h2>
+      </div>
+      <div class="screen-body">
+        <div class="tb-counter-row">
+          <span class="tb-counter-label">Personen</span>
+          <div class="tb-counter">
+            <button class="tb-counter-btn" id="tb-persons-dec">&#x2212;</button>
+            <span class="tb-counter-val" id="tb-persons-val">10</span>
+            <button class="tb-counter-btn" id="tb-persons-inc">+</button>
+          </div>
+        </div>
+        <div class="tb-counter-row">
+          <span class="tb-counter-label">Teams</span>
+          <div class="tb-counter">
+            <button class="tb-counter-btn" id="tb-teams-dec">&#x2212;</button>
+            <span class="tb-counter-val" id="tb-teams-val">2</span>
+            <button class="tb-counter-btn" id="tb-teams-inc">+</button>
+          </div>
+        </div>
+        <div class="tb-preview" id="tb-preview"></div>
+        <button class="btn-primary btn-full btn-anim" id="btn-teambuilder-start">
+          <span class="btn-anim-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="8" cy="8" r="3" class="anim-team-a"/>
+              <circle cx="16" cy="8" r="3" class="anim-team-b"/>
+              <path d="M3 20v-1a5 5 0 0 1 5-5"/>
+              <path d="M21 20v-1a5 5 0 0 0-5-5"/>
+            </svg>
+          </span>
+          <span>Einteilung starten</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ═══ Screen: Teambildung Reveal ═══ -->
+    <section id="screen-teambuilder-reveal" class="screen">
+      <div class="tb-reveal" id="tb-reveal" role="button" aria-label="Tippen für nächste Zuteilung">
+        <div class="tb-reveal-counter" id="tb-reveal-counter">1 / 10</div>
+        <div class="tb-reveal-content">
+          <div class="tb-reveal-prompt" id="tb-reveal-prompt">TIPPEN!</div>
+          <div class="tb-reveal-team hidden" id="tb-reveal-team"></div>
+        </div>
+        <button class="tb-reveal-exit" id="btn-teambuilder-exit">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          Beenden
+        </button>
+      </div>
+    </section>
+
+    <!-- ═══ Screen: Teambildung Aufstellung ═══ -->
+    <section id="screen-teambuilder-lineup" class="screen screen-deco">
+      <div class="sub-header">
+        <h2>Team-Aufstellung</h2>
+      </div>
+      <div class="tb-lineup" id="tb-lineup"></div>
+      <div class="tb-lineup-footer">
+        <button class="btn-primary btn-full btn-anim" id="btn-lineup-match">
+          <span class="btn-anim-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="9" class="anim-whistle-ring"/>
+              <polygon points="10,8 16,12 10,16" fill="currentColor" stroke="none"/>
+            </svg>
+          </span>
+          <span>Match starten</span>
+        </button>
+        <button class="btn-secondary btn-full" id="btn-lineup-done">Fertig</button>
+      </div>
+    </section>
+
+    <!-- ═══ Screen: Teambuilder Match ═══ -->
+    <section id="screen-tb-match" class="screen">
+      <div class="tbm-header">
+        <div class="match-timer-pill" id="tbm-timer-pill" role="button" aria-label="Timer starten / pausieren">
+          <span id="tbm-time">00:00</span>
+        </div>
+      </div>
+      <div class="tbm-teams" id="tbm-teams"></div>
+      <div class="tbm-footer">
+        <button class="btn-danger btn-full" id="btn-tbm-end">Match beenden</button>
+      </div>
+    </section>
+
+    <!-- ═══ Screen: Regeln ═══ -->
+    <section id="screen-rules" class="screen screen-deco">
+      <div class="screen-header">
+        <button class="btn-back" id="btn-rules-back" aria-label="Zurück">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <h1 class="screen-title">Regelwerk</h1>
+      </div>
+      <div class="screen-body">
+        <p class="rules-intro">Kurzregeln für alle Sportarten. Tipps zur App-Nutzung.</p>
+        <div id="rules-list" class="rules-list" role="list"></div>
+      </div>
+    </section>
+
+    <!-- ═══ Screen: Einstellungen ═══ -->
+    <section id="screen-settings" class="screen screen-deco">
+      <div class="sub-header">
+        <button class="btn-back" id="btn-settings-back" aria-label="Zurück"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg></button>
+        <h2>Einstellungen</h2>
+      </div>
+      <div class="screen-body">
+        <div class="setting-row">
+          <span class="setting-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></span>
+          <label for="toggle-sound">Sound</label>
+          <input type="checkbox" id="toggle-sound" role="switch">
+        </div>
+        <div class="setting-row">
+          <span class="setting-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12" y2="18"/></svg></span>
+          <label for="toggle-vibration">Vibration</label>
+          <input type="checkbox" id="toggle-vibration" role="switch">
+        </div>
+        <div class="setting-row">
+          <span class="setting-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></span>
+          <label for="toggle-tb-photos">Fotos bei Teambildung</label>
+          <input type="checkbox" id="toggle-tb-photos" role="switch">
+        </div>
+        <div class="setting-row">
+          <span class="setting-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></span>
+          <label for="toggle-notifications">Benachrichtigungen</label>
+          <input type="checkbox" id="toggle-notifications" role="switch">
+        </div>
+        <div class="setting-row hidden" id="install-settings-row">
+          <span class="setting-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>
+          <label>App installieren</label>
+          <button class="btn-install-settings" id="btn-settings-install">Installieren</button>
+          <span class="install-status-text hidden" id="install-status"></span>
+        </div>
+        <hr>
+        <button class="btn-secondary btn-full btn-anim" id="btn-restore-presets">
+          <span class="btn-anim-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.04"/></svg></span>
+          Standard-Presets wiederherstellen
+        </button>
+        <button class="btn-danger btn-full btn-anim" id="btn-clear-all">
+          <span class="btn-anim-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></span>
+          Alle Daten löschen
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Gewinner-Overlay (Teambuilder Match) -->
+  <div id="tbm-winner-overlay" class="tbm-winner-overlay hidden">
+    <canvas id="tbm-confetti" class="tbm-confetti-canvas"></canvas>
+    <div class="tbm-winner-box">
+      <div class="tbm-winner-label">Gewinner!</div>
+      <div class="tbm-winner-team" id="tbm-winner-name"></div>
+      <div class="tbm-winner-photos" id="tbm-winner-photos"></div>
+      <button class="btn-primary" id="btn-tbm-close">Fertig</button>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="modal-backdrop" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="modal" id="modal">
+      <button class="modal-close" id="modal-close" aria-label="Schlie&#xDF;en">&#x2715;</button>
+      <div id="modal-content"></div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+  <!-- ═══ Modal-Templates ═══ -->
+
+  <template id="tmpl-modal-halftime">
+    <h2>Halbzeit!</h2>
+    <p class="detail-score" id="ht-score"></p>
+    <p class="detail-meta" id="ht-teams"></p>
+    <p class="detail-meta" id="ht-time"></p>
+    <p class="detail-meta" id="ht-timeout"></p>
+    <p class="detail-meta hidden" id="ht-break"></p>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="ht-back">Weiter spielen</button>
+      <button class="btn-primary" id="ht-next">2. Halbzeit</button>
+    </div>
+  </template>
+
+  <template id="tmpl-modal-match-end">
+    <h2>Match beenden</h2>
+    <p class="detail-score" id="m-score"></p>
+    <p class="detail-meta" id="m-teams"></p>
+    <p class="detail-meta" id="m-time"></p>
+    <p class="detail-meta" id="m-timeout"></p>
+    <div class="modal-actions">
+      <button class="btn-primary" id="m-save">Speichern</button>
+      <button class="btn-danger" id="m-discard">Verwerfen</button>
+      <button class="btn-secondary" id="m-cancel">Weiter spielen</button>
+    </div>
+  </template>
+
+  <template id="tmpl-modal-sw-save">
+    <h2>Stoppuhr speichern</h2>
+    <div class="modal-field">
+      <label class="modal-label" for="sw-save-input">Bezeichnung</label>
+      <input class="modal-input" id="sw-save-input" type="text" maxlength="40" autocomplete="off">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="sw-save-cancel">Abbrechen</button>
+      <button class="btn-primary" id="sw-save-ok">Speichern</button>
+    </div>
+  </template>
+
+  <template id="tmpl-modal-timer-preset">
+    <h2>Timer-Preset speichern</h2>
+    <div class="modal-field">
+      <label class="modal-label" for="timer-preset-input">Name</label>
+      <input class="modal-input" id="timer-preset-input" type="text" placeholder="z.B. Pause" maxlength="30" autocomplete="off">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="tp-cancel">Abbrechen</button>
+      <button class="btn-primary" id="tp-ok">Speichern</button>
+    </div>
+  </template>
+
+  <template id="tmpl-modal-confirm">
+    <h2>Best&#xe4;tigung</h2>
+    <p class="detail-meta" id="confirm-msg"></p>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="confirm-cancel">Abbrechen</button>
+      <button class="btn-danger" id="confirm-ok">Fortfahren</button>
+    </div>
+  </template>
+
+  <template id="tmpl-modal-export">
+    <h2>Daten exportieren</h2>
+    <div class="modal-actions export-actions">
+      <button class="btn-secondary" id="exp-matches-csv">Matches als CSV</button>
+      <button class="btn-secondary" id="exp-sw-csv">Stoppuhren als CSV</button>
+      <button class="btn-secondary" id="exp-json">Alles als JSON</button>
+    </div>
+  </template>
+
+  <template id="tmpl-modal-match-detail">
+    <h2 id="md-title"></h2>
+    <p class="detail-meta" id="md-date"></p>
+    <div class="detail-score" id="md-score"></div>
+    <p class="detail-meta" id="md-duration"></p>
+    <p class="detail-meta hidden" id="md-halftime"></p>
+    <div class="detail-note">
+      <label class="modal-label" for="md-note">Notiz</label>
+      <textarea class="modal-input" id="md-note" rows="3"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="md-save-note">Notiz speichern</button>
+      <button class="btn-danger" id="md-delete">L&#xF6;schen</button>
+    </div>
+  </template>
+
+  <template id="tmpl-modal-sw-detail">
+    <h2 id="sd-title"></h2>
+    <p class="detail-meta" id="sd-date"></p>
+    <p class="detail-meta" id="sd-total"></p>
+    <ol class="lap-list-detail" id="sd-laps"></ol>
+    <div class="modal-actions">
+      <button class="btn-danger" id="sd-delete">L&#xF6;schen</button>
+    </div>
+  </template>
+
+  <template id="tmpl-modal-preset">
+    <h2 id="pm-title">Preset</h2>
+    <div class="modal-field">
+      <span class="modal-label">Icon</span>
+      <div class="icon-picker" id="pm-icons"></div>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label" for="pm-name">Name</label>
+      <input class="modal-input" id="pm-name" type="text" maxlength="20" autocomplete="off">
+    </div>
+    <div class="modal-row">
+      <div class="modal-field">
+        <label class="modal-label" for="pm-team-a">Team A</label>
+        <input class="modal-input" id="pm-team-a" type="text" maxlength="20" autocomplete="off">
+      </div>
+      <div class="modal-field">
+        <label class="modal-label" for="pm-team-b">Team B</label>
+        <input class="modal-input" id="pm-team-b" type="text" maxlength="20" autocomplete="off">
+      </div>
+    </div>
+    <div class="modal-field">
+      <span class="modal-label">Farbe</span>
+      <div class="color-row" id="pm-colors"></div>
+    </div>
+    <div class="modal-field">
+      <span class="modal-label">Spieldauer</span>
+      <div class="duration-chips" id="pm-duration"></div>
+    </div>
+    <div class="modal-field">
+      <span class="modal-label">Pausendauer (Halbzeit)</span>
+      <div class="duration-chips" id="pm-break"></div>
+    </div>
+    <div class="modal-actions" id="pm-actions">
+      <button class="btn-secondary" id="pm-cancel">Abbrechen</button>
+      <button class="btn-primary" id="pm-save">Speichern</button>
+    </div>
+  </template>
+
+  <!-- Kamera-Elemente für Teambildung (nur im Arbeitsspeicher, kein Speicher) -->
+  <video id="tb-camera" autoplay playsinline muted style="display:none" aria-hidden="true"></video>
+  <canvas id="tb-canvas" style="display:none" aria-hidden="true"></canvas>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

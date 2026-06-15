@@ -1,0 +1,6 @@
+tools/
+.playwright-mcp/
+.DS_Store
+Thumbs.db
+.superpowers/
+.claude/worktrees/
