@@ -18,7 +18,7 @@ timetracker/
 ├── index.html              # Single-Page App, alle Screens als <section>
 ├── app.js                  # Haupt-Controller, Event-Handler
 ├── style.css               # Design System, alle Layouts
-├── service-worker.js       # Offline-Caching (Cache-First, v8)
+├── service-worker.js       # Offline-Caching (Code: network-first, Assets: cache-first)
 ├── manifest.webmanifest    # PWA-Metadaten
 ├── js/
 │   ├── router.js           # Screen-Navigation (CSS-Toggle)

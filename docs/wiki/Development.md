@@ -65,11 +65,20 @@ In `js/audio.js` neue Funktion mit Web Audio API Oscillator exportieren.
 
 ## Service Worker
 
-`service-worker.js` – Cache-Version als `const CACHE = 'sz-v8'` im Code. Bei Asset-Änderungen Versionsnummer hochzählen:
+`service-worker.js` – Cache-Version als `const CACHE = 'sportzaehler-v13'` im Code. Bei Asset-Änderungen Versionsnummer hochzählen:
 
 ```js
-const CACHE = 'sz-v9'; // Erhöhen bei Updates
+const CACHE = 'sportzaehler-v14'; // Erhöhen bei Updates
 ```
+
+Neue JS-Dateien zusätzlich in die `ASSETS`-Liste eintragen (für Offline-Vorabcache).
+
+**Update-Strategie:** Code (HTML/JS/CSS/Manifest, Navigationen) wird *network-first*
+ausgeliefert – online also immer die aktuelle Version, offline der Cache-Fallback.
+Icons/Bilder laufen *cache-first*. Beim `install` werden die Assets mit
+`{ cache: 'reload' }` am HTTP-Cache vorbei geladen, damit der Versions-Bump
+garantiert frische Dateien zieht. Registrierung mit `updateViaCache: 'none'`,
+plus Auto-Reload bei `controllerchange` in `app.js`.
 
 ## PWA
 

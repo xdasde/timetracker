@@ -1982,7 +1982,7 @@ if ('serviceWorker' in navigator) {
   });
 
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js').then(reg => {
+    navigator.serviceWorker.register('./service-worker.js', { updateViaCache: 'none' }).then(reg => {
       // Beim Laden sofort auf neue Dateien prüfen …
       reg.update();
       // … und regelmäßig sowie beim Zurückkehren in die App.
