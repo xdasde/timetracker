@@ -2,8 +2,9 @@
 // content/games/*.md, die per scripts/build-content.mjs zu content.generated.js
 // kompiliert werden. Diese Datei leitet daraus die bekannte RULES-API ab.
 import { CONTENT } from './content.generated.js';
+import * as customgames from './customgames.js';
 
-export const RULES = Object.fromEntries(CONTENT.map(c => [c.id, {
+const toRule = c => ({
   name: c.name,
   icon: c.icon,
   structure: c.structure,
@@ -20,12 +21,19 @@ export const RULES = Object.fromEntries(CONTENT.map(c => [c.id, {
   material: c.material,
   players: c.players,
   source: c.source,
-}]));
+  custom: !!c.custom,
+});
+
+export const RULES = Object.fromEntries(CONTENT.map(c => [c.id, toRule(c)]));
 
 export function getRule(key) {
-  return RULES[key] || null;
+  if (RULES[key]) return RULES[key];
+  const custom = customgames.getById(key);
+  return custom ? toRule(custom) : null;
 }
 
 export function getAllRules() {
-  return Object.entries(RULES).map(([key, rule]) => ({ key, ...rule }));
+  const builtIn = Object.entries(RULES).map(([key, rule]) => ({ key, ...rule }));
+  const custom = customgames.getAll().map(c => ({ key: c.id, ...toRule(c) }));
+  return [...builtIn, ...custom];
 }

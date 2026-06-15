@@ -138,6 +138,18 @@ content/games/*.md  ──(scripts/build-content.mjs)──►  js/content.gener
 - Die Datenbank-Ansicht (Screen „Datenbank") bietet Suche + Filter nach Art
   (`kind`) und Schwierigkeit (`difficulty`).
 
+### Eigene Spiele in der App (`customgames.js`)
+
+- Nutzer:innen legen über „＋ Eigenes Spiel anlegen" Einträge an; diese werden
+  als content-förmige Objekte in `localStorage` (`tt.customGames`) gespeichert.
+- `customgames.js` liefert Speicherung, Validierung (Spiegel der Build-Prüfung),
+  Markdown-Serialisierung (`toMarkdown`) und die GitHub-Prefill-URL
+  (`prefillUrl`). `rules.js` und `presets.js` mischen eigene Spiele in
+  Datenbank-Liste bzw. nutzbare Presets (Roulette/Setup) ein.
+- Einreichen ist backend-frei: Die App öffnet GitHubs „neue Datei"-Seite mit
+  vorausgefülltem Inhalt; GitHub erstellt für Beitragende ohne Schreibrechte
+  automatisch Fork + Pull-Request. Fallback: Markdown kopieren / `.md` laden.
+
 ### timer.js / stopwatch.js
 
 - `Countdown` – States: picking → running → paused → done

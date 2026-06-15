@@ -11,6 +11,7 @@ import { playBeep, playWhistle, playGoal, playMatchEnd, playCountdownTick } from
 import { acquireWakeLock, releaseWakeLock } from './js/wakelock.js';
 import * as teambuilder from './js/teambuilder.js';
 import * as rules from './js/rules.js';
+import * as customgames from './js/customgames.js';
 import * as theme from './js/theme.js';
 
 // Gespeichertes Vereins-Design so früh wie möglich anwenden.
@@ -734,6 +735,7 @@ function renderRulesList() {
     addBadge(KIND_LABELS[rule.kind], 'rules-badge--kind');
     if (rule.difficulty) addBadge(rule.difficulty, `rules-badge--diff-${rule.difficulty}`);
     addBadge(rule.ageGroup);
+    if (rule.custom) addBadge('Eigenes', 'rules-badge--custom');
 
     const scoring = document.createElement('div');
     scoring.className = 'rules-scoring';
@@ -756,14 +758,46 @@ function renderRulesList() {
     if (rule.material && rule.material.length) {
       const mat = document.createElement('div');
       mat.className = 'rules-material';
-      mat.innerHTML = `<strong>Material:</strong> ${rule.material.join(', ')}`;
+      const matLabel = document.createElement('strong');
+      matLabel.textContent = 'Material: ';
+      mat.append(matLabel, document.createTextNode(rule.material.join(', ')));
       body.appendChild(mat);
     }
 
     const tipEl = document.createElement('div');
     tipEl.className = 'rules-tip';
-    tipEl.innerHTML = `<strong>App-Tipp:</strong> ${rule.tip}`;
+    const tipLabel = document.createElement('strong');
+    tipLabel.textContent = 'App-Tipp: ';
+    tipEl.append(tipLabel, document.createTextNode(rule.tip));
     body.appendChild(tipEl);
+
+    // Aktionen für eigene (lokal angelegte) Einträge
+    if (rule.custom) {
+      const actions = document.createElement('div');
+      actions.className = 'rules-custom-actions';
+      const mkBtn = (label, cls, handler) => {
+        const btn = document.createElement('button');
+        btn.className = cls;
+        btn.textContent = label;
+        btn.addEventListener('click', e => { e.stopPropagation(); handler(); });
+        return btn;
+      };
+      actions.append(
+        mkBtn('Bearbeiten', 'rules-custom-btn', () => openContributeModal(rule.key)),
+        mkBtn('Einreichen', 'rules-custom-btn', () => {
+          const g = customgames.getById(rule.key);
+          if (g) window.open(customgames.prefillUrl(g), '_blank', 'noopener');
+        }),
+        mkBtn('Löschen', 'rules-custom-btn rules-custom-btn--danger', async () => {
+          const ok = await ui.confirmAction(`"${rule.name}" wirklich löschen?`);
+          if (!ok) return;
+          customgames.remove(rule.key);
+          ui.showToast('Eigenes Spiel gelöscht');
+          renderRulesList();
+        }),
+      );
+      body.appendChild(actions);
+    }
 
     item.append(header, body);
     list.appendChild(item);
@@ -775,6 +809,186 @@ function renderRulesList() {
     });
   });
 }
+
+// ═══════════════════════════════════════════════════════════
+// EIGENES SPIEL ANLEGEN / BEITRAGEN
+// ═══════════════════════════════════════════════════════════
+const CG_PAIR_COLORS = [
+  { a: '#0F6E56', b: '#FF6B5B' },
+  { a: '#2563EB', b: '#DC2626' },
+  { a: '#7C3AED', b: '#D97706' },
+  { a: '#374151', b: '#059669' },
+];
+const CG_DURATION_OPTIONS = [
+  { label: 'Kein Limit', ms: null }, { label: '5 Min', ms: 300000 },
+  { label: '10 Min', ms: 600000 }, { label: '15 Min', ms: 900000 },
+  { label: '20 Min', ms: 1200000 }, { label: '30 Min', ms: 1800000 },
+  { label: '40 Min', ms: 2400000 }, { label: '45 Min', ms: 2700000 },
+];
+const CG_BREAK_OPTIONS = [
+  { label: 'Keine', ms: null }, { label: '1 Min', ms: 60000 },
+  { label: '5 Min', ms: 300000 }, { label: '10 Min', ms: 600000 },
+];
+const CG_KINDS = [
+  { key: 'sport', label: '🏆 Sportart' },
+  { key: 'spiel', label: '🎮 Spiel' },
+  { key: 'uebung', label: '🤸 Übung' },
+];
+const CG_DIFFS = [
+  { key: 'einfach', label: 'Einfach' },
+  { key: 'mittel', label: 'Mittel' },
+  { key: 'schwer', label: 'Schwer' },
+];
+
+function cgTimeChips(container, options, selected, onPick) {
+  container.replaceChildren();
+  const norm = v => v || null;
+  const btns = [];
+  const setActive = ms => btns.forEach(({ b, m }) =>
+    b.classList.toggle('duration-chip--active', norm(m) === norm(ms)));
+  options.forEach(opt => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'duration-chip';
+    b.textContent = opt.label;
+    b.addEventListener('click', () => { setActive(opt.ms); onPick(opt.ms); });
+    container.appendChild(b);
+    btns.push({ b, m: opt.ms });
+  });
+  setActive(selected);
+}
+
+function cgChipGroup(container, options, getVal, setVal, multi = false) {
+  container.replaceChildren();
+  options.forEach(opt => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    const active = multi ? getVal().includes(opt.key) : getVal() === opt.key;
+    b.className = 'roulette-cat-chip' + (active ? ' roulette-cat-chip--active' : '');
+    b.textContent = opt.label;
+    b.addEventListener('click', () => {
+      if (multi) {
+        const arr = getVal();
+        const i = arr.indexOf(opt.key);
+        if (i >= 0) arr.splice(i, 1); else arr.push(opt.key);
+        b.classList.toggle('roulette-cat-chip--active');
+      } else {
+        setVal(opt.key);
+        container.querySelectorAll('.roulette-cat-chip').forEach(c =>
+          c.classList.remove('roulette-cat-chip--active'));
+        b.classList.add('roulette-cat-chip--active');
+      }
+    });
+    container.appendChild(b);
+  });
+}
+
+function openContributeModal(existingId = null) {
+  const existing = existingId ? customgames.getById(existingId) : null;
+  const editing = existing ? { ...existing, categories: [...existing.categories], material: [...existing.material] } : {
+    id: null, name: '', icon: '🎯', kind: 'spiel', categories: [], difficulty: 'einfach',
+    ageGroup: null, material: [], players: null, teamA: 'Team A', teamB: 'Team B',
+    colorIndex: 0, durationMs: null, breakMs: null, periods: 1, periodLabel: 'Halbzeit',
+    structure: '', scoring: '', basics: [], tip: '', source: null,
+  };
+
+  ui.openModal('tmpl-modal-contribute', () => {
+    const $ = id => document.getElementById(id);
+    $('cg-title').textContent = existing ? 'Spiel bearbeiten' : 'Eigenes Spiel';
+    $('cg-name').value = editing.name;
+    $('cg-icon').value = editing.icon;
+    $('cg-team-a').value = editing.teamA;
+    $('cg-team-b').value = editing.teamB;
+    $('cg-structure').value = editing.structure;
+    $('cg-scoring').value = editing.scoring;
+    $('cg-basics').value = editing.basics.join('\n');
+    $('cg-tip').value = editing.tip;
+    $('cg-material').value = editing.material.join(', ');
+    $('cg-age').value = editing.ageGroup || '';
+    $('cg-players').value = editing.players || '';
+    $('cg-source').value = editing.source || '';
+
+    cgChipGroup($('cg-kind'), CG_KINDS, () => editing.kind, v => { editing.kind = v; });
+    cgChipGroup($('cg-diff'), CG_DIFFS, () => editing.difficulty, v => { editing.difficulty = v; });
+    cgChipGroup($('cg-cats'), [
+      { key: 'lauf', label: '🏃 Laufspiel' }, { key: 'ball', label: '⚽ Ballspiel' },
+      { key: 'team', label: '👥 Teamspiel' },
+    ], () => editing.categories, null, true);
+
+    const colorRow = $('cg-colors');
+    colorRow.replaceChildren();
+    CG_PAIR_COLORS.forEach((pair, i) => {
+      [pair.a, pair.b].forEach(c => {
+        const dot = document.createElement('button');
+        dot.type = 'button';
+        dot.className = 'color-dot' + (i === editing.colorIndex ? ' color-dot--active' : '');
+        dot.style.background = c;
+        dot.addEventListener('click', () => {
+          editing.colorIndex = i;
+          colorRow.querySelectorAll('.color-dot').forEach(d => d.classList.remove('color-dot--active'));
+          colorRow.querySelectorAll('.color-dot').forEach((d, di) => {
+            if (Math.floor(di / 2) === i) d.classList.add('color-dot--active');
+          });
+        });
+        colorRow.appendChild(dot);
+      });
+    });
+
+    cgTimeChips($('cg-duration'), CG_DURATION_OPTIONS, editing.durationMs, ms => { editing.durationMs = ms; });
+    cgTimeChips($('cg-break'), CG_BREAK_OPTIONS, editing.breakMs, ms => { editing.breakMs = ms; });
+
+    $('cg-cancel').onclick = ui.closeModal;
+    $('cg-save').onclick = () => {
+      editing.name = $('cg-name').value.trim();
+      editing.icon = $('cg-icon').value.trim() || '🎯';
+      editing.teamA = $('cg-team-a').value.trim() || 'Team A';
+      editing.teamB = $('cg-team-b').value.trim() || 'Team B';
+      editing.structure = $('cg-structure').value.trim();
+      editing.scoring = $('cg-scoring').value.trim();
+      editing.basics = $('cg-basics').value.split('\n').map(s => s.trim().replace(/^[-•]\s*/, '')).filter(Boolean);
+      editing.tip = $('cg-tip').value.trim();
+      editing.material = $('cg-material').value.split(',').map(s => s.trim()).filter(Boolean);
+      editing.ageGroup = $('cg-age').value.trim() || null;
+      editing.players = $('cg-players').value.trim() || null;
+      editing.source = $('cg-source').value.trim() || null;
+      editing.id = editing.id || customgames.uniqueId(editing.name);
+
+      const errors = customgames.validate(editing);
+      const errEl = $('cg-error');
+      if (errors.length) {
+        errEl.textContent = errors.join(' ');
+        errEl.classList.remove('hidden');
+        errEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+      errEl.classList.add('hidden');
+
+      const entry = { ...editing, custom: true };
+      customgames.save(entry);
+      ui.showToast('Eigenes Spiel gespeichert!');
+
+      // Zur Einreichen-Ansicht wechseln
+      $('cg-actions').classList.add('hidden');
+      $('cg-submit').classList.remove('hidden');
+      $('cg-pr').onclick = () => window.open(customgames.prefillUrl(entry), '_blank', 'noopener');
+      $('cg-copy').onclick = async () => {
+        try { await navigator.clipboard.writeText(customgames.toMarkdown(entry)); ui.showToast('Markdown kopiert'); }
+        catch { ui.showToast('Kopieren nicht möglich'); }
+      };
+      $('cg-download').onclick = () => {
+        const blob = new Blob([customgames.toMarkdown(entry)], { type: 'text/markdown' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `${entry.id}.md`;
+        a.click();
+        URL.revokeObjectURL(a.href);
+      };
+      $('cg-done').onclick = () => { ui.closeModal(); renderRulesList(); };
+    };
+  });
+}
+
+document.getElementById('btn-rules-add').addEventListener('click', () => openContributeModal());
 
 // ═══════════════════════════════════════════════════════════
 // SPIEL-ROULETTE
