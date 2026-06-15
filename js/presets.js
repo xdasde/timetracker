@@ -1,6 +1,7 @@
 import * as storage from './storage.js';
 import * as ui from './ui.js';
 import { CONTENT } from './content.generated.js';
+import * as customgames from './customgames.js';
 
 const ICONS = ['⚽', '🏀', '🏐', '🏈', '🎾', '🏓', '🥊', '🏒', '🤾', '🏑', '🏸', '🥏', '🔥', '⚾', '🏅', '🎿'];
 
@@ -70,10 +71,30 @@ export const ROULETTE_CATEGORIES = [
   { key: 'team', label: 'Teamspiel', icon: '👥' },
 ];
 
+// Aus einem eigenen Spiel (customgames) ein nutzbares Preset ableiten.
+function customGameToPreset(g) {
+  return {
+    id: `customgame-${g.id}`,
+    name: g.shortName || g.name,
+    icon: g.icon,
+    teamA: { name: g.teamA },
+    teamB: { name: g.teamB },
+    colorIndex: g.colorIndex,
+    durationMs: g.durationMs,
+    breakMs: g.breakMs,
+    periods: g.periods,
+    rulesKey: g.id,
+    categories: g.categories,
+    builtIn: false,
+    fromCustomGame: true,
+  };
+}
+
 export function getAll() {
   const custom = storage.getCollection('presets');
   const hidden = new Set(storage.getItem('hiddenPresets') || []);
-  return [...BUILT_IN_PRESETS.filter(p => !hidden.has(p.id)), ...custom];
+  const ownGames = customgames.getAll().map(customGameToPreset);
+  return [...BUILT_IN_PRESETS.filter(p => !hidden.has(p.id)), ...ownGames, ...custom];
 }
 
 // Liefert alle für das Roulette in Frage kommenden Presets:
@@ -121,7 +142,8 @@ export function renderList(onEdit, onRules) {
   if (!list) return;
   list.replaceChildren();
 
-  getAll().forEach(preset => {
+  // Eigene Spiele (aus der Datenbank abgeleitet) werden dort verwaltet, nicht hier.
+  getAll().filter(p => !p.fromCustomGame).forEach(preset => {
     const card = document.createElement('div');
     card.className = 'preset-card';
     card.setAttribute('role', 'listitem');

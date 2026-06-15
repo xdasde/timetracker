@@ -437,7 +437,10 @@
         <h1 class="screen-title">Datenbank</h1>
       </div>
       <div class="screen-body">
-        <p class="rules-intro">Spiele, Sportarten &amp; Übungen mit Kurzregeln und App-Tipps. Durchsuchen und filtern.</p>
+        <p class="rules-intro">Spiele, Sportarten &amp; Übungen mit Kurzregeln und App-Tipps. Durchsuchen, filtern und eigene Spiele beitragen.</p>
+        <button class="rules-add-btn" id="btn-rules-add">
+          <span aria-hidden="true">＋</span> Eigenes Spiel anlegen
+        </button>
         <div class="rules-search">
           <svg class="rules-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
           <input type="search" id="rules-search" class="rules-search-input" placeholder="Spiel oder Übung suchen…" autocomplete="off" aria-label="Datenbank durchsuchen">
@@ -711,6 +714,105 @@
     <div class="modal-actions" id="pm-actions">
       <button class="btn-secondary" id="pm-cancel">Abbrechen</button>
       <button class="btn-primary" id="pm-save">Speichern</button>
+    </div>
+  </template>
+
+  <template id="tmpl-modal-contribute">
+    <h2 id="cg-title">Eigenes Spiel</h2>
+    <p class="cg-hint">Sofort lokal nutzbar – und optional als Vorschlag (Pull-Request) für alle einreichbar.</p>
+    <div class="modal-field">
+      <label class="modal-label" for="cg-name">Name *</label>
+      <input class="modal-input" id="cg-name" type="text" maxlength="40" autocomplete="off">
+    </div>
+    <div class="modal-row">
+      <div class="modal-field cg-field-icon">
+        <label class="modal-label" for="cg-icon">Icon *</label>
+        <input class="modal-input" id="cg-icon" type="text" maxlength="4" autocomplete="off" placeholder="🎯">
+      </div>
+      <div class="modal-field">
+        <span class="modal-label">Art *</span>
+        <div class="roulette-cat-row" id="cg-kind"></div>
+      </div>
+    </div>
+    <div class="modal-field">
+      <span class="modal-label">Schwierigkeit</span>
+      <div class="roulette-cat-row" id="cg-diff"></div>
+    </div>
+    <div class="modal-field">
+      <span class="modal-label">Kategorien (für Roulette)</span>
+      <div class="roulette-cat-row" id="cg-cats"></div>
+    </div>
+    <div class="modal-row">
+      <div class="modal-field">
+        <label class="modal-label" for="cg-team-a">Team A</label>
+        <input class="modal-input" id="cg-team-a" type="text" maxlength="20" autocomplete="off">
+      </div>
+      <div class="modal-field">
+        <label class="modal-label" for="cg-team-b">Team B</label>
+        <input class="modal-input" id="cg-team-b" type="text" maxlength="20" autocomplete="off">
+      </div>
+    </div>
+    <div class="modal-field">
+      <span class="modal-label">Farbe</span>
+      <div class="color-row" id="cg-colors"></div>
+    </div>
+    <div class="modal-field">
+      <span class="modal-label">Spieldauer</span>
+      <div class="duration-chips" id="cg-duration"></div>
+    </div>
+    <div class="modal-field">
+      <span class="modal-label">Pausendauer</span>
+      <div class="duration-chips" id="cg-break"></div>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label" for="cg-structure">Aufbau *</label>
+      <input class="modal-input" id="cg-structure" type="text" maxlength="160" autocomplete="off" placeholder="z. B. 2 × 10 Min., kleines Feld">
+    </div>
+    <div class="modal-field">
+      <label class="modal-label" for="cg-scoring">Wertung *</label>
+      <input class="modal-input" id="cg-scoring" type="text" maxlength="160" autocomplete="off" placeholder="Wie wird gewertet / gewonnen?">
+    </div>
+    <div class="modal-field">
+      <label class="modal-label" for="cg-basics">Ablauf * (ein Punkt pro Zeile)</label>
+      <textarea class="modal-input cg-textarea" id="cg-basics" rows="5" placeholder="Erster Regelpunkt&#10;Zweiter Regelpunkt"></textarea>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label" for="cg-tip">App-Tipp *</label>
+      <textarea class="modal-input cg-textarea" id="cg-tip" rows="2" placeholder="z. B. wie Timer/Pause einzustellen sind"></textarea>
+    </div>
+    <details class="cg-more">
+      <summary>Weitere Angaben (optional)</summary>
+      <div class="modal-field">
+        <label class="modal-label" for="cg-material">Material (mit Komma trennen)</label>
+        <input class="modal-input" id="cg-material" type="text" autocomplete="off" placeholder="Softball, Hütchen">
+      </div>
+      <div class="modal-field">
+        <label class="modal-label" for="cg-age">Altersgruppe</label>
+        <input class="modal-input" id="cg-age" type="text" maxlength="40" autocomplete="off" placeholder="ab Klasse 1">
+      </div>
+      <div class="modal-field">
+        <label class="modal-label" for="cg-players">Spieleranzahl</label>
+        <input class="modal-input" id="cg-players" type="text" maxlength="40" autocomplete="off" placeholder="10–25">
+      </div>
+      <div class="modal-field">
+        <label class="modal-label" for="cg-source">Quelle (optional)</label>
+        <input class="modal-input" id="cg-source" type="text" maxlength="120" autocomplete="off">
+      </div>
+    </details>
+    <p id="cg-error" class="cg-error hidden" role="alert"></p>
+    <div class="modal-actions" id="cg-actions">
+      <button class="btn-secondary" id="cg-cancel">Abbrechen</button>
+      <button class="btn-primary" id="cg-save">Speichern</button>
+    </div>
+    <div class="cg-submit hidden" id="cg-submit">
+      <p class="cg-submit-title">✓ Lokal gespeichert. Als Vorschlag für alle einreichen?</p>
+      <button class="btn-primary btn-full" id="cg-pr">Per GitHub einreichen (Pull-Request)</button>
+      <p class="cg-submit-note">Öffnet GitHub mit vorausgefülltem Eintrag. GitHub legt automatisch eine Kopie (Fork) und den Pull-Request an. Ein GitHub-Konto ist nötig.</p>
+      <div class="modal-row">
+        <button class="btn-secondary cg-half" id="cg-copy">Markdown kopieren</button>
+        <button class="btn-secondary cg-half" id="cg-download">.md herunterladen</button>
+      </div>
+      <button class="btn-secondary btn-full" id="cg-done">Fertig</button>
     </div>
   </template>
 

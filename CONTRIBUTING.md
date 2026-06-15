@@ -4,6 +4,19 @@ Die Spiele-, Sportarten- und Übungsdatenbank lebt von Beiträgen. Jeder Eintrag
 ist eine einfache **Markdown-Datei** in `content/games/`. Du brauchst dafür
 keine Programmierkenntnisse – eine Textdatei genügt.
 
+## Am einfachsten: direkt in der App
+
+In der App unter **Datenbank → „＋ Eigenes Spiel anlegen"** kannst du ein Spiel
+über ein Formular erstellen. Es wird sofort lokal gespeichert (nutzbar im
+Roulette und Match-Setup). Anschließend kannst du es mit einem Klick
+
+- **per GitHub einreichen** – öffnet GitHub mit vorausgefülltem Eintrag; GitHub
+  legt automatisch eine Kopie (Fork) und einen Pull-Request an, oder
+- als **Markdown kopieren** / **`.md` herunterladen**, falls du keinen
+  GitHub-Account hast.
+
+Die folgenden Wege beschreiben dasselbe manuell.
+
 ## Neuen Eintrag anlegen (über GitHub, ohne lokales Setup)
 
 1. Gehe im Repository in den Ordner [`content/games/`](content/games).

@@ -2251,6 +2251,85 @@ textarea.modal-input { resize: vertical; min-height: 80px; }
   color: rgba(255,255,255,0.7);
   padding: 0.5rem 0 0.25rem;
 }
+.rules-badge--custom { background: rgba(245,158,11,0.22); color: var(--color-amber, #f59e0b); }
+
+/* Button "Eigenes Spiel anlegen" */
+.rules-add-btn {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  margin-bottom: 0.75rem;
+  border-radius: var(--radius-md, 12px);
+  border: 1px dashed var(--color-amber, #f59e0b);
+  background: rgba(245,158,11,0.10);
+  color: var(--color-amber, #f59e0b);
+  font-weight: 800;
+  font-size: 0.9rem;
+}
+.rules-add-btn:active { transform: scale(0.98); }
+
+/* Aktionen für eigene Einträge */
+.rules-custom-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 0.75rem;
+  margin-top: 0.5rem;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+.rules-custom-btn {
+  flex: 1;
+  min-width: 90px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm, 8px);
+  background: var(--color-border, #374151);
+  color: var(--color-text, #fff);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.rules-custom-btn:active { opacity: 0.8; }
+.rules-custom-btn--danger { background: rgba(239,68,68,0.2); color: #f87171; }
+
+/* Editor-Modal "Eigenes Spiel" */
+.cg-hint {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 0.5rem;
+}
+.cg-field-icon { flex: 0 0 84px; }
+.cg-textarea {
+  resize: vertical;
+  min-height: 2.5rem;
+  line-height: 1.4;
+  font-family: inherit;
+}
+.cg-error {
+  color: #f87171;
+  font-size: 0.82rem;
+  font-weight: 600;
+  background: rgba(239,68,68,0.12);
+  border-radius: var(--radius-sm, 8px);
+  padding: 0.6rem 0.8rem;
+  margin-top: 0.5rem;
+}
+.cg-more { margin-top: 0.25rem; }
+.cg-more summary {
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-amber, #f59e0b);
+  padding: 0.4rem 0;
+}
+.cg-submit {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+.cg-submit-title { font-weight: 800; font-size: 0.92rem; }
+.cg-submit-note { font-size: 0.74rem; color: rgba(255,255,255,0.55); line-height: 1.35; }
+.cg-half { flex: 1; }
 
 .rules-list {
   display: flex;
