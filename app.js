@@ -11,6 +11,10 @@ import { playBeep, playWhistle, playGoal, playMatchEnd, playCountdownTick } from
 import { acquireWakeLock, releaseWakeLock } from './js/wakelock.js';
 import * as teambuilder from './js/teambuilder.js';
 import * as rules from './js/rules.js';
+import * as theme from './js/theme.js';
+
+// Gespeichertes Vereins-Design so früh wie möglich anwenden.
+theme.initTheme();
 
 // ═══════════════════════════════════════════════════════════
 // SCREEN-REGISTRIERUNG
@@ -515,8 +519,10 @@ function _tbmShowWinner() {
     }
   });
 
-  // Konfetti-Animation
-  _tbmConfetti(winners.length === 1 ? winners[0].color : '#f59e0b');
+  // Konfetti-Animation (Standardfarbe folgt dem aktiven Akzent/Vereins-Design)
+  const accent = getComputedStyle(document.documentElement)
+    .getPropertyValue('--color-amber').trim() || '#f59e0b';
+  _tbmConfetti(winners.length === 1 ? winners[0].color : accent);
 }
 
 function _tbmConfetti(teamColor) {
@@ -1564,6 +1570,24 @@ function initSettings() {
     storage.setItem('settings', c);
   });
 
+  // Vereins-Design (Theme)
+  const themeSelect = document.getElementById('select-club-theme');
+  if (themeSelect) {
+    themeSelect.replaceChildren(...theme.THEMES.map(t => {
+      const opt = document.createElement('option');
+      opt.value = t.id;
+      opt.textContent = t.name;
+      return opt;
+    }));
+    themeSelect.value = theme.getSavedThemeId();
+    // onchange (statt addEventListener), damit ein erneutes initSettings()
+    // – z. B. nach „Alle Daten löschen" – keine doppelten Handler bindet.
+    themeSelect.onchange = e => {
+      const t = theme.setTheme(e.target.value);
+      ui.showToast(`Design: ${t.name}`);
+    };
+  }
+
   const notifToggle = document.getElementById('toggle-notifications');
   if (!notificationsSupported()) {
     // Notification API nicht verfügbar (z. B. ältere iOS-Safari): Zeile ausblenden
@@ -1607,6 +1631,7 @@ function initSettings() {
     const ok2 = await ui.confirmAction('Nicht rückgängig zu machen. Wirklich fortfahren?');
     if (!ok2) return;
     storage.clearAll();
+    theme.applyTheme(theme.DEFAULT_THEME);
     ui.showToast('Alle Daten gelöscht.');
     initSettings();
   });
