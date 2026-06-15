@@ -129,7 +129,10 @@ async function _tbCapturePhoto() {
   ctx.scale(-1, 1); // Frontkamera spiegeln
   ctx.drawImage(_tbVideo, sx, sy, side, side, 0, 0, size, size);
   ctx.restore();
-  return new Promise(resolve => _tbCanvas.toBlob(resolve, 'image/jpeg', 0.8));
+  return new Promise(resolve => _tbCanvas.toBlob(blob => {
+    _tbCanvas.getContext('2d').clearRect(0, 0, _tbCanvas.width, _tbCanvas.height);
+    resolve(blob);
+  }, 'image/jpeg', 0.8));
 }
 
 function _tbFlash() {
@@ -367,6 +370,9 @@ function leaveTbMatch() {
   cancelAnimationFrame(_tbmRaf);
   _tbmRaf = null;
   releaseWakeLock();
+  document.getElementById('tbm-winner-photos').replaceChildren();
+  document.getElementById('tbm-teams').replaceChildren();
+  teambuilder.clearPhotos();
 }
 
 function _tbmRafLoop() {
@@ -570,6 +576,7 @@ function _tbmConfetti(teamColor) {
 
 document.getElementById('btn-tbm-close').addEventListener('click', () => {
   document.getElementById('tbm-winner-overlay').classList.add('hidden');
+  document.getElementById('tbm-winner-photos').replaceChildren();
   document.getElementById('tbm-teams').replaceChildren();
   teambuilder.clearPhotos();
   router.navigateTo('screen-teambuilder');
@@ -2097,6 +2104,12 @@ if ('serviceWorker' in navigator) {
     }).catch(console.error);
   });
 }
+
+// Notfall-Cleanup: Kamera und Fotos beim Verlassen der Seite freigeben
+window.addEventListener('pagehide', () => {
+  _tbStopCamera();
+  teambuilder.clearPhotos();
+});
 
 // ═══════════════════════════════════════════════════════════
 // BOOT
