@@ -2509,6 +2509,35 @@ textarea.modal-input { resize: vertical; min-height: 80px; }
   color: var(--color-muted);
   line-height: 1.4;
 }
+.setting-privacy-notice {
+  background: rgba(var(--color-accent-rgb), 0.06);
+  border: 1px solid rgba(var(--color-accent-rgb), 0.22);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.78rem;
+  color: var(--color-muted);
+  line-height: 1.5;
+}
+.setting-privacy-notice-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+.setting-privacy-notice p { margin: 0; }
+.setting-privacy-notice ul {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.setting-privacy-notice strong { color: var(--color-text); }
 .roulette-exclude-list {
   display: flex;
   flex-direction: column;
