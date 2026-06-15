@@ -9,6 +9,7 @@ const TAB_MAP = {
   'screen-tools':              'tools',
   'screen-history':            'history',
   'screen-settings':           null,
+  'screen-roulette':           'home',
   'screen-teambuilder':        'home',
   'screen-teambuilder-reveal': null,
   'screen-teambuilder-lineup': null,

@@ -25,12 +25,13 @@ router.register('screen-match-setup', enterSetup);
 router.register('screen-match-live', enterLive, leaveLive);
 router.register('screen-tools');
 router.register('screen-history', () => historyMod.render(currentHistoryTab));
-router.register('screen-settings');
+router.register('screen-settings', () => renderRouletteExclusion());
 router.register('screen-teambuilder', enterTeamBuilder);
 router.register('screen-teambuilder-reveal', enterTeamBuilderReveal);
 router.register('screen-teambuilder-lineup', enterLineup, leaveLineup);
 router.register('screen-tb-match', enterTbMatch, leaveTbMatch);
 router.register('screen-rules', enterRules);
+router.register('screen-roulette', enterRoulette);
 
 // ═══════════════════════════════════════════════════════════
 // TOP-NAV
@@ -73,6 +74,9 @@ document.getElementById('btn-goto-log').addEventListener('click', () =>
 
 document.getElementById('btn-open-rules').addEventListener('click', () =>
   router.navigateTo('screen-rules'));
+
+document.getElementById('btn-open-roulette').addEventListener('click', () =>
+  router.navigateTo('screen-roulette'));
 
 // ═══════════════════════════════════════════════════════════
 // TEAMBILDUNG
@@ -667,6 +671,137 @@ function enterRules() {
     });
   });
 }
+
+// ═══════════════════════════════════════════════════════════
+// SPIEL-ROULETTE
+// ═══════════════════════════════════════════════════════════
+let _rouletteCategory = 'all';
+let _rouletteResult   = null;   // aktuell ausgelostes Preset
+let _rouletteSpinning = false;
+
+function _getRouletteExcluded() {
+  return (storage.getItem('settings') || {}).rouletteExcluded || [];
+}
+
+function enterRoulette() {
+  _rouletteSpinning = false;
+  buildRouletteCats();
+  resetRouletteDisplay();
+}
+
+function buildRouletteCats() {
+  const row = document.getElementById('roulette-cats');
+  if (!row) return;
+  row.replaceChildren();
+  presets.ROULETTE_CATEGORIES.forEach(cat => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'roulette-cat-chip' + (cat.key === _rouletteCategory ? ' roulette-cat-chip--active' : '');
+    btn.textContent = `${cat.icon} ${cat.label}`;
+    btn.setAttribute('role', 'tab');
+    btn.setAttribute('aria-selected', String(cat.key === _rouletteCategory));
+    btn.addEventListener('click', () => {
+      if (_rouletteSpinning) return;
+      _rouletteCategory = cat.key;
+      buildRouletteCats();
+      resetRouletteDisplay();
+    });
+    row.appendChild(btn);
+  });
+}
+
+function _setRouletteFace(icon, name, meta) {
+  document.getElementById('roulette-icon').textContent = icon;
+  document.getElementById('roulette-name').textContent = name;
+  document.getElementById('roulette-meta').textContent = meta ?? '';
+}
+
+function resetRouletteDisplay() {
+  _rouletteResult = null;
+  const candidates = presets.getRouletteCandidates(_rouletteCategory, _getRouletteExcluded());
+  const display = document.getElementById('roulette-display');
+  display.classList.remove('roulette-display--win', 'roulette-display--spin');
+  document.getElementById('roulette-result-actions').classList.add('hidden');
+  const spinBtn = document.getElementById('btn-roulette-spin');
+  const empty = document.getElementById('roulette-empty');
+  if (candidates.length === 0) {
+    empty.classList.remove('hidden');
+    spinBtn.disabled = true;
+    _setRouletteFace('🎲', 'Keine Spiele', '—');
+  } else {
+    empty.classList.add('hidden');
+    spinBtn.disabled = false;
+    _setRouletteFace('🎲', 'Bereit?', `${candidates.length} Spiele im Topf`);
+  }
+}
+
+function spinRoulette() {
+  if (_rouletteSpinning) return;
+  const candidates = presets.getRouletteCandidates(_rouletteCategory, _getRouletteExcluded());
+  if (candidates.length === 0) return;
+
+  _rouletteSpinning = true;
+  _rouletteResult = null;
+  const cfg = storage.getItem('settings') || {};
+  const display = document.getElementById('roulette-display');
+  display.classList.remove('roulette-display--win');
+  display.classList.add('roulette-display--spin');
+  document.getElementById('roulette-result-actions').classList.add('hidden');
+  document.getElementById('btn-roulette-spin').disabled = true;
+
+  const final = candidates[Math.floor(Math.random() * candidates.length)];
+  const totalTicks = 16 + Math.floor(Math.random() * Math.max(1, candidates.length));
+  let ticks = 0;
+  let delay = 55;
+
+  const step = () => {
+    const p = candidates[Math.floor(Math.random() * candidates.length)];
+    _setRouletteFace(p.icon, p.name, '…');
+    if (cfg.vibration !== false && navigator.vibrate) navigator.vibrate(6);
+    ticks++;
+    if (ticks >= totalTicks) { _finishSpin(final); return; }
+    if (ticks > totalTicks - 6) delay += 45; // gegen Ende abbremsen
+    setTimeout(step, delay);
+  };
+  step();
+}
+
+function _finishSpin(preset) {
+  _rouletteResult = preset;
+  _rouletteSpinning = false;
+  const display = document.getElementById('roulette-display');
+  display.classList.remove('roulette-display--spin');
+  display.classList.add('roulette-display--win');
+  const meta = [];
+  if (preset.durationMs) meta.push(`${Math.floor(preset.durationMs / 60000)} Min.`);
+  meta.push(`${preset.teamA.name} vs. ${preset.teamB.name}`);
+  _setRouletteFace(preset.icon, preset.name, meta.join(' · '));
+  document.getElementById('roulette-result-actions').classList.remove('hidden');
+  document.getElementById('btn-roulette-spin').disabled = false;
+  const cfg = storage.getItem('settings') || {};
+  if (cfg.sound !== false) playBeep();
+  if (cfg.vibration !== false && navigator.vibrate) navigator.vibrate([20, 40, 80]);
+}
+
+function startMatchFromPreset(preset) {
+  match.startMatch(
+    preset.teamA.name,
+    preset.teamB.name,
+    preset.colorIndex ?? 0,
+    preset.durationMs ?? null,
+    preset.breakMs ?? null,
+    preset.periods ?? 2,
+  );
+  router.navigateTo('screen-match-live');
+}
+
+document.getElementById('btn-roulette-back').addEventListener('click', () =>
+  router.navigateTo('screen-home'));
+document.getElementById('btn-roulette-spin').addEventListener('click', spinRoulette);
+document.getElementById('btn-roulette-again').addEventListener('click', spinRoulette);
+document.getElementById('btn-roulette-start').addEventListener('click', () => {
+  if (_rouletteResult) startMatchFromPreset(_rouletteResult);
+});
 
 // ═══════════════════════════════════════════════════════════
 // MATCH SETUP
@@ -1546,6 +1681,41 @@ document.getElementById('btn-export').addEventListener('click', () => {
 // ═══════════════════════════════════════════════════════════
 // EINSTELLUNGEN
 // ═══════════════════════════════════════════════════════════
+// Ausschlussliste fürs Spiel-Roulette: pro Spiel ein Schalter.
+function renderRouletteExclusion() {
+  const list = document.getElementById('roulette-exclude-list');
+  if (!list) return;
+  list.replaceChildren();
+  const excluded = new Set(_getRouletteExcluded());
+  const all = presets.getAll();
+  if (all.length === 0) {
+    const empty = document.createElement('p');
+    empty.className = 'settings-section-hint';
+    empty.textContent = 'Keine Spiele vorhanden.';
+    list.appendChild(empty);
+    return;
+  }
+  all.forEach(p => {
+    const row = document.createElement('label');
+    row.className = 'roulette-exclude-item';
+    const name = document.createElement('span');
+    name.className = 'roulette-exclude-name';
+    name.textContent = `${p.icon} ${p.name}`;
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.checked = excluded.has(p.id);
+    cb.addEventListener('change', () => {
+      const c = storage.getItem('settings') || {};
+      const set = new Set(c.rouletteExcluded || []);
+      if (cb.checked) set.add(p.id); else set.delete(p.id);
+      c.rouletteExcluded = [...set];
+      storage.setItem('settings', c);
+    });
+    row.append(name, cb);
+    list.appendChild(row);
+  });
+}
+
 function initSettings() {
   const cfg = storage.getItem('settings') || { sound: true, vibration: true, tbPhotos: true };
   document.getElementById('toggle-sound').checked     = cfg.sound     !== false;
@@ -1620,9 +1790,12 @@ function initSettings() {
     });
   }
 
+  renderRouletteExclusion();
+
   document.getElementById('btn-restore-presets').addEventListener('click', () => {
     storage.removeItem('hiddenPresets');
     ui.showToast('Standard-Presets wiederhergestellt!');
+    renderRouletteExclusion();
   });
 
   document.getElementById('btn-clear-all').addEventListener('click', async () => {

@@ -108,6 +108,20 @@
             <div class="home-tile-sub">Stoppuhr &amp; Countdown</div>
           </div>
         </button>
+        <button class="home-tile home-tile--wide home-tile--accent" id="btn-open-roulette" aria-label="Spiel-Roulette öffnen">
+          <span class="home-tile-icon home-icon-anim home-icon-roulette">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="9" class="anim-roulette-wheel" style="transform-origin:12px 12px"/>
+              <circle cx="12" cy="12" r="2.2" fill="currentColor" stroke="none"/>
+              <line x1="12" y1="3" x2="12" y2="21" class="anim-roulette-wheel" style="transform-origin:12px 12px"/>
+              <line x1="3" y1="12" x2="21" y2="12" class="anim-roulette-wheel" style="transform-origin:12px 12px"/>
+            </svg>
+          </span>
+          <div class="home-tile-text">
+            <div class="home-tile-label">Spiel-Roulette</div>
+            <div class="home-tile-sub">Zufälliges Spiel auslosen</div>
+          </div>
+        </button>
         <button class="home-tile home-tile--wide home-tile--accent" id="btn-open-teambuilder" aria-label="Teams zufällig einteilen">
           <span class="home-tile-icon home-icon-anim home-icon-team">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -428,6 +442,34 @@
       </div>
     </section>
 
+    <!-- ═══ Screen: Spiel-Roulette ═══ -->
+    <section id="screen-roulette" class="screen screen-deco">
+      <div class="sub-header">
+        <button class="btn-back" id="btn-roulette-back" aria-label="Zurück"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg></button>
+        <h2>Spiel-Roulette</h2>
+      </div>
+      <div class="screen-body">
+        <p class="roulette-intro">Wähle eine Kategorie und lose ein zufälliges Spiel aus.</p>
+        <div class="roulette-cat-row" id="roulette-cats" role="tablist" aria-label="Kategorie"></div>
+
+        <div class="roulette-stage">
+          <div class="roulette-display" id="roulette-display" aria-live="polite">
+            <span class="roulette-display-icon" id="roulette-icon">🎲</span>
+            <span class="roulette-display-name" id="roulette-name">Bereit?</span>
+            <span class="roulette-display-meta" id="roulette-meta">Tippe auf „Auslosen"</span>
+          </div>
+        </div>
+
+        <button class="btn-primary btn-full roulette-spin-btn" id="btn-roulette-spin">Auslosen 🎲</button>
+
+        <div class="roulette-result-actions hidden" id="roulette-result-actions">
+          <button class="btn-secondary" id="btn-roulette-again">Nochmal</button>
+          <button class="btn-primary" id="btn-roulette-start">Match starten</button>
+        </div>
+        <p class="roulette-empty hidden" id="roulette-empty">Keine Spiele in dieser Kategorie verfügbar. Passe die Ausschlussliste in den Einstellungen an.</p>
+      </div>
+    </section>
+
     <!-- ═══ Screen: Einstellungen ═══ -->
     <section id="screen-settings" class="screen screen-deco">
       <div class="sub-header">
@@ -465,6 +507,15 @@
           <label>App installieren</label>
           <button class="btn-install-settings" id="btn-settings-install">Installieren</button>
           <span class="install-status-text hidden" id="install-status"></span>
+        </div>
+        <hr>
+        <div class="settings-section">
+          <div class="settings-section-title">
+            <span class="setting-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="3" x2="12" y2="21"/><line x1="3" y1="12" x2="21" y2="12"/></svg></span>
+            <span>Spiel-Roulette: Ausschlussliste</span>
+          </div>
+          <p class="settings-section-hint">Ausgewählte Spiele werden beim Roulette nicht vorgeschlagen.</p>
+          <div class="roulette-exclude-list" id="roulette-exclude-list"></div>
         </div>
         <hr>
         <button class="btn-secondary btn-full btn-anim" id="btn-restore-presets">
@@ -629,6 +680,10 @@
     <div class="modal-field">
       <span class="modal-label">Pausendauer (Halbzeit)</span>
       <div class="duration-chips" id="pm-break"></div>
+    </div>
+    <div class="modal-field">
+      <span class="modal-label">Roulette-Kategorien</span>
+      <div class="roulette-cat-row" id="pm-categories"></div>
     </div>
     <div class="modal-actions" id="pm-actions">
       <button class="btn-secondary" id="pm-cancel">Abbrechen</button>

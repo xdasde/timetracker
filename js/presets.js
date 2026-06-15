@@ -56,6 +56,7 @@ const BUILT_IN_PRESETS = [
     breakMs: 900000,
     periods: 2,
     rulesKey: 'soccer',
+    categories: ['ball', 'team'],
     builtIn: true,
   },
   {
@@ -69,6 +70,7 @@ const BUILT_IN_PRESETS = [
     breakMs: 600000,
     periods: 4,
     rulesKey: 'basketball',
+    categories: ['ball', 'team'],
     builtIn: true,
   },
   {
@@ -81,6 +83,7 @@ const BUILT_IN_PRESETS = [
     durationMs: null,
     periods: 5,
     rulesKey: 'volleyball',
+    categories: ['ball', 'team'],
     builtIn: true,
   },
   {
@@ -94,6 +97,7 @@ const BUILT_IN_PRESETS = [
     breakMs: 300000,
     periods: 2,
     rulesKey: 'voelkerball',
+    categories: ['ball', 'team'],
     builtIn: true,
   },
   {
@@ -105,6 +109,7 @@ const BUILT_IN_PRESETS = [
     colorIndex: 3,
     durationMs: null,
     rulesKey: 'laufsport',
+    categories: ['lauf'],
     builtIn: true,
   },
   {
@@ -117,6 +122,7 @@ const BUILT_IN_PRESETS = [
     durationMs: null,
     periods: 2,
     rulesKey: 'schulsport',
+    categories: ['lauf', 'ball', 'team'],
     builtIn: true,
   },
   {
@@ -130,6 +136,7 @@ const BUILT_IN_PRESETS = [
     breakMs: 600000,
     periods: 2,
     rulesKey: 'handball',
+    categories: ['ball', 'team'],
     builtIn: true,
   },
   {
@@ -143,6 +150,7 @@ const BUILT_IN_PRESETS = [
     breakMs: 900000,
     periods: 2,
     rulesKey: 'futsal',
+    categories: ['ball', 'team'],
     builtIn: true,
   },
   {
@@ -156,6 +164,7 @@ const BUILT_IN_PRESETS = [
     breakMs: 600000,
     periods: 4,
     rulesKey: 'hockey',
+    categories: ['ball', 'team'],
     builtIn: true,
   },
   {
@@ -169,6 +178,7 @@ const BUILT_IN_PRESETS = [
     breakMs: 600000,
     periods: 3,
     rulesKey: 'floorball',
+    categories: ['ball', 'team'],
     builtIn: true,
   },
   {
@@ -182,6 +192,7 @@ const BUILT_IN_PRESETS = [
     breakMs: null,
     periods: 3,
     rulesKey: 'badminton',
+    categories: ['ball'],
     builtIn: true,
   },
   {
@@ -195,6 +206,7 @@ const BUILT_IN_PRESETS = [
     breakMs: null,
     periods: 5,
     rulesKey: 'tabletennis',
+    categories: ['ball'],
     builtIn: true,
   },
   {
@@ -208,6 +220,7 @@ const BUILT_IN_PRESETS = [
     breakMs: null,
     periods: 2,
     rulesKey: 'ultimate',
+    categories: ['ball', 'team', 'lauf'],
     builtIn: true,
   },
   {
@@ -221,6 +234,7 @@ const BUILT_IN_PRESETS = [
     breakMs: 300000,
     periods: 3,
     rulesKey: 'tchoukball',
+    categories: ['ball', 'team'],
     builtIn: true,
   },
   {
@@ -234,6 +248,7 @@ const BUILT_IN_PRESETS = [
     breakMs: null,
     periods: 3,
     rulesKey: 'faustball',
+    categories: ['ball', 'team'],
     builtIn: true,
   },
   {
@@ -247,6 +262,7 @@ const BUILT_IN_PRESETS = [
     breakMs: 300000,
     periods: 2,
     rulesKey: 'brennball',
+    categories: ['lauf', 'team', 'ball'],
     builtIn: true,
   },
   {
@@ -260,6 +276,7 @@ const BUILT_IN_PRESETS = [
     breakMs: null,
     periods: 3,
     rulesKey: 'prellball',
+    categories: ['ball', 'team'],
     builtIn: true,
   },
   {
@@ -273,6 +290,7 @@ const BUILT_IN_PRESETS = [
     breakMs: 300000,
     periods: 2,
     rulesKey: 'schlagball',
+    categories: ['lauf', 'team', 'ball'],
     builtIn: true,
   },
   {
@@ -286,16 +304,37 @@ const BUILT_IN_PRESETS = [
     breakMs: null,
     periods: 1,
     rulesKey: 'staffellauf',
+    categories: ['lauf', 'team'],
     builtIn: true,
   },
 ];
 
 export { BUILT_IN_PRESETS };
 
+// Kategorien für das Spiel-Roulette. 'all' ist der Standard-Filter.
+export const ROULETTE_CATEGORIES = [
+  { key: 'all',  label: 'Alle',      icon: '🎲' },
+  { key: 'lauf', label: 'Laufspiel', icon: '🏃' },
+  { key: 'ball', label: 'Ballspiel', icon: '⚽' },
+  { key: 'team', label: 'Teamspiel', icon: '👥' },
+];
+
 export function getAll() {
   const custom = storage.getCollection('presets');
   const hidden = new Set(storage.getItem('hiddenPresets') || []);
   return [...BUILT_IN_PRESETS.filter(p => !hidden.has(p.id)), ...custom];
+}
+
+// Liefert alle für das Roulette in Frage kommenden Presets:
+// gefiltert nach Kategorie (außer 'all') und ohne ausgeschlossene IDs.
+// Presets ohne Kategorien (z. B. eigene) erscheinen nur unter 'Alle'.
+export function getRouletteCandidates(category = 'all', excludedIds = []) {
+  const excluded = new Set(excludedIds);
+  return getAll().filter(p => {
+    if (excluded.has(p.id)) return false;
+    if (category === 'all') return true;
+    return Array.isArray(p.categories) && p.categories.includes(category);
+  });
 }
 
 export function save(data) {
@@ -420,8 +459,10 @@ export function openModal(preset, onSaved, onDeleted) {
       colorIndex: 0,
       durationMs: null,
       breakMs: null,
+      categories: [],
       builtIn: false,
     };
+    editing.categories = Array.isArray(editing.categories) ? [...editing.categories] : [];
 
     document.getElementById('pm-title').textContent = isNew ? 'Neues Preset' : 'Preset bearbeiten';
     document.getElementById('pm-name').value = editing.name;
@@ -484,6 +525,26 @@ export function openModal(preset, onSaved, onDeleted) {
       editing.durationMs, ms => { editing.durationMs = ms; });
     buildTimeChips(document.getElementById('pm-break'), BREAK_OPTIONS,
       editing.breakMs, ms => { editing.breakMs = ms; });
+
+    // Roulette-Kategorien (Mehrfachauswahl; 'all' ist kein wählbarer Wert)
+    const catRow = document.getElementById('pm-categories');
+    if (catRow) {
+      catRow.replaceChildren();
+      ROULETTE_CATEGORIES.filter(c => c.key !== 'all').forEach(cat => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        const active = editing.categories.includes(cat.key);
+        btn.className = 'roulette-cat-chip' + (active ? ' roulette-cat-chip--active' : '');
+        btn.textContent = `${cat.icon} ${cat.label}`;
+        btn.addEventListener('click', () => {
+          const i = editing.categories.indexOf(cat.key);
+          if (i >= 0) editing.categories.splice(i, 1);
+          else editing.categories.push(cat.key);
+          btn.classList.toggle('roulette-cat-chip--active');
+        });
+        catRow.appendChild(btn);
+      });
+    }
 
     const actions = document.getElementById('pm-actions');
     if (!isNew) {
