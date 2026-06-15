@@ -1,0 +1,55 @@
+name: Spiele-Datenbank
+
+# Validiert die Markdown-Einträge bei jedem Pull-Request und regeneriert das
+# kompilierte Bundle (js/content.generated.js) nach einem Merge auf den
+# Default-Branch automatisch.
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'content/games/**'
+      - 'scripts/build-content.mjs'
+      - '.github/workflows/content.yml'
+  pull_request:
+    paths:
+      - 'content/games/**'
+      - 'scripts/build-content.mjs'
+
+jobs:
+  # ── PR: nur die Markdown-Dateien validieren ────────────────────────────────
+  validate:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Markdown-Einträge validieren
+        run: node scripts/build-content.mjs --validate
+
+  # ── Push auf main: Bundle neu bauen und ggf. zurück-committen ──────────────
+  build-and-commit:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Bundle erzeugen
+        run: node scripts/build-content.mjs
+      - name: Änderungen committen (falls vorhanden)
+        run: |
+          if [ -n "$(git status --porcelain js/content.generated.js)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add js/content.generated.js
+            git commit -m "chore: Spiele-Datenbank neu generieren"
+            git push
+          else
+            echo "Bundle ist bereits aktuell – nichts zu committen."
+          fi

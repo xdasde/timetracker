@@ -1,0 +1,11 @@
+{
+  "name": "sportzaehler",
+  "version": "1.0.0",
+  "description": "Sportzähler PWA – Spiele- & Übungsdatenbank aus Markdown",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:content": "node scripts/build-content.mjs",
+    "validate:content": "node scripts/build-content.mjs --check"
+  }
+}

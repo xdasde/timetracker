@@ -620,13 +620,94 @@ document.getElementById('btn-preset-add').addEventListener('click', () => {
 });
 
 // ═══════════════════════════════════════════════════════════
-// REGELN SCREEN
+// DATENBANK SCREEN (Spiele / Sportarten / Übungen, durchsuchbar)
 // ═══════════════════════════════════════════════════════════
+const RULES_KIND_FILTERS = [
+  { key: 'all',    label: 'Alle',     icon: '📚' },
+  { key: 'sport',  label: 'Sportart', icon: '🏆' },
+  { key: 'spiel',  label: 'Spiel',    icon: '🎮' },
+  { key: 'uebung', label: 'Übung',    icon: '🤸' },
+];
+const RULES_DIFF_FILTERS = [
+  { key: 'all',     label: 'Alle Stufen' },
+  { key: 'einfach', label: 'Einfach' },
+  { key: 'mittel',  label: 'Mittel' },
+  { key: 'schwer',  label: 'Schwer' },
+];
+const _rulesFilter = { search: '', kind: 'all', diff: 'all' };
+let _rulesWired = false;
+
 function enterRules() {
+  // Beim Betreten Filter zurücksetzen (sorgt u. a. dafür, dass der "?"-Sprung
+  // aus den Presets jeden Eintrag findet).
+  _rulesFilter.search = '';
+  _rulesFilter.kind = 'all';
+  _rulesFilter.diff = 'all';
+  const searchInput = document.getElementById('rules-search');
+  if (searchInput) searchInput.value = '';
+
+  if (!_rulesWired) {
+    _rulesWired = true;
+    searchInput?.addEventListener('input', e => {
+      _rulesFilter.search = e.target.value.trim().toLowerCase();
+      renderRulesList();
+    });
+  }
+  buildRulesFilterChips();
+  renderRulesList();
+}
+
+function buildRulesFilterChips() {
+  const kindRow = document.getElementById('rules-filter-kind');
+  const diffRow = document.getElementById('rules-filter-diff');
+  const build = (row, options, stateKey) => {
+    if (!row) return;
+    row.replaceChildren();
+    options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      const active = _rulesFilter[stateKey] === opt.key;
+      btn.className = 'roulette-cat-chip' + (active ? ' roulette-cat-chip--active' : '');
+      btn.textContent = opt.icon ? `${opt.icon} ${opt.label}` : opt.label;
+      btn.setAttribute('aria-pressed', String(active));
+      btn.addEventListener('click', () => {
+        _rulesFilter[stateKey] = opt.key;
+        buildRulesFilterChips();
+        renderRulesList();
+      });
+      row.appendChild(btn);
+    });
+  };
+  build(kindRow, RULES_KIND_FILTERS, 'kind');
+  build(diffRow, RULES_DIFF_FILTERS, 'diff');
+}
+
+function rulesMatchesFilter(rule) {
+  if (_rulesFilter.kind !== 'all' && rule.kind !== _rulesFilter.kind) return false;
+  if (_rulesFilter.diff !== 'all' && rule.difficulty !== _rulesFilter.diff) return false;
+  const q = _rulesFilter.search;
+  if (!q) return true;
+  const hay = [rule.name, rule.scoring, rule.structure, (rule.material || []).join(' '),
+    (rule.basics || []).join(' ')].join(' ').toLowerCase();
+  return hay.includes(q);
+}
+
+const KIND_LABELS = { sport: 'Sportart', spiel: 'Spiel', uebung: 'Übung' };
+
+function renderRulesList() {
   const list = document.getElementById('rules-list');
   if (!list) return;
   list.replaceChildren();
-  rules.getAllRules().forEach(rule => {
+
+  const matches = rules.getAllRules().filter(rulesMatchesFilter);
+
+  const countEl = document.getElementById('rules-count');
+  if (countEl) countEl.textContent =
+    `${matches.length} ${matches.length === 1 ? 'Eintrag' : 'Einträge'}`;
+  const emptyEl = document.getElementById('rules-empty');
+  if (emptyEl) emptyEl.classList.toggle('hidden', matches.length > 0);
+
+  matches.forEach(rule => {
     const item = document.createElement('div');
     item.className = 'rules-item';
     item.setAttribute('role', 'listitem');
@@ -639,6 +720,20 @@ function enterRules() {
 
     const body = document.createElement('div');
     body.className = 'rules-item-body';
+
+    // Badge-Zeile: Art, Schwierigkeit, Altersgruppe
+    const badges = document.createElement('div');
+    badges.className = 'rules-badges';
+    const addBadge = (text, cls) => {
+      if (!text) return;
+      const b = document.createElement('span');
+      b.className = 'rules-badge' + (cls ? ` ${cls}` : '');
+      b.textContent = text;
+      badges.appendChild(b);
+    };
+    addBadge(KIND_LABELS[rule.kind], 'rules-badge--kind');
+    if (rule.difficulty) addBadge(rule.difficulty, `rules-badge--diff-${rule.difficulty}`);
+    addBadge(rule.ageGroup);
 
     const scoring = document.createElement('div');
     scoring.className = 'rules-scoring';
@@ -656,11 +751,20 @@ function enterRules() {
       ul.appendChild(li);
     });
 
+    body.append(badges, scoring, structure, ul);
+
+    if (rule.material && rule.material.length) {
+      const mat = document.createElement('div');
+      mat.className = 'rules-material';
+      mat.innerHTML = `<strong>Material:</strong> ${rule.material.join(', ')}`;
+      body.appendChild(mat);
+    }
+
     const tipEl = document.createElement('div');
     tipEl.className = 'rules-tip';
     tipEl.innerHTML = `<strong>App-Tipp:</strong> ${rule.tip}`;
+    body.appendChild(tipEl);
 
-    body.append(scoring, structure, ul, tipEl);
     item.append(header, body);
     list.appendChild(item);
 

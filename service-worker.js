@@ -1,4 +1,4 @@
-const CACHE = 'sportzaehler-v14';
+const CACHE = 'sportzaehler-v15';
 const ASSETS = [
   './',
   './index.html',
@@ -8,6 +8,7 @@ const ASSETS = [
   './js/router.js',
   './js/ui.js',
   './js/match.js',
+  './js/content.generated.js',
   './js/presets.js',
   './js/rules.js',
   './js/stopwatch.js',

@@ -20,14 +20,20 @@ timetracker/
 ├── style.css               # Design System, alle Layouts
 ├── service-worker.js       # Offline-Caching (Code: network-first, Assets: cache-first)
 ├── manifest.webmanifest    # PWA-Metadaten
+├── content/
+│   ├── games/*.md          # Quelle der Spiele-/Übungsdatenbank (je 1 Datei)
+│   └── SCHEMA.md           # Feldreferenz der Markdown-Einträge
+├── scripts/
+│   └── build-content.mjs   # kompiliert content/games/*.md → js/content.generated.js
 ├── js/
 │   ├── router.js           # Screen-Navigation (CSS-Toggle)
 │   ├── storage.js          # localStorage-Wrapper (tt.*)
 │   ├── match.js            # Match-Logik: Score, Timer, Perioden
 │   ├── timer.js            # Countdown-Klasse
 │   ├── stopwatch.js        # Stoppuhr-Klasse mit Lap-Funktion
-│   ├── presets.js          # Sport-Preset-Verwaltung
-│   ├── rules.js            # Regelwerk-Datenbank
+│   ├── content.generated.js # AUTO-GENERIERT aus content/games/*.md
+│   ├── presets.js          # Preset-Verwaltung (leitet Built-ins aus content ab)
+│   ├── rules.js            # Regelwerk-API (leitet RULES aus content ab)
 │   ├── ui.js               # Modal, Toast, Bestätigungsdialog
 │   ├── history.js          # Spielhistorie-Anzeige
 │   ├── export.js           # CSV/JSON-Export
@@ -96,16 +102,41 @@ Verwaltet den Live-Match-Zustand. Alle State-Mutationen gehen durch dieses Modul
 
 ### presets.js
 
-- 19 Built-in Presets + Custom Presets aus localStorage
+- Built-in Presets werden aus `content.generated.js` abgeleitet (+ Custom Presets aus localStorage)
 - `getAll()` – Alle aktiven Presets (Built-in + Custom)
 - `save()` / `remove()` – CRUD für Custom Presets
 - `renderList()` / `renderChips()` – UI-Rendering
 
 ### rules.js
 
-- Regelwerk-Datenbank für alle 19 Sportarten
-- `getRule(key)` – Regel für eine Sportart
-- `getAllRules()` – Alle Regeln als Array
+- Regelwerk-API, abgeleitet aus `content.generated.js`
+- `getRule(key)` – Regel/Eintrag per id
+- `getAllRules()` – Alle Einträge als Array (inkl. `kind`, `difficulty`, `material`, …)
+
+## Spiele-/Übungsdatenbank (Content-Pipeline)
+
+Die Datenbank ist Markdown-basiert und für offene Beiträge ausgelegt:
+
+```
+content/games/*.md  ──(scripts/build-content.mjs)──►  js/content.generated.js
+                                                          │
+                                       ┌──────────────────┴──────────────────┐
+                                  rules.js (RULES)                   presets.js (BUILT_IN_PRESETS)
+```
+
+- **Quelle der Wahrheit:** je eine `.md`-Datei pro Eintrag mit YAML-Frontmatter
+  (strukturierte Felder) und Body (`## Ablauf` → `basics[]`, `## Tipp` → `tip`).
+  Format siehe `content/SCHEMA.md`, Anleitung in `CONTRIBUTING.md`.
+- **Build:** `scripts/build-content.mjs` (zero-dependency, eigener Mini-YAML-Parser)
+  validiert alle Einträge und schreibt `js/content.generated.js`
+  (`export const CONTENT = [...]`). Befehle: `npm run build:content`,
+  `npm run validate:content`.
+- **CI:** `.github/workflows/content.yml` validiert MD bei Pull-Requests
+  (`--validate`) und regeneriert das Bundle nach Merge auf `main` automatisch.
+- **Runtime bleibt build-frei:** Die App importiert nur das fertige
+  `content.generated.js` (im Service-Worker-Cache, daher offline-tauglich).
+- Die Datenbank-Ansicht (Screen „Datenbank") bietet Suche + Filter nach Art
+  (`kind`) und Schwierigkeit (`difficulty`).
 
 ### timer.js / stopwatch.js
 
