@@ -4,11 +4,12 @@
 // Ermöglicht das Umschalten des App-Designs (Farben + Logo) auf
 // das Erscheinungsbild eines Vereins. Auswählbar in den Einstellungen.
 //
-// Neuen Verein hinzufügen:
-//   1. Logo (PNG/SVG) nach /icons legen.
-//   2. Unten einen Eintrag in THEMES ergänzen (Farben als CSS-Variablen,
-//      Pfad zum Logo, theme-color für die Statusleiste).
-// Fehlt die Logodatei, wird automatisch der Schriftzug (logoText) angezeigt.
+// Neuen Verein hinzufügen: einen Eintrag in THEMES ergänzen (Farben als
+// CSS-Variablen, theme-color für die Statusleiste und logoImg).
+// logoImg kann eine URL ODER eine Liste von URLs sein, die der Reihe nach
+// probiert werden. So lässt sich das Logo direkt von der Vereinsseite laden
+// (immer aktuell). Lädt keine der URLs, wird automatisch der Schriftzug
+// (logoText) angezeigt.
 // ═══════════════════════════════════════════════════════════
 import * as storage from './storage.js';
 
@@ -27,10 +28,15 @@ export const THEMES = [
     id: 'hagen-wildewiese',
     name: 'SC Hagen-Wildewiese',
     logoText: 'SC Hagen-Wildewiese',
-    // Logo der App im Vereins-Modus. Datei nach /icons legen.
-    logoImg: 'icons/club-hagen-wildewiese.png',
-    // HINWEIS: Platzhalter-Farben des Vereins – bitte mit den echten
-    // Vereinsfarben (von www.sc-hagen-wildewiese.de) abgleichen.
+    // Logo wird live von der Vereinsseite geladen (bleibt damit aktuell).
+    // Reihenfolge = Fallback-Kette: erst der Favicon-/Site-Icon-Resolver
+    // (löst zuverlässig das in der Seite gesetzte Icon auf), dann das
+    // direkte Favicon der Domain, zuletzt der Schriftzug.
+    // Möchtest du das exakte Header-Logo: die Bild-URL hier vorne eintragen.
+    logoImg: [
+      'https://www.google.com/s2/favicons?domain=www.sc-hagen-wildewiese.de&sz=128',
+      'https://www.sc-hagen-wildewiese.de/favicon.ico',
+    ],
     themeColor: '#0d3b66',
     vars: {
       '--color-bg':         '#0a1929',
@@ -92,21 +98,27 @@ function updateNavLogo(theme) {
   const el = document.querySelector('.nav-logo');
   if (!el) return;
   el.classList.toggle('nav-logo--club', theme.id !== DEFAULT_THEME);
-  el.replaceChildren();
 
-  if (theme.logoImg) {
-    const img = new Image();
-    img.className = 'nav-logo-img';
-    img.alt = theme.name;
-    img.decoding = 'async';
-    // Fällt auf den Schriftzug zurück, falls die Logodatei (noch) fehlt.
-    img.onerror = () => {
-      el.replaceChildren();
-      el.textContent = theme.logoText || theme.name;
-    };
-    img.src = theme.logoImg;
-    el.appendChild(img);
-  } else {
+  const sources = [].concat(theme.logoImg || []).filter(Boolean);
+  const showText = () => {
+    el.replaceChildren();
     el.textContent = theme.logoText || theme.name;
-  }
+  };
+
+  if (!sources.length) { showText(); return; }
+
+  // Quellen der Reihe nach probieren; klappt keine, Schriftzug anzeigen.
+  let i = 0;
+  const img = new Image();
+  img.className = 'nav-logo-img';
+  img.alt = theme.name;
+  img.decoding = 'async';
+  img.referrerPolicy = 'no-referrer'; // umgeht manche Hotlink-Sperren
+  img.onerror = () => {
+    i += 1;
+    if (i < sources.length) img.src = sources[i];
+    else showText();
+  };
+  el.replaceChildren(img);
+  img.src = sources[0];
 }
