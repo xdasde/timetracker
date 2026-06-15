@@ -336,8 +336,9 @@ body.live-active #app { top: 0; }
 #btn-goto-tools       { order: 1; }
 #btn-open-teambuilder { order: 2; }
 #btn-open-roulette    { order: 3; }
-#btn-open-presets     { order: 4; }
-#btn-goto-log         { order: 5; }
+#btn-open-rules       { order: 4; }
+#btn-open-presets     { order: 5; }
+#btn-goto-log         { order: 6; }
 
 .home-tile--primary {
   grid-column: 1 / -1;

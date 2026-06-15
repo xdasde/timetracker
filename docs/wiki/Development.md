@@ -65,10 +65,10 @@ In `js/audio.js` neue Funktion mit Web Audio API Oscillator exportieren.
 
 ## Service Worker
 
-`service-worker.js` – Cache-Version als `const CACHE = 'sportzaehler-v13'` im Code. Bei Asset-Änderungen Versionsnummer hochzählen:
+`service-worker.js` – Cache-Version als `const CACHE = 'sportzaehler-v14'` im Code. Bei Asset-Änderungen Versionsnummer hochzählen:
 
 ```js
-const CACHE = 'sportzaehler-v14'; // Erhöhen bei Updates
+const CACHE = 'sportzaehler-v15'; // Erhöhen bei Updates
 ```
 
 Neue JS-Dateien zusätzlich in die `ASSETS`-Liste eintragen (für Offline-Vorabcache).
