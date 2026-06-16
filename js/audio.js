@@ -8,6 +8,18 @@ function ctx() {
   return _ctx;
 }
 
+// Muss synchron innerhalb eines User-Gesture-Handlers (click/touchend) aufgerufen
+// werden, BEVOR ein späterer (z. B. asynchron ausgelöster) Sound abgespielt wird.
+// Erstellt den AudioContext (falls nötig) und versucht ihn aus dem 'suspended'-
+// Zustand zu holen – sonst greift die Browser-Autoplay-Policy und es bleibt stumm.
+export function unlockAudio() {
+  const c = ctx();
+  if (!c) return;
+  if (c.state === 'suspended') {
+    try { c.resume(); } catch { /* ignorieren */ }
+  }
+}
+
 function _tone(c, freq, type, startAt, duration, gainVal = 0.35) {
   const osc = c.createOscillator();
   const g   = c.createGain();

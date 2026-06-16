@@ -7,7 +7,7 @@ import { Stopwatch, fmtMs } from './js/stopwatch.js';
 import * as timer from './js/timer.js';
 import * as historyMod from './js/history.js';
 import * as exportMod from './js/export.js';
-import { playBeep, playWhistle, playGoal, playMatchEnd, playCountdownTick } from './js/audio.js';
+import { playBeep, playWhistle, playGoal, playMatchEnd, playCountdownTick, unlockAudio } from './js/audio.js';
 import { acquireWakeLock, releaseWakeLock } from './js/wakelock.js';
 import * as teambuilder from './js/teambuilder.js';
 
@@ -50,8 +50,10 @@ function enterHome() {
   if (badge) badge.textContent = `${count} gespeichert`;
 }
 
-document.getElementById('btn-new-match').addEventListener('click', () =>
-  router.navigateTo('screen-match-setup'));
+document.getElementById('btn-new-match').addEventListener('click', () => {
+  unlockAudio();
+  router.navigateTo('screen-match-setup');
+});
 
 document.getElementById('btn-open-presets').addEventListener('click', () =>
   router.navigateTo('screen-presets'));
@@ -914,6 +916,7 @@ function mountSW(id, cardEl) {
   };
 
   ssBtn.addEventListener('click', () => {
+    unlockAudio();
     sw.toggle();
     sync();
     if (sw.isRunning()) {
@@ -1063,10 +1066,40 @@ function onTimerDone() {
   releaseWakeLock();
   ui.showToast('Timer abgelaufen!', 3000);
   syncTimerUI();
+  notifyTimerDone(cfg);
   setTimeout(() => { timer.reset(); syncTimerUI(); }, 3000);
 }
 
+// Echte OS-Benachrichtigung – nur wenn der Tab nicht aktiv im Vordergrund ist,
+// sonst reichen Toast + Sound (kein doppeltes Feedback nötig).
+function notifyTimerDone(cfg) {
+  if (!cfg.notifications) return;
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  if (!document.hidden) return;
+  if (!('serviceWorker' in navigator)) return;
+  navigator.serviceWorker.ready.then(reg => {
+    reg.showNotification('Timer abgelaufen!', {
+      body: 'Der Countdown ist zu Ende.',
+      icon: './icons/icon-192.png',
+      badge: './icons/icon-192.png',
+      tag: 'sportzaehler-timer',
+      renotify: true,
+    });
+  }).catch(() => { /* Service Worker nicht verfügbar – ignorieren */ });
+}
+
+// Wenn der Tab nach dem Verstecken wieder sichtbar wird, muss die Anzeige mit
+// dem Wandzeit-Endzeitpunkt abgeglichen werden, da rAF im Hintergrund pausiert
+// (und ggf. von dem setTimeout-Sicherheitsnetz im Hintergrund bereits beendet wurde).
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && timer.getState() === 'running') {
+    timer.reconcile();
+    syncTimerUI();
+  }
+});
+
 document.getElementById('btn-timer-start').addEventListener('click', () => {
+  unlockAudio();
   const ms = (getWheelVal(wMin) * 60 + getWheelVal(wSec)) * 1000;
   if (ms === 0) return;
   timer.setDuration(ms);
@@ -1150,6 +1183,7 @@ function initSettings() {
   document.getElementById('toggle-sound').checked     = cfg.sound     !== false;
   document.getElementById('toggle-vibration').checked = cfg.vibration !== false;
   document.getElementById('toggle-tb-photos').checked = cfg.tbPhotos  !== false;
+  document.getElementById('toggle-notifications').checked = cfg.notifications === true;
 
   document.getElementById('toggle-sound').addEventListener('change', e => {
     const c = storage.getItem('settings') || {};
@@ -1166,6 +1200,25 @@ function initSettings() {
   document.getElementById('toggle-tb-photos').addEventListener('change', e => {
     const c = storage.getItem('settings') || {};
     c.tbPhotos = e.target.checked;
+    storage.setItem('settings', c);
+  });
+
+  document.getElementById('toggle-notifications').addEventListener('change', e => {
+    const c = storage.getItem('settings') || {};
+    const enabling = e.target.checked;
+    if (enabling && 'Notification' in window && Notification.permission === 'default') {
+      // Muss synchron im Click/Change-Handler (User-Geste) aufgerufen werden.
+      Notification.requestPermission().then(permission => {
+        if (permission !== 'granted') {
+          // Nutzer hat abgelehnt – Schalter wieder ausschalten, Einstellung bleibt konsistent.
+          e.target.checked = false;
+          const c2 = storage.getItem('settings') || {};
+          c2.notifications = false;
+          storage.setItem('settings', c2);
+        }
+      });
+    }
+    c.notifications = enabling;
     storage.setItem('settings', c);
   });
 
