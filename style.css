@@ -15,8 +15,12 @@
   --nav-height:       56px;
   --radius-sm:        8px;
   --radius-md:        12px;
+  --radius-lg:        18px;
   --radius-pill:      999px;
   --shadow:           0 2px 8px rgba(0,0,0,0.45);
+  --shadow-tile:      0 4px 14px rgba(0,0,0,0.35), 0 1px 3px rgba(0,0,0,0.3);
+  --shadow-tile-active: 0 2px 6px rgba(0,0,0,0.3);
+  --app-max-width:    520px;
 }
 
 /* ═══════════════════════════════════════════
@@ -33,6 +37,13 @@ body {
   user-select: none;
   -webkit-user-select: none;
 }
+
+/* On wider viewports (tablet/desktop) the app reads as a centered column
+   rather than stretching edge-to-edge; on narrow phones --app-max-width
+   exceeds the viewport so it stays full-bleed. */
+@media (min-width: 600px) {
+  body { background: #0b0f17; }
+}
 button {
   cursor: pointer; border: none; background: none;
   font-family: inherit; font-size: inherit;
@@ -48,7 +59,10 @@ ol, ul { list-style: none; }
 ═══════════════════════════════════════════ */
 .top-nav {
   position: fixed;
-  top: 0; left: 0; right: 0;
+  top: 0; left: 50%;
+  width: 100%;
+  max-width: var(--app-max-width);
+  transform: translateX(-50%);
   height: var(--nav-height);
   background: var(--color-surface);
   border-bottom: 1px solid var(--color-border);
@@ -106,7 +120,19 @@ ol, ul { list-style: none; }
 #app {
   position: fixed;
   inset: var(--nav-height) 0 0 0;
+  left: 50%;
+  right: auto;
+  width: 100%;
+  max-width: var(--app-max-width);
+  transform: translateX(-50%);
   overflow: hidden;
+}
+
+@media (min-width: 600px) {
+  .top-nav,
+  #app {
+    box-shadow: 0 0 0 1px var(--color-border), 0 0 32px rgba(0,0,0,0.5);
+  }
 }
 .screen {
   display: none;
@@ -218,18 +244,22 @@ body.live-active #app { top: 0; }
 }
 
 .home-tile {
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   padding: 20px;
   cursor: pointer;
-  transition: transform 0.1s;
+  transition: transform 0.12s, box-shadow 0.12s;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
   border: 1px solid var(--color-border);
   background: var(--color-surface);
-  min-height: 100px;
+  min-height: 132px;
+  box-shadow: var(--shadow-tile);
 }
-.home-tile:active { transform: scale(0.97); }
+.home-tile:active { transform: scale(0.97); box-shadow: var(--shadow-tile-active); }
 
 .home-tile--primary {
   grid-column: 1 / -1;
@@ -238,13 +268,33 @@ body.live-active #app { top: 0; }
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  padding: 22px 20px;
+  padding: 20px 22px;
   min-height: unset;
+  text-align: left;
 }
-.home-tile--primary:active { background: var(--color-amber-dark); transform: scale(0.99); }
+.home-tile--primary:active { background: var(--color-amber-dark); transform: scale(0.99); box-shadow: var(--shadow-tile-active); }
 
-.home-tile-icon { font-size: 1.8rem; line-height: 1; }
-.home-tile--primary .home-tile-icon { font-size: 2.2rem; }
+.home-tile-icon {
+  font-size: 1.8rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.home-tile:not(.home-tile--primary) .home-tile-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-pill);
+  background: rgba(245, 158, 11, 0.16);
+}
+.home-tile--primary .home-tile-icon {
+  font-size: 2.2rem;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-pill);
+  background: rgba(17, 24, 39, 0.12);
+  flex-shrink: 0;
+}
 
 .home-tile-label {
   font-size: 0.82rem;
@@ -288,15 +338,16 @@ body.live-active #app { top: 0; }
 .preset-card {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   padding: 16px;
   display: flex;
   align-items: center;
   gap: 14px;
   cursor: pointer;
-  transition: transform 0.1s, background 0.1s;
+  box-shadow: var(--shadow-tile);
+  transition: transform 0.1s, background 0.1s, box-shadow 0.1s;
 }
-.preset-card:active { background: #283548; transform: scale(0.99); }
+.preset-card:active { background: #283548; transform: scale(0.99); box-shadow: var(--shadow-tile-active); }
 
 .preset-card-icon { font-size: 1.7rem; flex-shrink: 0; line-height: 1; }
 .preset-card-info { flex: 1; min-width: 0; }
@@ -384,12 +435,13 @@ body.live-active #app { top: 0; }
 
 .setup-team {
   background: var(--color-surface);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   padding: 14px;
   border: 1px solid var(--color-border);
   display: flex;
   flex-direction: column;
   gap: 10px;
+  box-shadow: var(--shadow-tile);
 }
 .setup-team > label {
   font-weight: 800;
@@ -543,12 +595,13 @@ body.live-active #app { top: 0; }
 ═══════════════════════════════════════════ */
 .tool-card {
   background: var(--color-surface);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   padding: 18px;
   border: 1px solid var(--color-border);
   display: flex;
   flex-direction: column;
   gap: 12px;
+  box-shadow: var(--shadow-tile);
 }
 .tool-card-title {
   font-size: 0.68rem;
@@ -725,13 +778,14 @@ body.live-active #app { top: 0; }
 
 .history-card {
   background: var(--color-surface);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   padding: 14px 16px;
   border: 1px solid var(--color-border);
   cursor: pointer;
-  transition: transform 0.1s, background 0.1s;
+  box-shadow: var(--shadow-tile);
+  transition: transform 0.1s, background 0.1s, box-shadow 0.1s;
 }
-.history-card:active { transform: scale(0.98); background: #283548; }
+.history-card:active { transform: scale(0.98); background: #283548; box-shadow: var(--shadow-tile-active); }
 .history-card-date { font-size: 0.68rem; color: var(--color-muted); margin-bottom: 4px; }
 .history-card-title { font-size: 0.9rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px; }
 .history-card-result {
@@ -1067,6 +1121,8 @@ textarea.modal-input { resize: vertical; min-height: 80px; }
   grid-column: 1 / -1;
   flex-direction: row;
   align-items: center;
+  justify-content: flex-start;
+  text-align: left;
   gap: 14px;
   padding: 18px 20px;
   min-height: unset;
@@ -1075,11 +1131,12 @@ textarea.modal-input { resize: vertical; min-height: 80px; }
 .tb-counter-row {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   padding: 16px 18px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  box-shadow: var(--shadow-tile);
 }
 .tb-counter-label {
   font-size: 0.9rem;
