@@ -1046,8 +1046,8 @@ textarea.modal-input { resize: vertical; min-height: 80px; }
 
 /* Install in Einstellungen */
 .btn-install-settings {
-  background: var(--color-primary);
-  color: #fff;
+  background: var(--color-amber);
+  color: #111827;
   border: none;
   border-radius: var(--radius-pill);
   padding: 6px 16px;
@@ -1057,7 +1057,7 @@ textarea.modal-input { resize: vertical; min-height: 80px; }
 .install-status-text {
   font-size: 0.82rem;
   font-weight: 600;
-  color: var(--color-primary);
+  color: var(--color-amber);
 }
 
 /* ═══════════════════════════════════════════
