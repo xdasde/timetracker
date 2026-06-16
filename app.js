@@ -1228,19 +1228,41 @@ function _isIOS() {
   return /iPhone|iPad|iPod/.test(navigator.userAgent) && !window.MSStream;
 }
 
+function _hideAllInstallBannerVariants() {
+  document.getElementById('install-banner-pwa').classList.add('hidden');
+  document.getElementById('install-banner-ios').classList.add('hidden');
+  document.getElementById('install-banner-manual').classList.add('hidden');
+}
+
 function _showInstallBanner() {
   if (_isStandalone()) return;
   const banner = document.getElementById('install-banner');
   if (_isIOS()) {
+    _hideAllInstallBannerVariants();
     document.getElementById('install-banner-ios').classList.remove('hidden');
-    document.getElementById('install-banner-pwa').classList.add('hidden');
     banner.classList.remove('hidden');
   } else if (_deferredInstall) {
+    _hideAllInstallBannerVariants();
     document.getElementById('install-banner-pwa').classList.remove('hidden');
-    document.getElementById('install-banner-ios').classList.add('hidden');
     banner.classList.remove('hidden');
   }
 }
+
+// Fallback: wenn nach kurzer Wartezeit kein beforeinstallprompt-Event kam
+// (z.B. Firefox for Android, Samsung Internet, oder Chrome-Heuristiken beim
+// ersten Besuch), zeige trotzdem einen Hinweis mit manueller Anleitung,
+// statt den Nutzer ganz ohne Installationsmöglichkeit zu lassen.
+function _showManualInstallBannerIfNeeded() {
+  if (_isStandalone() || _isIOS() || _deferredInstall) return;
+  if (storage.getItem('installDismissed')) return;
+  const banner = document.getElementById('install-banner');
+  if (!banner.classList.contains('hidden')) return; // bereits ein anderer Banner sichtbar
+  _hideAllInstallBannerVariants();
+  document.getElementById('install-banner-manual').classList.remove('hidden');
+  banner.classList.remove('hidden');
+}
+
+setTimeout(_showManualInstallBannerIfNeeded, 4500);
 
 window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault();
@@ -1277,6 +1299,12 @@ document.getElementById('btn-dismiss-install-ios').addEventListener('click', () 
   storage.setItem('installDismissed', true);
 });
 
+// Manueller Hinweis-Banner: nur schließen (kein Prompt möglich)
+document.getElementById('btn-dismiss-install-manual').addEventListener('click', () => {
+  document.getElementById('install-banner').classList.add('hidden');
+  storage.setItem('installDismissed', true);
+});
+
 function _syncInstallSettings() {
   const row = document.getElementById('install-settings-row');
   const btn = document.getElementById('btn-settings-install');
@@ -1297,7 +1325,13 @@ function _syncInstallSettings() {
     status.classList.remove('hidden');
     status.textContent = 'Teilen → „Zum Home-Bildschirm"';
   } else {
-    row.classList.add('hidden');
+    // Kein beforeinstallprompt-Event eingetroffen (z.B. Firefox for Android,
+    // Samsung Internet, oder Chrome-Heuristiken beim ersten Besuch). Zeige
+    // trotzdem eine manuelle Anleitung, statt die Zeile komplett zu verstecken.
+    row.classList.remove('hidden');
+    btn.classList.add('hidden');
+    status.classList.remove('hidden');
+    status.textContent = 'Browser-Menü (⋮) → „App installieren" / „Zum Startbildschirm hinzufügen"';
   }
 }
 
