@@ -232,19 +232,33 @@ function tbUpdateRevealUI() {
   }
 }
 
+let _tbRevealBusy = false;
 document.getElementById('tb-reveal').addEventListener('click', async () => {
+  // Während der Fotoaufnahme (async) ignorieren wir weitere Taps – sonst kann
+  // ein schnelles Doppeltippen beim letzten Teilnehmer den internen Zustand
+  // auf "fertig" springen lassen, ohne dass der Screen-Wechsel ausgelöst wird
+  // (App bleibt dann reglos auf dem Reveal-Screen stecken).
+  if (_tbRevealBusy) return;
+
   const rs = teambuilder.getRevealState();
   if (rs.done) return;
 
   if (!rs.revealed) {
     // Foto aufnehmen beim ersten Tippen (TIPPEN! → Team anzeigen)
+    _tbRevealBusy = true;
     _tbFlash();
     const blob = await _tbCapturePhoto();
     if (blob) {
       teambuilder.addPhoto(rs.current, rs.teamIdx, URL.createObjectURL(blob));
     }
     teambuilder.tap();
-    tbUpdateRevealUI();
+    _tbRevealBusy = false;
+    if (teambuilder.getRevealState().done) {
+      _tbStopCamera();
+      router.navigateTo('screen-teambuilder-lineup');
+    } else {
+      tbUpdateRevealUI();
+    }
   } else {
     // Zweites Tippen: weiter oder Einteilung abschließen
     teambuilder.tap();
