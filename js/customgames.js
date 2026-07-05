@@ -126,9 +126,34 @@ export function toMarkdown(e) {
   return L.join('\n');
 }
 
-// Vorausgefüllte GitHub-„neue Datei"-URL → öffnet Web-Editor, GitHub erzeugt für
-// Nutzer ohne Schreibrechte automatisch Fork + Pull-Request.
+// Vorausgefüllte GitHub-„neues Issue"-URL. Bewusst NICHT der „neue Datei"-Editor:
+// Ohne Schreibrechte zwingt GitHub dort zum Fork – das ist für Gelegenheits-
+// Beitragende zu viel. Ein Issue kann dagegen jede:r mit (kostenlosem) GitHub-
+// Konto ohne Fork anlegen. Ein Workflow (game-submission.yml) macht daraus
+// automatisch einen Pull-Request, den ein Maintainer nur noch prüft und mergt.
+//
+// Der Marker <!-- game-submission --> und der ```md-Block sind das Vertragsformat,
+// das der Workflow ausliest – Reihenfolge/Zeichen daher nicht ändern.
 export function prefillUrl(e) {
-  const value = encodeURIComponent(toMarkdown(e));
-  return `https://github.com/${REPO}/new/${BRANCH}?filename=content/games/${e.id}.md&value=${value}`;
+  const md = toMarkdown(e);
+  const body =
+`<!-- game-submission -->
+Neuer Vorschlag für die Spiele- & Übungsdatenbank – eingereicht über die App.
+
+**Spiel:** ${e.name}
+**Dateiname:** \`content/games/${e.id}.md\`
+
+Fertiger Eintrag (bitte unverändert lassen – wird automatisch übernommen):
+
+\`\`\`md
+${md}
+\`\`\`
+
+_Ein Maintainer prüft den Vorschlag und übernimmt ihn in die App._`;
+  const params = new URLSearchParams({
+    title: `Neues Spiel: ${e.name}`,
+    labels: 'spiel-einreichung',
+    body,
+  });
+  return `https://github.com/${REPO}/issues/new?${params.toString()}`;
 }
