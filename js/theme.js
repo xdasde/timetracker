@@ -27,16 +27,9 @@ export const THEMES = [
   {
     id: 'hagen-wildewiese',
     name: 'SC Hagen-Wildewiese',
-    logoText: 'SC Hagen-Wildewiese',
-    // Logo wird live von der Vereinsseite geladen (bleibt damit aktuell).
-    // Reihenfolge = Fallback-Kette: erst der Favicon-/Site-Icon-Resolver
-    // (löst zuverlässig das in der Seite gesetzte Icon auf), dann das
-    // direkte Favicon der Domain, zuletzt der Schriftzug.
-    // Möchtest du das exakte Header-Logo: die Bild-URL hier vorne eintragen.
-    logoImg: [
-      'https://www.google.com/s2/favicons?domain=www.sc-hagen-wildewiese.de&sz=128',
-      'https://www.sc-hagen-wildewiese.de/favicon.ico',
-    ],
+    // Fach-/Stift-Icon als Logo (statt Favicon der Vereinsseite).
+    logoText: '✏️ Wildewiese',
+    logoImg: null,
     themeColor: '#0d3b66',
     vars: {
       '--color-bg':         '#0a1929',
@@ -47,6 +40,48 @@ export const THEMES = [
       '--color-accent-rgb': '47, 128, 237',
       '--color-text':       '#f3f8ff',
       '--color-muted':      '#9bb3cf',
+    },
+  },
+  {
+    id: 'kgs-allendorf',
+    name: 'KGS Allendorf',
+    // Kath. Grundschule Allendorf: Petrol/Teal-Grund + Mauve/Lila-Akzent
+    // (angelehnt an die Vereinsseite), Fach-/Stift-Icon als Logo.
+    logoText: '✏️ KGS Allendorf',
+    logoImg: null,
+    themeColor: '#0d3a3d',
+    vars: {
+      '--color-bg':         '#0d3a3d',
+      '--color-surface':    '#12484c',
+      '--color-border':     '#1e6065',
+      '--color-amber':      '#cf8fbb',
+      '--color-amber-dark': '#ac6a97',
+      '--color-accent-rgb': '207, 143, 187',
+      '--color-text':       '#eef7f6',
+      '--color-muted':      '#a7c6c4',
+    },
+  },
+  {
+    id: 'ssv-allendorf',
+    name: 'SSV 1928 Allendorf',
+    // Rotes Design nach dem Vereinsauftritt. Weißer Text auf dem roten Akzent
+    // (--color-on-accent), damit Buttons/Chips lesbar bleiben.
+    logoText: 'SSV Allendorf',
+    logoImg: [
+      'https://www.google.com/s2/favicons?domain=www.ssvallendorf.de&sz=128',
+      'https://www.ssvallendorf.de/favicon.ico',
+    ],
+    themeColor: '#160a0a',
+    vars: {
+      '--color-bg':          '#160a0a',
+      '--color-surface':     '#241010',
+      '--color-border':      '#3d1a1a',
+      '--color-amber':       '#d21f27',
+      '--color-amber-dark':  '#a5141b',
+      '--color-accent-rgb':  '210, 31, 39',
+      '--color-text':        '#fdecec',
+      '--color-muted':       '#c99a9a',
+      '--color-on-accent':   '#ffffff',
     },
   },
 ];
@@ -94,31 +129,44 @@ export function initTheme() {
   return applyTheme(getSavedThemeId());
 }
 
+// Generations-Token: verhindert, dass ein verspäteter onerror/onload eines
+// vorherigen Theme-Logos (z. B. ein langsam fehlschlagendes Favicon) das
+// inzwischen umgeschaltete Logo überschreibt.
+let _logoGen = 0;
+
 function updateNavLogo(theme) {
   const el = document.querySelector('.nav-logo');
   if (!el) return;
+  const gen = ++_logoGen;
   el.classList.toggle('nav-logo--club', theme.id !== DEFAULT_THEME);
 
   const sources = [].concat(theme.logoImg || []).filter(Boolean);
   const showText = () => {
+    if (gen !== _logoGen) return;       // Theme wurde inzwischen gewechselt
     el.replaceChildren();
     el.textContent = theme.logoText || theme.name;
   };
 
-  if (!sources.length) { showText(); return; }
+  // Bis ein Bild geladen ist, immer den Schriftzug zeigen (nie leer).
+  showText();
+  if (!sources.length) return;
 
-  // Quellen der Reihe nach probieren; klappt keine, Schriftzug anzeigen.
+  // Quellen der Reihe nach probieren; klappt keine, bleibt der Schriftzug.
   let i = 0;
   const img = new Image();
   img.className = 'nav-logo-img';
   img.alt = theme.name;
   img.decoding = 'async';
   img.referrerPolicy = 'no-referrer'; // umgeht manche Hotlink-Sperren
+  img.onload = () => {
+    if (gen !== _logoGen) return;
+    el.replaceChildren(img);
+  };
   img.onerror = () => {
+    if (gen !== _logoGen) return;
     i += 1;
     if (i < sources.length) img.src = sources[i];
     else showText();
   };
-  el.replaceChildren(img);
   img.src = sources[0];
 }
