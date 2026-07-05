@@ -30,13 +30,17 @@ export function setPeriods(n) { setup.periods = n || 2; }
 
 export function getSetup() { return { ...setup }; }
 
-export function startMatch(nameA, nameB, colorIndex, durationMs = setup.durationMs, breakMs = setup.breakMs, periods = setup.periods) {
+// colors (optional) = { a, aName, b, bName } überschreibt das Farbpaar des
+// colorIndex – z. B. um die Teamfarben aus der Teambildung zu übernehmen.
+export function startMatch(nameA, nameB, colorIndex, durationMs = setup.durationMs, breakMs = setup.breakMs, periods = setup.periods, colors = null) {
   const pair = COLORS[colorIndex] ?? COLORS[0];
+  const cA = colors?.a || pair.a, cAName = colors?.aName || pair.aName;
+  const cB = colors?.b || pair.b, cBName = colors?.bName || pair.bName;
   live = {
     id: `m_${Date.now()}`,
     createdAt: Date.now(),
-    teamA: { name: nameA || 'Team A', color: pair.aName, colorHex: pair.a, score: 0 },
-    teamB: { name: nameB || 'Team B', color: pair.bName, colorHex: pair.b, score: 0 },
+    teamA: { name: nameA || 'Team A', color: cAName, colorHex: cA, score: 0 },
+    teamB: { name: nameB || 'Team B', color: cBName, colorHex: cB, score: 0 },
     startedAt: null,
     accMs: 0,
     running: false,

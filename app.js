@@ -27,7 +27,8 @@ router.register('screen-match-setup', enterSetup);
 router.register('screen-match-live', enterLive, leaveLive);
 router.register('screen-tools');
 router.register('screen-history', () => historyMod.render(currentHistoryTab));
-router.register('screen-settings', () => renderRouletteExclusion());
+router.register('screen-settings');
+router.register('screen-roulette-exclude', renderRouletteExclusion);
 router.register('screen-teambuilder', enterTeamBuilder);
 router.register('screen-teambuilder-reveal', enterTeamBuilderReveal);
 router.register('screen-teambuilder-lineup', enterLineup, leaveLineup);
@@ -364,7 +365,20 @@ document.getElementById('btn-lineup-done').addEventListener('click', () => {
 });
 
 document.getElementById('btn-lineup-match').addEventListener('click', () => {
-  router.navigateTo('screen-tb-match');
+  const teams = teambuilder.getLineup();
+  // Bei genau 2 Teams die gewohnte Match-Ansicht (screen-match-live) nutzen –
+  // mit den Teamnamen und -farben aus der Einteilung. Bei mehr Teams bleibt es
+  // beim mehrspaltigen Teambuilder-Scoreboard.
+  if (teams.length === 2) {
+    teambuilder.clearPhotos();
+    match.startMatch(teams[0].name, teams[1].name, 0, null, null, 1, {
+      a: teams[0].color, aName: 'team-1',
+      b: teams[1].color, bName: 'team-2',
+    });
+    router.navigateTo('screen-match-live');
+  } else {
+    router.navigateTo('screen-tb-match');
+  }
 });
 
 // ── Teambuilder Match ────────────────────────────────────────
@@ -2465,8 +2479,10 @@ document.getElementById('btn-export').addEventListener('click', () => {
 // ═══════════════════════════════════════════════════════════
 // EINSTELLUNGEN
 // ═══════════════════════════════════════════════════════════
-// Ausschlussliste fürs Spiel-Roulette: pro Spiel ein Schalter.
-function renderRouletteExclusion() {
+// Ausschlussliste fürs Spiel-Roulette (eigenes Untermenü): pro Spiel ein Schalter.
+let _excludeOrigin = 'screen-roulette';
+function renderRouletteExclusion(opts = {}) {
+  if (opts.from) _excludeOrigin = opts.from;
   const list = document.getElementById('roulette-exclude-list');
   if (!list) return;
   list.replaceChildren();
@@ -2499,6 +2515,14 @@ function renderRouletteExclusion() {
     list.appendChild(row);
   });
 }
+
+// Einstiege in das Ausschlusslisten-Untermenü (Roulette-Header + Einstellungen)
+document.getElementById('btn-roulette-exclude-open').addEventListener('click', () =>
+  router.navigateTo('screen-roulette-exclude', { from: 'screen-roulette' }));
+document.getElementById('btn-open-roulette-exclude').addEventListener('click', () =>
+  router.navigateTo('screen-roulette-exclude', { from: 'screen-settings' }));
+document.getElementById('btn-roulette-exclude-back').addEventListener('click', () =>
+  router.navigateTo(_excludeOrigin));
 
 function initSettings() {
   const cfg = storage.getItem('settings') || { sound: true, vibration: true, tbPhotos: false };

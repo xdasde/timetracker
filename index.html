@@ -471,6 +471,7 @@
       <div class="sub-header">
         <button class="btn-back" id="btn-roulette-back" aria-label="Zurück"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg></button>
         <h2>Spiel-Roulette</h2>
+        <button class="btn-icon" id="btn-roulette-exclude-open" aria-label="Ausschlussliste bearbeiten"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="9" cy="6" r="2" fill="currentColor" stroke="none"/><circle cx="15" cy="12" r="2" fill="currentColor" stroke="none"/><circle cx="9" cy="18" r="2" fill="currentColor" stroke="none"/></svg></button>
       </div>
       <div class="screen-body">
         <p class="roulette-intro">Wähle eine Kategorie und lose ein zufälliges Spiel aus.</p>
@@ -492,7 +493,19 @@
           <button class="btn-secondary" id="btn-roulette-again">Nochmal</button>
           <button class="btn-primary" id="btn-roulette-start">Match starten</button>
         </div>
-        <p class="roulette-empty hidden" id="roulette-empty">Keine Spiele in dieser Kategorie verfügbar. Passe die Ausschlussliste in den Einstellungen an.</p>
+        <p class="roulette-empty hidden" id="roulette-empty">Keine Spiele in dieser Kategorie verfügbar. Passe die Ausschlussliste an (Symbol oben rechts).</p>
+      </div>
+    </section>
+
+    <!-- ═══ Screen: Roulette-Ausschlussliste ═══ -->
+    <section id="screen-roulette-exclude" class="screen screen-deco">
+      <div class="sub-header">
+        <button class="btn-back" id="btn-roulette-exclude-back" aria-label="Zurück"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg></button>
+        <h2>Ausschlussliste</h2>
+      </div>
+      <div class="screen-body">
+        <p class="settings-section-hint">Angehakte Spiele werden beim Spiel-Roulette nicht mehr vorgeschlagen.</p>
+        <div class="roulette-exclude-list" id="roulette-exclude-list"></div>
       </div>
     </section>
 
@@ -637,14 +650,11 @@
           <span class="install-status-text hidden" id="install-status"></span>
         </div>
         <hr>
-        <div class="settings-section">
-          <div class="settings-section-title">
-            <span class="setting-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="3" x2="12" y2="21"/><line x1="3" y1="12" x2="21" y2="12"/></svg></span>
-            <span>Spiel-Roulette: Ausschlussliste</span>
-          </div>
-          <p class="settings-section-hint">Ausgewählte Spiele werden beim Roulette nicht vorgeschlagen.</p>
-          <div class="roulette-exclude-list" id="roulette-exclude-list"></div>
-        </div>
+        <button class="setting-link-row" id="btn-open-roulette-exclude">
+          <span class="setting-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="9" cy="6" r="2" fill="currentColor" stroke="none"/><circle cx="15" cy="12" r="2" fill="currentColor" stroke="none"/><circle cx="9" cy="18" r="2" fill="currentColor" stroke="none"/></svg></span>
+          <span class="setting-link-label">Spiel-Roulette: Ausschlussliste</span>
+          <svg class="setting-link-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 6 15 12 9 18"/></svg>
+        </button>
         <hr>
         <button class="btn-secondary btn-full btn-anim" id="btn-restore-presets">
           <span class="btn-anim-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.04"/></svg></span>
