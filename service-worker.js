@@ -1,4 +1,4 @@
-const CACHE = 'sportzaehler-v18';
+const CACHE = 'sportzaehler-v19';
 const ASSETS = [
   './',
   './index.html',

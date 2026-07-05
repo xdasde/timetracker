@@ -2574,6 +2574,38 @@ textarea.modal-input { resize: vertical; min-height: 80px; }
   line-height: 1.4;
 }
 
+/* Spielregeln im Roulette-Ergebnis */
+.roulette-rules {
+  width: 100%;
+  max-width: 420px;
+  margin: 2px auto 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow);
+  padding: 14px 16px;
+  animation: roulette-rules-in 0.3s ease;
+}
+@keyframes roulette-rules-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.roulette-rules-title {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--color-text);
+  margin-bottom: 6px;
+}
+.roulette-rules-sublabel {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-muted);
+  margin-top: 2px;
+}
+.roulette-rules .rules-basics { margin-top: 0.4rem; }
+
 /* ── Fänger-Auslosung ─────────────────────────────────────── */
 .fanger-bias {
   display: flex;

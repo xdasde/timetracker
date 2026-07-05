@@ -1067,6 +1067,7 @@ function resetRouletteDisplay() {
   const display = document.getElementById('roulette-display');
   display.classList.remove('roulette-display--win', 'roulette-display--spin');
   document.getElementById('roulette-result-actions').classList.add('hidden');
+  _hideRouletteRules();
   const spinBtn = document.getElementById('btn-roulette-spin');
   const empty = document.getElementById('roulette-empty');
   if (candidates.length === 0) {
@@ -1087,6 +1088,7 @@ function spinRoulette() {
 
   _rouletteSpinning = true;
   _rouletteResult = null;
+  _hideRouletteRules();
   const cfg = storage.getItem('settings') || {};
   const display = document.getElementById('roulette-display');
   display.classList.remove('roulette-display--win');
@@ -1121,11 +1123,76 @@ function _finishSpin(preset) {
   if (preset.durationMs) meta.push(`${Math.floor(preset.durationMs / 60000)} Min.`);
   meta.push(`${preset.teamA.name} vs. ${preset.teamB.name}`);
   _setRouletteFace(preset.icon, preset.name, meta.join(' · '));
+  renderRouletteRules(preset);
   document.getElementById('roulette-result-actions').classList.remove('hidden');
   document.getElementById('btn-roulette-spin').disabled = false;
   const cfg = storage.getItem('settings') || {};
   if (cfg.sound !== false) playBeep();
   if (cfg.vibration !== false && navigator.vibrate) navigator.vibrate([20, 40, 80]);
+}
+
+function _hideRouletteRules() {
+  const el = document.getElementById('roulette-rules');
+  if (el) { el.classList.add('hidden'); el.replaceChildren(); }
+}
+
+// Zeigt die Spielregeln des ausgelosten Spiels unter dem Ergebnis an.
+function renderRouletteRules(preset) {
+  const el = document.getElementById('roulette-rules');
+  if (!el) return;
+  const rule = preset.rulesKey ? rules.getRule(preset.rulesKey) : null;
+  if (!rule) { _hideRouletteRules(); return; } // z. B. selbst angelegtes Preset ohne Regeln
+  el.replaceChildren();
+
+  const title = document.createElement('div');
+  title.className = 'roulette-rules-title';
+  title.textContent = 'Spielregeln';
+  el.appendChild(title);
+
+  if (Array.isArray(rule.basics) && rule.basics.length) {
+    const ablaufLabel = document.createElement('div');
+    ablaufLabel.className = 'roulette-rules-sublabel';
+    ablaufLabel.textContent = 'Ablauf';
+    const ul = document.createElement('ul');
+    ul.className = 'rules-basics';
+    rule.basics.forEach(b => {
+      const li = document.createElement('li');
+      li.textContent = b;
+      ul.appendChild(li);
+    });
+    el.append(ablaufLabel, ul);
+  }
+
+  if (rule.structure) {
+    const s = document.createElement('div');
+    s.className = 'rules-structure';
+    s.textContent = `Aufbau: ${rule.structure}`;
+    el.appendChild(s);
+  }
+  if (rule.scoring) {
+    const s = document.createElement('div');
+    s.className = 'rules-scoring';
+    s.textContent = `Wertung: ${rule.scoring}`;
+    el.appendChild(s);
+  }
+  if (Array.isArray(rule.material) && rule.material.length) {
+    const m = document.createElement('div');
+    m.className = 'rules-material';
+    const lbl = document.createElement('strong');
+    lbl.textContent = 'Material: ';
+    m.append(lbl, document.createTextNode(rule.material.join(', ')));
+    el.appendChild(m);
+  }
+  if (rule.tip) {
+    const t = document.createElement('div');
+    t.className = 'rules-tip';
+    const lbl = document.createElement('strong');
+    lbl.textContent = 'App-Tipp: ';
+    t.append(lbl, document.createTextNode(rule.tip));
+    el.appendChild(t);
+  }
+
+  el.classList.remove('hidden');
 }
 
 function startMatchFromPreset(preset) {
