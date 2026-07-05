@@ -331,14 +331,15 @@ body.live-active #app { top: 0; }
 .home-tile--accent .home-tile-icon svg { width: 28px; height: 28px; }
 .home-tile--accent .home-tile-label { font-size: 0.95rem; }
 
-/* Reihenfolge: Hero, Timer, Teambildung, Presets, Verlauf */
+/* Reihenfolge (via order): Hero, Timer, dann Teambildung + Auslosen als Paar */
 #btn-new-match        { order: 0; }
 #btn-goto-tools       { order: 1; }
 #btn-open-teambuilder { order: 2; }
-#btn-open-roulette    { order: 3; }
-#btn-open-rules       { order: 4; }
-#btn-open-presets     { order: 5; }
-#btn-goto-log         { order: 6; }
+#btn-open-fanger      { order: 3; }
+#btn-open-roulette    { order: 4; }
+#btn-open-rules       { order: 5; }
+#btn-open-presets     { order: 6; }
+#btn-goto-log         { order: 7; }
 
 .home-tile--primary {
   grid-column: 1 / -1;
@@ -2736,6 +2737,115 @@ textarea.modal-input { resize: vertical; min-height: 80px; }
   color: var(--color-muted);
 }
 .fanger-history .btn-secondary { margin-bottom: 14px; }
+
+/* Durchzählen-Button + Roster-Status */
+.fanger-countoff-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: -2px;
+}
+.fanger-roster-status {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--color-accent);
+  text-align: center;
+  margin-top: -4px;
+}
+
+/* Foto-Chips im Auslosungs-Ergebnis */
+.fanger-chip--photo {
+  position: relative;
+  width: 88px;
+  height: 88px;
+  min-width: 88px;
+  padding: 0;
+  overflow: hidden;
+  background: var(--color-amber);
+}
+.fanger-chip-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  -webkit-user-select: none;
+  user-select: none;
+  pointer-events: none;
+}
+.fanger-chip-badge {
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: rgba(17, 24, 39, 0.82);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Durchzählen-Screen ───────────────────────────────────── */
+.countoff-reveal {
+  background:
+    radial-gradient(120% 120% at 50% 0%, rgba(var(--color-accent-rgb), 0.18), rgba(var(--color-accent-rgb), 0.03) 60%),
+    var(--color-bg);
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.countoff-number {
+  font-size: clamp(6rem, 40vw, 14rem);
+  font-weight: 900;
+  line-height: 1;
+  color: var(--color-accent);
+}
+.countoff-number--pop {
+  animation: countoff-pop 0.4s cubic-bezier(0.22, 1.4, 0.5, 1);
+}
+@keyframes countoff-pop {
+  0%   { transform: scale(0.3); opacity: 0; }
+  60%  { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); }
+}
+.countoff-sub {
+  margin-top: 10px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-muted);
+}
+.countoff-actions {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 22px;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+  padding: 0 18px;
+}
+/* Abbrechen-Button hier in den Flow holen (Standard ist absolut positioniert) */
+.countoff-actions .tb-reveal-exit {
+  position: static;
+  bottom: auto;
+}
+.countoff-done {
+  border-radius: var(--radius-pill);
+  padding: 12px 26px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  background: var(--color-amber);
+  color: #111827;
+  transition: transform 0.1s, opacity 0.15s;
+}
+.countoff-done:active { transform: scale(0.96); }
+.countoff-done:disabled { opacity: 0.4; }
 
 /* Einstellungen: Abschnitt + Ausschlussliste */
 .settings-section { display: flex; flex-direction: column; gap: 8px; }

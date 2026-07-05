@@ -94,20 +94,6 @@
             <div id="home-preset-badge" class="home-tile-badge">0 gespeichert</div>
           </div>
         </button>
-        <button class="home-tile home-tile--wide home-tile--accent" id="btn-goto-tools" aria-label="Werkzeuge öffnen">
-          <span class="home-tile-icon home-icon-anim home-icon-clock">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <circle cx="12" cy="13" r="8"/>
-              <polyline points="12,9 12,13 15,15" class="anim-clock-hand" style="transform-origin:12px 13px"/>
-              <line x1="10" y1="3" x2="14" y2="3"/>
-              <line x1="12" y1="3" x2="12" y2="5"/>
-            </svg>
-          </span>
-          <div class="home-tile-text">
-            <div class="home-tile-label">Timer</div>
-            <div class="home-tile-sub">Stoppuhr &amp; Countdown</div>
-          </div>
-        </button>
         <button class="home-tile" id="btn-open-roulette" aria-label="Spiel-Roulette öffnen">
           <span class="home-tile-icon home-icon-anim home-icon-roulette">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -122,7 +108,21 @@
             <div class="home-tile-sub">Zufälliges Spiel auslosen</div>
           </div>
         </button>
-        <button class="home-tile home-tile--wide home-tile--accent" id="btn-open-teambuilder" aria-label="Teams zufällig einteilen">
+        <button class="home-tile home-tile--wide home-tile--accent" id="btn-goto-tools" aria-label="Werkzeuge öffnen">
+          <span class="home-tile-icon home-icon-anim home-icon-clock">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="13" r="8"/>
+              <polyline points="12,9 12,13 15,15" class="anim-clock-hand" style="transform-origin:12px 13px"/>
+              <line x1="10" y1="3" x2="14" y2="3"/>
+              <line x1="12" y1="3" x2="12" y2="5"/>
+            </svg>
+          </span>
+          <div class="home-tile-text">
+            <div class="home-tile-label">Timer</div>
+            <div class="home-tile-sub">Stoppuhr &amp; Countdown</div>
+          </div>
+        </button>
+        <button class="home-tile" id="btn-open-teambuilder" aria-label="Teams zufällig einteilen">
           <span class="home-tile-icon home-icon-anim home-icon-team">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <circle cx="9" cy="7" r="3" class="anim-team-a"/>
@@ -135,7 +135,7 @@
             <div class="home-tile-sub">Zufällige Teams</div>
           </div>
         </button>
-        <button class="home-tile" id="btn-open-fanger" aria-label="Fänger auslosen">
+        <button class="home-tile" id="btn-open-fanger" aria-label="Auslosen: Fänger &amp; Nummern">
           <span class="home-tile-icon home-icon-anim home-icon-fanger">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <circle cx="12" cy="12" r="9" class="anim-ping-ring"/>
@@ -144,8 +144,8 @@
             </svg>
           </span>
           <div class="home-tile-text">
-            <div class="home-tile-label">Fänger auslosen</div>
-            <div class="home-tile-sub">Zufällige Fänger</div>
+            <div class="home-tile-label">Auslosen</div>
+            <div class="home-tile-sub">Fänger &amp; Nummern</div>
           </div>
         </button>
         <button class="home-tile" id="btn-open-rules" aria-label="Spiele-Datenbank öffnen">
@@ -498,7 +498,7 @@
     <section id="screen-fanger" class="screen screen-deco">
       <div class="sub-header">
         <button class="btn-back" id="btn-fanger-back" aria-label="Zurück"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg></button>
-        <h2>Fänger auslosen</h2>
+        <h2>Auslosen</h2>
       </div>
       <div class="screen-body">
         <p class="roulette-intro">Die Gruppe zählt sich durch (1…N). Das Tool zieht zufällig die Fänger.</p>
@@ -511,6 +511,11 @@
             <button class="tb-counter-btn" id="fanger-persons-inc">+</button>
           </div>
         </div>
+        <button class="btn-secondary btn-full fanger-countoff-btn" id="btn-fanger-countoff">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" width="18" height="18"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg>
+          Kinder durchzählen
+        </button>
+        <p class="fanger-roster-status hidden" id="fanger-roster-status"></p>
         <div class="tb-counter-row">
           <span class="tb-counter-label">Anzahl Fänger</span>
           <div class="tb-counter">
@@ -552,6 +557,25 @@
       </div>
     </section>
 
+    <!-- ═══ Screen: Durchzählen ═══ -->
+    <section id="screen-countoff" class="screen">
+      <div class="tb-reveal countoff-reveal" id="countoff-reveal" role="button" aria-label="Tippen für deine Nummer">
+        <div class="tb-reveal-counter" id="countoff-counter">0 Kinder</div>
+        <div class="tb-reveal-content">
+          <div class="tb-reveal-prompt" id="countoff-prompt">Tippe für deine Nummer!</div>
+          <div class="countoff-number hidden" id="countoff-number"></div>
+          <div class="countoff-sub hidden" id="countoff-sub">Nächstes Kind tippt</div>
+        </div>
+        <div class="countoff-actions">
+          <button class="tb-reveal-exit" id="btn-countoff-cancel">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            Abbrechen
+          </button>
+          <button class="countoff-done" id="btn-countoff-done">Fertig ✓</button>
+        </div>
+      </div>
+    </section>
+
     <!-- ═══ Screen: Einstellungen ═══ -->
     <section id="screen-settings" class="screen screen-deco">
       <div class="sub-header">
@@ -571,7 +595,7 @@
         </div>
         <div class="setting-row">
           <span class="setting-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></span>
-          <label for="toggle-tb-photos">Fotos bei Teambildung</label>
+          <label for="toggle-tb-photos">Fotos (Teambildung &amp; Auslosen)</label>
           <input type="checkbox" id="toggle-tb-photos" role="switch">
         </div>
         <div class="setting-privacy-notice">
@@ -579,10 +603,10 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" width="15" height="15"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
             Datenschutzhinweis – Kamerafunktion
           </div>
-          <p>Wenn diese Funktion aktiviert ist, greift die App während der Teambildung kurzzeitig auf die Gerätekamera zu. Es gelten folgende Grundsätze:</p>
+          <p>Wenn diese Funktion aktiviert ist, greift die App während der Teambildung und beim Durchzählen (Auslosen) kurzzeitig auf die Gerätekamera zu. Es gelten folgende Grundsätze:</p>
           <ul>
             <li><strong>Keine Speicherung</strong> – Fotos werden ausschließlich im Arbeitsspeicher (RAM) gehalten. Es wird keine Datei auf dem Gerät angelegt.</li>
-            <li><strong>Sofortige Löschung</strong> – Alle Aufnahmen werden automatisch und unwiderruflich gelöscht, sobald die Teambildung abgeschlossen oder abgebrochen wird.</li>
+            <li><strong>Sofortige Löschung</strong> – Alle Aufnahmen werden automatisch und unwiderruflich gelöscht, sobald Teambildung oder Auslosen abgeschlossen bzw. abgebrochen wird oder die App-Sitzung endet.</li>
             <li><strong>Kein Upload</strong> – Es findet keinerlei Übertragung von Bild- oder Kameradaten an Server oder Dritte statt. Die App arbeitet vollständig offline.</li>
             <li><strong>Kein Export</strong> – Fotos sind in keinem Datenexport enthalten und können nicht aus der App heraus gespeichert oder weitergegeben werden.</li>
             <li><strong>Technischer Schutz</strong> – Das Speichern per Rechtsklick ist deaktiviert. Nach jeder Aufnahme werden die Bilddaten im Zwischenspeicher sofort gelöscht.</li>

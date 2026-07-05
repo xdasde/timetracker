@@ -35,6 +35,7 @@ router.register('screen-tb-match', enterTbMatch, leaveTbMatch);
 router.register('screen-rules', enterRules);
 router.register('screen-roulette', enterRoulette);
 router.register('screen-fanger', enterFanger);
+router.register('screen-countoff', enterCountoff, leaveCountoff);
 
 // ═══════════════════════════════════════════════════════════
 // TOP-NAV
@@ -1158,6 +1159,22 @@ function enterFanger() {
   fangerUpdateBias();
   fangerResetDisplay();
   fangerRenderHistory();
+  fangerRenderRosterStatus();
+}
+
+function fangerRenderRosterStatus() {
+  const el = document.getElementById('fanger-roster-status');
+  if (!el) return;
+  if (fanger.hasRoster()) {
+    const n = fanger.getRoster().length;
+    const withPhotos = fanger.hasPhotos();
+    el.textContent = withPhotos
+      ? `📸 ${n} Kinder mit Foto erfasst`
+      : `✓ ${n} Kinder durchgezählt`;
+    el.classList.remove('hidden');
+  } else {
+    el.classList.add('hidden');
+  }
 }
 
 function fangerUpdateCounters() {
@@ -1274,9 +1291,23 @@ function fangerFinish(picks) {
   const chipsWrap = result.querySelector('.fanger-chips');
   chipsWrap.replaceChildren();
   picks.forEach(n => {
+    const photo = fanger.getRosterPhoto(n);
     const chip = document.createElement('span');
-    chip.className = 'fanger-chip fanger-chip--win';
-    chip.textContent = n;
+    chip.className = 'fanger-chip fanger-chip--win' + (photo ? ' fanger-chip--photo' : '');
+    if (photo) {
+      const img = document.createElement('img');
+      img.className = 'fanger-chip-img';
+      img.src = photo;
+      img.alt = '';
+      img.addEventListener('contextmenu', e => e.preventDefault());
+      chip.appendChild(img);
+      const badge = document.createElement('span');
+      badge.className = 'fanger-chip-badge';
+      badge.textContent = n;
+      chip.appendChild(badge);
+    } else {
+      chip.textContent = n;
+    }
     chipsWrap.appendChild(chip);
   });
   const label = document.createElement('div');
@@ -1295,18 +1326,18 @@ function fangerFinish(picks) {
 document.getElementById('btn-fanger-back').addEventListener('click', () =>
   router.navigateTo('screen-home'));
 
-document.getElementById('fanger-persons-inc').addEventListener('click', () => {
-  fanger.setPersonCount(fanger.getPersonCount() + 1);
+function fangerManualPersons(delta) {
+  // Manuelles Ändern der Personenzahl macht die durchgezählte Nummern-/Foto-
+  // Zuordnung ungültig – daher Roster verwerfen (Fotos werden freigegeben).
+  if (fanger.hasRoster()) fanger.clearRoster();
+  fanger.setPersonCount(fanger.getPersonCount() + delta);
   fangerUpdateCounters();
   if (!_fangerDrawing) fangerResetDisplay();
   fangerRenderHistory();
-});
-document.getElementById('fanger-persons-dec').addEventListener('click', () => {
-  fanger.setPersonCount(fanger.getPersonCount() - 1);
-  fangerUpdateCounters();
-  if (!_fangerDrawing) fangerResetDisplay();
-  fangerRenderHistory();
-});
+  fangerRenderRosterStatus();
+}
+document.getElementById('fanger-persons-inc').addEventListener('click', () => fangerManualPersons(+1));
+document.getElementById('fanger-persons-dec').addEventListener('click', () => fangerManualPersons(-1));
 document.getElementById('fanger-count-inc').addEventListener('click', () => {
   fanger.setCatcherCount(fanger.getCatcherCount() + 1);
   fangerUpdateCounters();
@@ -1329,6 +1360,89 @@ document.getElementById('btn-fanger-reset').addEventListener('click', () => {
   fanger.resetHistory();
   fangerRenderHistory();
   fangerResetDisplay();
+});
+
+// ── Durchzählen (Count-off) ──────────────────────────────────
+// Jedes Kind tippt einmal aufs Display und bekommt aufsteigend seine Nummer.
+// Optional wird pro Tipp ein Foto (nur im RAM) erfasst. Am Ende setzt das die
+// Personenzahl der Auslosung und – falls Fotos an sind – die Gesichter.
+let _coCount   = 0;
+let _coPhotos  = [];   // pro Tipp: Blob-URL | null
+let _coBusy    = false;
+
+document.getElementById('btn-fanger-countoff').addEventListener('click', () =>
+  router.navigateTo('screen-countoff'));
+
+function _coReleasePhotos() {
+  _coPhotos.forEach(u => { if (u) { try { URL.revokeObjectURL(u); } catch {} } });
+  _coPhotos = [];
+}
+
+async function enterCountoff() {
+  _coCount = 0;
+  _coReleasePhotos();
+  _coBusy = false;
+  await _tbStartCamera();
+  coUpdateUI(null);
+}
+
+function leaveCountoff() {
+  _tbStopCamera();
+}
+
+function coUpdateUI(justAssigned) {
+  document.getElementById('countoff-counter').textContent =
+    `${_coCount} ${_coCount === 1 ? 'Kind' : 'Kinder'}`;
+  const promptEl = document.getElementById('countoff-prompt');
+  const numEl    = document.getElementById('countoff-number');
+  const subEl    = document.getElementById('countoff-sub');
+  if (justAssigned) {
+    promptEl.classList.add('hidden');
+    numEl.classList.remove('hidden');
+    subEl.classList.remove('hidden');
+    numEl.textContent = justAssigned;
+    numEl.classList.remove('countoff-number--pop');
+    void numEl.offsetWidth;            // Reflow → Animation neu starten
+    numEl.classList.add('countoff-number--pop');
+  } else {
+    promptEl.classList.remove('hidden');
+    numEl.classList.add('hidden');
+    subEl.classList.add('hidden');
+  }
+  document.getElementById('btn-countoff-done').disabled = _coCount < 2;
+}
+
+document.getElementById('countoff-reveal').addEventListener('click', async e => {
+  if (e.target.closest('.countoff-actions')) return;   // Buttons nicht als Tipp werten
+  if (_coBusy || _coCount >= 50) return;
+  _coBusy = true;
+  _tbFlash();
+  const blob  = await _tbCapturePhoto();               // null, wenn Fotos aus
+  _coPhotos.push(blob ? URL.createObjectURL(blob) : null);
+  _coCount++;
+  const cfg = storage.getItem('settings') || {};
+  if (cfg.vibration !== false && navigator.vibrate) navigator.vibrate(10);
+  coUpdateUI(_coCount);
+  _coBusy = false;
+});
+
+document.getElementById('btn-countoff-cancel').addEventListener('click', e => {
+  e.stopPropagation();
+  _tbStopCamera();
+  _coReleasePhotos();
+  _coCount = 0;
+  router.navigateTo('screen-fanger');
+});
+
+document.getElementById('btn-countoff-done').addEventListener('click', e => {
+  e.stopPropagation();
+  if (_coCount < 2) return;
+  _tbStopCamera();
+  // Fotos ans Fänger-Modul übergeben (übernimmt Eigentum + spätere Freigabe).
+  fanger.setRoster(_coPhotos.map(photo => ({ photo })));
+  _coPhotos = [];   // Eigentum abgegeben – hier nicht mehr freigeben
+  _coCount = 0;
+  router.navigateTo('screen-fanger');
 });
 
 // ═══════════════════════════════════════════════════════════
@@ -2266,6 +2380,8 @@ function initSettings() {
     const c = storage.getItem('settings') || {};
     c.tbPhotos = e.target.checked;
     storage.setItem('settings', c);
+    // Beim Deaktivieren evtl. vorhandene Auslosungs-Fotos sofort freigeben.
+    if (!e.target.checked && fanger.hasPhotos()) fanger.clearRoster();
   });
 
   // Vereins-Design (Theme)

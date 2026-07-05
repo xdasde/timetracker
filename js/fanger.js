@@ -21,6 +21,7 @@ let catcherCount = 3;
 let biasMode     = 'soft';        // 'off' | 'soft' | 'strong'
 let history      = new Array(personCount).fill(0); // Fänger-Einsätze je Person
 let lastResult   = [];            // zuletzt gezogene Nummern (1-basiert)
+let roster       = [];            // pro Nummer: { number, photo } · photo = Blob-URL | null (nur RAM)
 
 export function getPersonCount()  { return personCount; }
 export function getCatcherCount() { return catcherCount; }
@@ -55,6 +56,38 @@ export function getHistory() {
 export function resetHistory() {
   history = new Array(personCount).fill(0);
   lastResult = [];
+}
+
+// ── Roster (Durchzählen) ────────────────────────────────────
+// Beim „Durchzählen" tippt jedes Kind einmal und bekommt aufsteigend eine
+// Nummer. Optional wird pro Nummer ein Foto (nur im Arbeitsspeicher) erfasst,
+// das bei der Auslosung als Gesicht angezeigt wird.
+
+export function getRoster()   { return roster.map(r => ({ ...r })); }
+export function hasRoster()   { return roster.length > 0; }
+export function hasPhotos()   { return roster.some(r => r.photo); }
+export function getRosterPhoto(number) {
+  const e = roster[number - 1];
+  return e ? e.photo : null;
+}
+
+// entries: [{ photo }] in Tipp-Reihenfolge. Setzt Personenzahl = Anzahl und
+// startet eine frische Ausgleichs-Historie (neue Gruppe).
+export function setRoster(entries) {
+  clearRoster();
+  roster = entries.map((e, i) => ({ number: i + 1, photo: e.photo || null }));
+  personCount = Math.max(2, Math.min(50, roster.length));
+  history = new Array(personCount).fill(0);
+  if (catcherCount > personCount - 1) catcherCount = personCount - 1;
+  if (catcherCount < 1) catcherCount = 1;
+  lastResult = [];
+}
+
+export function clearRoster() {
+  roster.forEach(r => {
+    if (r.photo) { try { URL.revokeObjectURL(r.photo); } catch {} }
+  });
+  roster = [];
 }
 
 // Gewichtetes Ziehen ohne Zurücklegen: `catcherCount` verschiedene
