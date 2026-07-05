@@ -1,0 +1,51 @@
+name: GitHub Pages
+
+# Baut die Spiele-Datenbank und veröffentlicht die PWA (statische Dateien im
+# Repo-Root) über GitHub Pages. Läuft bei jedem Push auf main und kann manuell
+# angestoßen werden.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Nur Lese-Rechte fürs Repo, Schreibrechte für die Pages-Bereitstellung.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Immer nur ein Deploy gleichzeitig; laufende Deploys nicht abbrechen.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Spiele-Datenbank bauen
+        run: node scripts/build-content.mjs
+      - name: Pages konfigurieren (aktiviert Pages automatisch)
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+      - name: Artefakt hochladen
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Auf GitHub Pages veröffentlichen
+        id: deployment
+        uses: actions/deploy-pages@v4
