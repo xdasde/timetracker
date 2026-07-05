@@ -117,3 +117,14 @@ export function draw() {
   lastResult = picked.map(i => i + 1).sort((a, b) => a - b);
   return getLastResult();
 }
+
+// Startreihenfolge: mischt alle Personen (1…N) zufällig gleichverteilt und gibt
+// die Reihenfolge zurück. Unabhängig vom Ausgleich; verändert die Historie nicht.
+export function drawOrder() {
+  const order = Array.from({ length: personCount }, (_, i) => i + 1);
+  for (let i = order.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  return order;
+}

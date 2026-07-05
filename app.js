@@ -1219,14 +1219,26 @@ document.getElementById('btn-roulette-start').addEventListener('click', () => {
 // FÄNGER-AUSLOSUNG
 // ═══════════════════════════════════════════════════════════
 let _fangerDrawing = false;
+let _fangerMode    = 'select';   // 'select' = einzelne auslosen · 'order' = Startreihenfolge
 
 function enterFanger() {
   _fangerDrawing = false;
   fangerUpdateCounters();
   fangerUpdateBias();
+  fangerUpdateMode();
   fangerResetDisplay();
   fangerRenderHistory();
   fangerRenderRosterStatus();
+}
+
+function fangerUpdateMode() {
+  document.querySelectorAll('#fanger-mode-seg .fanger-seg-btn').forEach(b => {
+    b.classList.toggle('fanger-seg-btn--active', b.dataset.mode === _fangerMode);
+  });
+  // Anzahl + Ausgleich nur im Auswahl-Modus zeigen.
+  const show = _fangerMode === 'select';
+  document.querySelectorAll('.fanger-select-only').forEach(el =>
+    el.classList.toggle('hidden', !show));
 }
 
 function fangerRenderRosterStatus() {
@@ -1236,8 +1248,8 @@ function fangerRenderRosterStatus() {
     const n = fanger.getRoster().length;
     const withPhotos = fanger.hasPhotos();
     el.textContent = withPhotos
-      ? `📸 ${n} Kinder mit Foto erfasst`
-      : `✓ ${n} Kinder durchgezählt`;
+      ? `📸 ${n} Personen mit Foto erfasst`
+      : `✓ ${n} Personen durchgezählt`;
     el.classList.remove('hidden');
   } else {
     el.classList.add('hidden');
@@ -1262,8 +1274,8 @@ function fangerUpdateBias() {
   hint.textContent = mode === 'off'
     ? 'Alle mit gleicher Chance'
     : mode === 'strong'
-      ? 'Frühere Fänger kommen deutlich seltener dran'
-      : 'Wer schon Fänger war, kommt etwas seltener dran';
+      ? 'Wer schon dran war, kommt deutlich seltener dran'
+      : 'Wer schon dran war, kommt etwas seltener dran';
 }
 
 function fangerResetDisplay() {
@@ -1273,7 +1285,9 @@ function fangerResetDisplay() {
   const hint = document.createElement('span');
   hint.className = 'fanger-result-hint';
   hint.id = 'fanger-result-hint';
-  hint.textContent = 'Bereit? Tippe auf „Auslosen"';
+  hint.textContent = _fangerMode === 'order'
+    ? 'Startreihenfolge auslosen'
+    : 'Bereit? Tippe auf „Auslosen"';
   result.appendChild(hint);
   document.getElementById('fanger-result-actions').classList.add('hidden');
   document.getElementById('btn-fanger-draw').disabled = false;
@@ -1301,6 +1315,7 @@ function fangerRenderHistory() {
 
 function fangerDraw() {
   if (_fangerDrawing) return;
+  if (_fangerMode === 'order') { fangerDrawOrder(); return; }
   _fangerDrawing = true;
   const cfg = storage.getItem('settings') || {};
   const drawBtn = document.getElementById('btn-fanger-draw');
@@ -1379,7 +1394,7 @@ function fangerFinish(picks) {
   });
   const label = document.createElement('div');
   label.className = 'fanger-result-label';
-  label.textContent = picks.length === 1 ? 'ist Fänger' : 'sind Fänger';
+  label.textContent = picks.length === 1 ? 'ausgelost' : 'ausgelost';
   result.appendChild(label);
 
   document.getElementById('fanger-result-actions').classList.remove('hidden');
@@ -1390,8 +1405,68 @@ function fangerFinish(picks) {
   if (cfg.vibration !== false && navigator.vibrate) navigator.vibrate([20, 40, 80]);
 }
 
+// Startreihenfolge auslosen: alle Personen in zufälliger Reihenfolge auflisten.
+function fangerDrawOrder() {
+  if (_fangerDrawing) return;
+  _fangerDrawing = true;
+  const cfg = storage.getItem('settings') || {};
+  document.getElementById('fanger-result-actions').classList.add('hidden');
+
+  const order  = fanger.drawOrder();
+  const result = document.getElementById('fanger-result');
+  result.classList.add('fanger-result--win');
+  result.replaceChildren();
+
+  const list = document.createElement('ol');
+  list.className = 'fanger-order';
+  order.forEach((num, idx) => {
+    const li = document.createElement('li');
+    li.className = 'fanger-order-item';
+    li.style.animationDelay = `${Math.min(idx * 0.04, 1.2)}s`;
+
+    const rank = document.createElement('span');
+    rank.className = 'fanger-order-rank';
+    rank.textContent = `${idx + 1}.`;
+
+    const who = document.createElement('span');
+    who.className = 'fanger-order-who';
+    const photo = fanger.getRosterPhoto(num);
+    if (photo) {
+      const img = document.createElement('img');
+      img.className = 'fanger-order-img';
+      img.src = photo;
+      img.alt = '';
+      img.addEventListener('contextmenu', e => e.preventDefault());
+      who.appendChild(img);
+    }
+    const n = document.createElement('span');
+    n.className = 'fanger-order-num';
+    n.textContent = `Nr. ${num}`;
+    who.appendChild(n);
+
+    li.append(rank, who);
+    list.appendChild(li);
+  });
+  result.appendChild(list);
+
+  document.getElementById('fanger-result-actions').classList.remove('hidden');
+  document.getElementById('btn-fanger-draw').disabled = false;
+  _fangerDrawing = false;
+  if (cfg.sound !== false) playBeep();
+  if (cfg.vibration !== false && navigator.vibrate) navigator.vibrate([20, 40, 80]);
+}
+
 document.getElementById('btn-fanger-back').addEventListener('click', () =>
   router.navigateTo('screen-home'));
+
+document.querySelectorAll('#fanger-mode-seg .fanger-seg-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (_fangerDrawing) return;
+    _fangerMode = btn.dataset.mode;
+    fangerUpdateMode();
+    fangerResetDisplay();
+  });
+});
 
 function fangerManualPersons(delta) {
   // Manuelles Ändern der Personenzahl macht die durchgezählte Nummern-/Foto-
@@ -1459,7 +1534,7 @@ function leaveCountoff() {
 
 function coUpdateUI(justAssigned) {
   document.getElementById('countoff-counter').textContent =
-    `${_coCount} ${_coCount === 1 ? 'Kind' : 'Kinder'}`;
+    `${_coCount} ${_coCount === 1 ? 'Person' : 'Personen'}`;
   const promptEl = document.getElementById('countoff-prompt');
   const numEl    = document.getElementById('countoff-number');
   const subEl    = document.getElementById('countoff-sub');

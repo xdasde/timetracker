@@ -135,7 +135,7 @@
             <div class="home-tile-sub">Zufällige Teams</div>
           </div>
         </button>
-        <button class="home-tile" id="btn-open-fanger" aria-label="Auslosen: Fänger &amp; Nummern">
+        <button class="home-tile" id="btn-open-fanger" aria-label="Auslosen: Auswahl &amp; Reihenfolge">
           <span class="home-tile-icon home-icon-anim home-icon-fanger">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <circle cx="12" cy="12" r="9" class="anim-ping-ring"/>
@@ -145,7 +145,7 @@
           </span>
           <div class="home-tile-text">
             <div class="home-tile-label">Auslosen</div>
-            <div class="home-tile-sub">Fänger &amp; Nummern</div>
+            <div class="home-tile-sub">Auswahl &amp; Reihenfolge</div>
           </div>
         </button>
         <button class="home-tile" id="btn-open-rules" aria-label="Spiele-Datenbank öffnen">
@@ -503,7 +503,12 @@
         <h2>Auslosen</h2>
       </div>
       <div class="screen-body">
-        <p class="roulette-intro">Die Gruppe zählt sich durch (1…N). Das Tool zieht zufällig die Fänger.</p>
+        <p class="roulette-intro">Die Gruppe zählt sich durch (1…N). Das Tool lost zufällig aus – einzelne Personen oder eine ganze Startreihenfolge.</p>
+
+        <div class="fanger-bias-seg fanger-mode-seg" id="fanger-mode-seg" role="group" aria-label="Modus wählen">
+          <button type="button" class="fanger-seg-btn fanger-seg-btn--active" data-mode="select">Auswahl</button>
+          <button type="button" class="fanger-seg-btn" data-mode="order">Reihenfolge</button>
+        </div>
 
         <div class="tb-counter-row">
           <span class="tb-counter-label">Personen</span>
@@ -515,11 +520,11 @@
         </div>
         <button class="btn-secondary btn-full fanger-countoff-btn" id="btn-fanger-countoff">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" width="18" height="18"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg>
-          Kinder durchzählen
+          Personen durchzählen
         </button>
         <p class="fanger-roster-status hidden" id="fanger-roster-status"></p>
-        <div class="tb-counter-row">
-          <span class="tb-counter-label">Anzahl Fänger</span>
+        <div class="tb-counter-row fanger-select-only" id="fanger-count-row">
+          <span class="tb-counter-label">Anzahl</span>
           <div class="tb-counter">
             <button class="tb-counter-btn" id="fanger-count-dec">&#x2212;</button>
             <span class="tb-counter-val" id="fanger-count-val">3</span>
@@ -527,10 +532,10 @@
           </div>
         </div>
 
-        <div class="fanger-bias">
+        <div class="fanger-bias fanger-select-only" id="fanger-bias-block">
           <div class="fanger-bias-head">
             <span class="tb-counter-label">Ausgleich</span>
-            <span class="fanger-bias-hint" id="fanger-bias-hint">Wer schon Fänger war, kommt seltener dran</span>
+            <span class="fanger-bias-hint" id="fanger-bias-hint">Wer schon dran war, kommt seltener dran</span>
           </div>
           <div class="fanger-bias-seg" id="fanger-bias-seg" role="group" aria-label="Ausgleich wählen">
             <button type="button" class="fanger-seg-btn" data-bias="off">Aus</button>
@@ -545,7 +550,7 @@
           </div>
         </div>
 
-        <button class="btn-primary btn-full roulette-spin-btn" id="btn-fanger-draw">Auslosen 🖐️</button>
+        <button class="btn-primary btn-full roulette-spin-btn" id="btn-fanger-draw">Auslosen 🎲</button>
 
         <div class="roulette-result-actions hidden" id="fanger-result-actions">
           <button class="btn-secondary" id="btn-fanger-again">Nochmal</button>
@@ -562,11 +567,11 @@
     <!-- ═══ Screen: Durchzählen ═══ -->
     <section id="screen-countoff" class="screen">
       <div class="tb-reveal countoff-reveal" id="countoff-reveal" role="button" aria-label="Tippen für deine Nummer">
-        <div class="tb-reveal-counter" id="countoff-counter">0 Kinder</div>
+        <div class="tb-reveal-counter" id="countoff-counter">0 Personen</div>
         <div class="tb-reveal-content">
           <div class="tb-reveal-prompt" id="countoff-prompt">Tippe für deine Nummer!</div>
           <div class="countoff-number hidden" id="countoff-number"></div>
-          <div class="countoff-sub hidden" id="countoff-sub">Nächstes Kind tippt</div>
+          <div class="countoff-sub hidden" id="countoff-sub">Nächste Person tippt</div>
         </div>
         <div class="countoff-actions">
           <button class="tb-reveal-exit" id="btn-countoff-cancel">
