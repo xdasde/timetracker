@@ -2573,6 +2573,170 @@ textarea.modal-input { resize: vertical; min-height: 80px; }
   line-height: 1.4;
 }
 
+/* ── Fänger-Auslosung ─────────────────────────────────────── */
+.fanger-bias {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.fanger-bias-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.fanger-bias-hint {
+  font-size: 0.74rem;
+  color: var(--color-muted);
+  line-height: 1.3;
+}
+.fanger-bias-seg {
+  display: flex;
+  gap: 6px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  padding: 4px;
+}
+.fanger-seg-btn {
+  flex: 1;
+  border-radius: var(--radius-pill);
+  padding: 9px 6px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--color-text);
+  transition: background 0.12s, color 0.12s, transform 0.1s;
+}
+.fanger-seg-btn:active { transform: scale(0.96); }
+.fanger-seg-btn--active {
+  background: var(--color-amber);
+  color: #111827;
+}
+
+.fanger-stage {
+  display: flex;
+  justify-content: center;
+  padding: 6px 0;
+}
+.fanger-result {
+  width: 100%;
+  max-width: 420px;
+  min-height: 170px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(var(--color-accent-rgb), 0.35);
+  background:
+    radial-gradient(120% 120% at 50% 0%, rgba(var(--color-accent-rgb), 0.14), rgba(var(--color-accent-rgb), 0.02) 60%),
+    var(--color-surface);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 22px 18px;
+  text-align: center;
+}
+.fanger-result--win {
+  border-color: var(--color-amber);
+  box-shadow: 0 8px 26px rgba(var(--color-accent-rgb), 0.3);
+}
+.fanger-result-hint {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-muted);
+}
+.fanger-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+}
+.fanger-chip {
+  min-width: 62px;
+  height: 62px;
+  padding: 0 10px;
+  border-radius: 18px;
+  background: rgba(var(--color-accent-rgb), 0.12);
+  border: 1px solid rgba(var(--color-accent-rgb), 0.3);
+  color: var(--color-text);
+  font-size: 1.9rem;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.fanger-chip--win {
+  background: var(--color-amber);
+  border-color: var(--color-amber);
+  color: #111827;
+  animation: fanger-pop 0.45s cubic-bezier(0.22, 1.4, 0.5, 1);
+}
+.fanger-chip--win:nth-child(2) { animation-delay: 0.06s; }
+.fanger-chip--win:nth-child(3) { animation-delay: 0.12s; }
+.fanger-chip--win:nth-child(4) { animation-delay: 0.18s; }
+.fanger-chip--win:nth-child(5) { animation-delay: 0.24s; }
+@keyframes fanger-pop {
+  0%   { transform: scale(0.4) rotate(-18deg); }
+  60%  { transform: scale(1.2) rotate(6deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+.fanger-result-label {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.fanger-history {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  padding: 0 14px;
+}
+.fanger-history > summary {
+  cursor: pointer;
+  padding: 13px 0;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--color-text);
+  list-style: none;
+}
+.fanger-history > summary::-webkit-details-marker { display: none; }
+.fanger-history-badge {
+  font-weight: 600;
+  color: var(--color-muted);
+  font-size: 0.8rem;
+}
+.fanger-history-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
+  gap: 8px;
+  padding: 4px 0 14px;
+}
+.fanger-hist-cell {
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 8px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.fanger-hist-cell--hot {
+  border-color: var(--color-amber);
+  background: rgba(var(--color-accent-rgb), 0.08);
+}
+.fanger-hist-num {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--color-text);
+}
+.fanger-hist-count {
+  font-size: 0.72rem;
+  color: var(--color-muted);
+}
+.fanger-history .btn-secondary { margin-bottom: 14px; }
+
 /* Einstellungen: Abschnitt + Ausschlussliste */
 .settings-section { display: flex; flex-direction: column; gap: 8px; }
 .settings-section-title {

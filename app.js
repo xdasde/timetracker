@@ -10,6 +10,7 @@ import * as exportMod from './js/export.js';
 import { playBeep, playWhistle, playGoal, playMatchEnd, playCountdownTick } from './js/audio.js';
 import { acquireWakeLock, releaseWakeLock } from './js/wakelock.js';
 import * as teambuilder from './js/teambuilder.js';
+import * as fanger from './js/fanger.js';
 import * as rules from './js/rules.js';
 import * as customgames from './js/customgames.js';
 import * as theme from './js/theme.js';
@@ -33,6 +34,7 @@ router.register('screen-teambuilder-lineup', enterLineup, leaveLineup);
 router.register('screen-tb-match', enterTbMatch, leaveTbMatch);
 router.register('screen-rules', enterRules);
 router.register('screen-roulette', enterRoulette);
+router.register('screen-fanger', enterFanger);
 
 // ═══════════════════════════════════════════════════════════
 // TOP-NAV
@@ -78,6 +80,9 @@ document.getElementById('btn-open-rules').addEventListener('click', () =>
 
 document.getElementById('btn-open-roulette').addEventListener('click', () =>
   router.navigateTo('screen-roulette'));
+
+document.getElementById('btn-open-fanger').addEventListener('click', () =>
+  router.navigateTo('screen-fanger'));
 
 // ═══════════════════════════════════════════════════════════
 // TEAMBILDUNG
@@ -1140,6 +1145,190 @@ document.getElementById('btn-roulette-spin').addEventListener('click', spinRoule
 document.getElementById('btn-roulette-again').addEventListener('click', spinRoulette);
 document.getElementById('btn-roulette-start').addEventListener('click', () => {
   if (_rouletteResult) startMatchFromPreset(_rouletteResult);
+});
+
+// ═══════════════════════════════════════════════════════════
+// FÄNGER-AUSLOSUNG
+// ═══════════════════════════════════════════════════════════
+let _fangerDrawing = false;
+
+function enterFanger() {
+  _fangerDrawing = false;
+  fangerUpdateCounters();
+  fangerUpdateBias();
+  fangerResetDisplay();
+  fangerRenderHistory();
+}
+
+function fangerUpdateCounters() {
+  document.getElementById('fanger-persons-val').textContent = fanger.getPersonCount();
+  document.getElementById('fanger-count-val').textContent   = fanger.getCatcherCount();
+  document.getElementById('fanger-persons-dec').disabled = fanger.getPersonCount() <= 2;
+  document.getElementById('fanger-persons-inc').disabled = fanger.getPersonCount() >= 50;
+  document.getElementById('fanger-count-dec').disabled   = fanger.getCatcherCount() <= 1;
+  document.getElementById('fanger-count-inc').disabled   = fanger.getCatcherCount() >= fanger.getPersonCount() - 1;
+}
+
+function fangerUpdateBias() {
+  const mode = fanger.getBiasMode();
+  document.querySelectorAll('#fanger-bias-seg .fanger-seg-btn').forEach(b => {
+    b.classList.toggle('fanger-seg-btn--active', b.dataset.bias === mode);
+  });
+  const hint = document.getElementById('fanger-bias-hint');
+  hint.textContent = mode === 'off'
+    ? 'Alle mit gleicher Chance'
+    : mode === 'strong'
+      ? 'Frühere Fänger kommen deutlich seltener dran'
+      : 'Wer schon Fänger war, kommt etwas seltener dran';
+}
+
+function fangerResetDisplay() {
+  const result = document.getElementById('fanger-result');
+  result.classList.remove('fanger-result--win');
+  result.replaceChildren();
+  const hint = document.createElement('span');
+  hint.className = 'fanger-result-hint';
+  hint.id = 'fanger-result-hint';
+  hint.textContent = 'Bereit? Tippe auf „Auslosen"';
+  result.appendChild(hint);
+  document.getElementById('fanger-result-actions').classList.add('hidden');
+  document.getElementById('btn-fanger-draw').disabled = false;
+}
+
+function fangerRenderHistory() {
+  const grid = document.getElementById('fanger-history-grid');
+  grid.replaceChildren();
+  const hist = fanger.getHistory();
+  const maxCount = Math.max(0, ...hist.map(h => h.count));
+  hist.forEach(h => {
+    const cell = document.createElement('div');
+    cell.className = 'fanger-hist-cell';
+    if (h.count > 0 && h.count === maxCount) cell.classList.add('fanger-hist-cell--hot');
+    cell.innerHTML = `<span class="fanger-hist-num">${h.number}</span>` +
+                     `<span class="fanger-hist-count">${h.count}×</span>`;
+    grid.appendChild(cell);
+  });
+  const rounds = hist.length ? Math.max(...hist.map(h => h.count)) : 0;
+  const badge = document.getElementById('fanger-history-badge');
+  const totalPicks = hist.reduce((s, h) => s + h.count, 0);
+  badge.textContent = totalPicks > 0 ? `· ${totalPicks} vergeben` : '';
+  void rounds;
+}
+
+function fangerDraw() {
+  if (_fangerDrawing) return;
+  _fangerDrawing = true;
+  const cfg = storage.getItem('settings') || {};
+  const drawBtn = document.getElementById('btn-fanger-draw');
+  drawBtn.disabled = true;
+  document.getElementById('fanger-result-actions').classList.add('hidden');
+
+  const result   = document.getElementById('fanger-result');
+  const finalPicks = fanger.draw();
+  const pool     = fanger.getPersonCount();
+
+  result.classList.remove('fanger-result--win');
+  result.replaceChildren();
+  const chipsWrap = document.createElement('div');
+  chipsWrap.className = 'fanger-chips';
+  result.appendChild(chipsWrap);
+
+  // Kurze "Rollier"-Animation: zufällige Nummern durchblitzen lassen,
+  // dann auf das Endergebnis einrasten.
+  const totalTicks = 14;
+  let ticks = 0;
+  let delay = 55;
+
+  const renderChips = nums => {
+    chipsWrap.replaceChildren();
+    nums.forEach(n => {
+      const chip = document.createElement('span');
+      chip.className = 'fanger-chip';
+      chip.textContent = n;
+      chipsWrap.appendChild(chip);
+    });
+  };
+
+  const randomSet = () => {
+    const s = new Set();
+    while (s.size < finalPicks.length) s.add(1 + Math.floor(Math.random() * pool));
+    return [...s].sort((a, b) => a - b);
+  };
+
+  const step = () => {
+    renderChips(randomSet());
+    if (cfg.vibration !== false && navigator.vibrate) navigator.vibrate(6);
+    ticks++;
+    if (ticks >= totalTicks) { fangerFinish(finalPicks); return; }
+    if (ticks > totalTicks - 5) delay += 50;
+    setTimeout(step, delay);
+  };
+  step();
+}
+
+function fangerFinish(picks) {
+  _fangerDrawing = false;
+  const cfg = storage.getItem('settings') || {};
+  const result = document.getElementById('fanger-result');
+  result.classList.add('fanger-result--win');
+  const chipsWrap = result.querySelector('.fanger-chips');
+  chipsWrap.replaceChildren();
+  picks.forEach(n => {
+    const chip = document.createElement('span');
+    chip.className = 'fanger-chip fanger-chip--win';
+    chip.textContent = n;
+    chipsWrap.appendChild(chip);
+  });
+  const label = document.createElement('div');
+  label.className = 'fanger-result-label';
+  label.textContent = picks.length === 1 ? 'ist Fänger' : 'sind Fänger';
+  result.appendChild(label);
+
+  document.getElementById('fanger-result-actions').classList.remove('hidden');
+  document.getElementById('btn-fanger-draw').disabled = false;
+  fangerUpdateCounters();
+  fangerRenderHistory();
+  if (cfg.sound !== false) playBeep();
+  if (cfg.vibration !== false && navigator.vibrate) navigator.vibrate([20, 40, 80]);
+}
+
+document.getElementById('btn-fanger-back').addEventListener('click', () =>
+  router.navigateTo('screen-home'));
+
+document.getElementById('fanger-persons-inc').addEventListener('click', () => {
+  fanger.setPersonCount(fanger.getPersonCount() + 1);
+  fangerUpdateCounters();
+  if (!_fangerDrawing) fangerResetDisplay();
+  fangerRenderHistory();
+});
+document.getElementById('fanger-persons-dec').addEventListener('click', () => {
+  fanger.setPersonCount(fanger.getPersonCount() - 1);
+  fangerUpdateCounters();
+  if (!_fangerDrawing) fangerResetDisplay();
+  fangerRenderHistory();
+});
+document.getElementById('fanger-count-inc').addEventListener('click', () => {
+  fanger.setCatcherCount(fanger.getCatcherCount() + 1);
+  fangerUpdateCounters();
+});
+document.getElementById('fanger-count-dec').addEventListener('click', () => {
+  fanger.setCatcherCount(fanger.getCatcherCount() - 1);
+  fangerUpdateCounters();
+});
+
+document.querySelectorAll('#fanger-bias-seg .fanger-seg-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    fanger.setBiasMode(btn.dataset.bias);
+    fangerUpdateBias();
+  });
+});
+
+document.getElementById('btn-fanger-draw').addEventListener('click', fangerDraw);
+document.getElementById('btn-fanger-again').addEventListener('click', fangerDraw);
+document.getElementById('btn-fanger-reset').addEventListener('click', () => {
+  fanger.resetHistory();
+  fangerRenderHistory();
+  fangerResetDisplay();
 });
 
 // ═══════════════════════════════════════════════════════════

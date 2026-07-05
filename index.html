@@ -135,6 +135,19 @@
             <div class="home-tile-sub">Zufällige Teams</div>
           </div>
         </button>
+        <button class="home-tile" id="btn-open-fanger" aria-label="Fänger auslosen">
+          <span class="home-tile-icon home-icon-anim home-icon-fanger">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="9" class="anim-ping-ring"/>
+              <circle cx="12" cy="12" r="4.5"/>
+              <circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/>
+            </svg>
+          </span>
+          <div class="home-tile-text">
+            <div class="home-tile-label">Fänger auslosen</div>
+            <div class="home-tile-sub">Zufällige Fänger</div>
+          </div>
+        </button>
         <button class="home-tile" id="btn-open-rules" aria-label="Spiele-Datenbank öffnen">
           <span class="home-tile-icon home-icon-anim home-icon-rules">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -478,6 +491,64 @@
           <button class="btn-primary" id="btn-roulette-start">Match starten</button>
         </div>
         <p class="roulette-empty hidden" id="roulette-empty">Keine Spiele in dieser Kategorie verfügbar. Passe die Ausschlussliste in den Einstellungen an.</p>
+      </div>
+    </section>
+
+    <!-- ═══ Screen: Fänger-Auslosung ═══ -->
+    <section id="screen-fanger" class="screen screen-deco">
+      <div class="sub-header">
+        <button class="btn-back" id="btn-fanger-back" aria-label="Zurück"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg></button>
+        <h2>Fänger auslosen</h2>
+      </div>
+      <div class="screen-body">
+        <p class="roulette-intro">Die Gruppe zählt sich durch (1…N). Das Tool zieht zufällig die Fänger.</p>
+
+        <div class="tb-counter-row">
+          <span class="tb-counter-label">Personen</span>
+          <div class="tb-counter">
+            <button class="tb-counter-btn" id="fanger-persons-dec">&#x2212;</button>
+            <span class="tb-counter-val" id="fanger-persons-val">12</span>
+            <button class="tb-counter-btn" id="fanger-persons-inc">+</button>
+          </div>
+        </div>
+        <div class="tb-counter-row">
+          <span class="tb-counter-label">Anzahl Fänger</span>
+          <div class="tb-counter">
+            <button class="tb-counter-btn" id="fanger-count-dec">&#x2212;</button>
+            <span class="tb-counter-val" id="fanger-count-val">3</span>
+            <button class="tb-counter-btn" id="fanger-count-inc">+</button>
+          </div>
+        </div>
+
+        <div class="fanger-bias">
+          <div class="fanger-bias-head">
+            <span class="tb-counter-label">Ausgleich</span>
+            <span class="fanger-bias-hint" id="fanger-bias-hint">Wer schon Fänger war, kommt seltener dran</span>
+          </div>
+          <div class="fanger-bias-seg" id="fanger-bias-seg" role="group" aria-label="Ausgleich wählen">
+            <button type="button" class="fanger-seg-btn" data-bias="off">Aus</button>
+            <button type="button" class="fanger-seg-btn fanger-seg-btn--active" data-bias="soft">Sanft</button>
+            <button type="button" class="fanger-seg-btn" data-bias="strong">Stark</button>
+          </div>
+        </div>
+
+        <div class="fanger-stage">
+          <div class="fanger-result" id="fanger-result" aria-live="polite">
+            <span class="fanger-result-hint" id="fanger-result-hint">Bereit? Tippe auf „Auslosen"</span>
+          </div>
+        </div>
+
+        <button class="btn-primary btn-full roulette-spin-btn" id="btn-fanger-draw">Auslosen 🖐️</button>
+
+        <div class="roulette-result-actions hidden" id="fanger-result-actions">
+          <button class="btn-secondary" id="btn-fanger-again">Nochmal</button>
+        </div>
+
+        <details class="fanger-history" id="fanger-history-box">
+          <summary>Bisherige Einsätze <span id="fanger-history-badge" class="fanger-history-badge"></span></summary>
+          <div class="fanger-history-grid" id="fanger-history-grid"></div>
+          <button class="btn-secondary btn-full" id="btn-fanger-reset">Historie zurücksetzen</button>
+        </details>
       </div>
     </section>
 
