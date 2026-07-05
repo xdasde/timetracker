@@ -15,10 +15,12 @@ permissions:
   pages: write
   id-token: write
 
-# Immer nur ein Deploy gleichzeitig; laufende Deploys nicht abbrechen.
+# Immer nur ein Deploy gleichzeitig. Bei schnell aufeinanderfolgenden Pushes
+# den älteren Lauf abbrechen, statt beide um denselben Pages-Deploy konkurrieren
+# zu lassen (sonst „Deployment failed, try again later").
 concurrency:
   group: pages
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   build:
