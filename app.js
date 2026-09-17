@@ -15,6 +15,10 @@ import * as rules from './js/rules.js';
 import * as customgames from './js/customgames.js';
 import * as theme from './js/theme.js';
 
+const TEAM_CREST_FALLBACK = 'assets/generated/brand-assets/derived/team.png';
+let _setupActiveSlot = 'a';
+let _setupTeamSelection = { a: 'eagle', b: 'wolf' };
+
 // Gespeichertes Vereins-Design so früh wie möglich anwenden.
 theme.initTheme();
 
@@ -76,6 +80,9 @@ document.getElementById('btn-open-teambuilder').addEventListener('click', () =>
 
 document.getElementById('btn-goto-log').addEventListener('click', () =>
   router.navigateTo('screen-history'));
+
+document.getElementById('btn-home-stopwatch').addEventListener('click', () =>
+  router.navigateTo('screen-tools'));
 
 document.getElementById('btn-open-rules').addEventListener('click', () =>
   router.navigateTo('screen-rules'));
@@ -150,7 +157,22 @@ function _tbFlash() {
   el.addEventListener('animationend', () => el.remove(), { once: true });
 }
 
-// ── Zähler & Vorschau ────────────────────────────────────────
+// ── Zähler, Wappenwahl & Vorschau ────────────────────────────
+function tbUpdateCrestUI() {
+  const selected = new Set(teambuilder.getSelectedCrestIds());
+  const limit = Math.min(teambuilder.getTeamCount(), teambuilder.TEAM_CRESTS.length);
+  const grid = document.getElementById('tb-crest-grid');
+  grid?.querySelectorAll('.tb-crest').forEach(card => {
+    const active = selected.has(card.dataset.crestId);
+    card.classList.toggle('is-selected', active);
+    card.setAttribute('aria-pressed', String(active));
+  });
+  const hint = document.getElementById('tb-crest-hint');
+  if (hint) hint.textContent = `${selected.size} von ${limit} gewählt · direkt antippen`;
+  const start = document.getElementById('btn-teambuilder-start');
+  if (start) start.disabled = selected.size < limit;
+}
+
 function tbUpdateCounterUI() {
   document.getElementById('tb-persons-val').textContent = teambuilder.getPersonCount();
   document.getElementById('tb-teams-val').textContent   = teambuilder.getTeamCount();
@@ -158,6 +180,7 @@ function tbUpdateCounterUI() {
   document.getElementById('tb-teams-dec').disabled      = teambuilder.getTeamCount() <= 2;
   document.getElementById('tb-persons-inc').disabled    = teambuilder.getPersonCount() >= 50;
   document.getElementById('tb-teams-inc').disabled      = teambuilder.getTeamCount() >= 10;
+  tbUpdateCrestUI();
   tbUpdatePreview();
 }
 
@@ -168,7 +191,16 @@ function tbUpdatePreview() {
     const chip = document.createElement('div');
     chip.className = 'tb-preview-chip';
     chip.style.background = t.color;
-    chip.textContent = `${t.name} – ${t.count}×`;
+    if (t.crest) {
+      const img = document.createElement('img');
+      img.src = t.crest.asset;
+      img.alt = '';
+      img.setAttribute('aria-hidden', 'true');
+      chip.appendChild(img);
+    }
+    const text = document.createElement('span');
+    text.textContent = `${t.name} – ${t.count}×`;
+    chip.appendChild(text);
     preview.appendChild(chip);
   });
 }
@@ -176,6 +208,13 @@ function tbUpdatePreview() {
 function enterTeamBuilder() {
   tbUpdateCounterUI();
 }
+
+document.getElementById('tb-crest-grid').addEventListener('click', e => {
+  const card = e.target.closest('.tb-crest');
+  if (!card) return;
+  teambuilder.toggleTeamCrest(card.dataset.crestId);
+  tbUpdateCounterUI();
+});
 
 document.getElementById('btn-teambuilder-back').addEventListener('click', () => {
   teambuilder.clearPhotos();
@@ -225,10 +264,12 @@ function tbUpdateRevealUI() {
   if (rs.revealed) {
     const color = teambuilder.getTeamColor(rs.teamIdx);
     const name  = teambuilder.getTeamName(rs.teamIdx);
+    const crest = teambuilder.getTeamCrest(rs.teamIdx);
     promptEl.classList.add('hidden');
     teamEl.classList.remove('hidden');
     teamEl.className = 'tb-reveal-team';
     teamEl.innerHTML =
+      (crest ? `<img class="tb-reveal-team-crest" src="${crest.asset}" alt="">` : '') +
       `<div class="tb-reveal-team-name">${name}</div>` +
       `<div class="tb-reveal-team-sub">Das ist dein Team!</div>`;
     revealEl.style.background = color;
@@ -297,7 +338,17 @@ function enterLineup() {
     const header = document.createElement('div');
     header.className = 'tb-lineup-team-header';
     header.style.background = team.color;
-    header.textContent = team.name;
+    if (team.crest) {
+      const crest = document.createElement('img');
+      crest.className = 'tb-lineup-team-crest';
+      crest.src = team.crest.asset;
+      crest.alt = '';
+      crest.setAttribute('aria-hidden', 'true');
+      header.appendChild(crest);
+    }
+    const headerName = document.createElement('span');
+    headerName.textContent = team.name;
+    header.appendChild(headerName);
     teamEl.appendChild(header);
 
     const photosEl = document.createElement('div');
@@ -442,6 +493,15 @@ function _tbmRenderTeams(teams) {
     const nameEl  = document.createElement('div');
     nameEl.className = 'tbm-team-name';
     nameEl.textContent = team.name;
+    if (team.crest) {
+      const crest = document.createElement('img');
+      crest.className = 'tbm-team-crest';
+      crest.src = team.crest.asset;
+      crest.alt = '';
+      crest.setAttribute('aria-hidden', 'true');
+      header.appendChild(crest);
+    }
+    header.appendChild(nameEl);
     const scoreEl = document.createElement('div');
     scoreEl.className = 'tbm-score-display';
     scoreEl.id = `tbm-score-${ti}`;
@@ -1652,12 +1712,104 @@ function buildDurationChips(container, options, selectedMs, onPick) {
   return setActive;
 }
 
+function _setupCrestById(id) {
+  return teambuilder.TEAM_CRESTS.find(crest => crest.id === id) || null;
+}
+
+function _setupInput(slot) {
+  return document.getElementById(slot === 'a' ? 'team-a-name' : 'team-b-name');
+}
+
+function _setupAssignCrest(slot, id) {
+  const crest = _setupCrestById(id);
+  if (!crest) return;
+  _setupTeamSelection[slot] = id;
+  _setupInput(slot).value = crest.name;
+  match.setTeamName(slot, crest.name);
+}
+
+function _setupSyncCrestFromName(slot, name) {
+  const crest = teambuilder.TEAM_CRESTS.find(item => item.name === name);
+  if (crest) _setupTeamSelection[slot] = crest.id;
+}
+
+function _setupRenderTeamChoices() {
+  const selected = new Set(Object.values(_setupTeamSelection));
+  document.querySelectorAll('.setup-team-preset').forEach(card => {
+    const active = selected.has(card.dataset.crestId);
+    card.classList.toggle('setup-team-preset--active', active);
+    card.setAttribute('aria-pressed', String(active));
+  });
+
+  ['a', 'b'].forEach(slot => {
+    const crest = _setupCrestById(_setupTeamSelection[slot]);
+    const input = _setupInput(slot);
+    const slotEl = document.getElementById(`setup-team-slot-${slot}`);
+    const image = document.getElementById(`setup-team-${slot}-crest`);
+    const label = document.getElementById(`setup-team-${slot}-label`);
+    const name = input.value.trim() || crest?.name || `Team ${slot.toUpperCase()}`;
+    image.src = crest?.asset || TEAM_CREST_FALLBACK;
+    image.alt = crest?.name || '';
+    label.textContent = name;
+    slotEl.classList.toggle('setup-team-slot--active', _setupActiveSlot === slot);
+    slotEl.setAttribute('aria-pressed', String(_setupActiveSlot === slot));
+  });
+
+  const hint = document.getElementById('setup-team-assign-hint');
+  if (hint) hint.textContent = `Tippe ein Wappen für Team ${_setupActiveSlot.toUpperCase()}`;
+}
+
+function buildSetupTeamChoices() {
+  const container = document.getElementById('setup-team-presets');
+  container.replaceChildren();
+  teambuilder.TEAM_CRESTS.forEach(crest => {
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'setup-team-preset';
+    card.dataset.crestId = crest.id;
+    card.setAttribute('aria-pressed', 'false');
+    const image = document.createElement('img');
+    image.src = crest.asset;
+    image.alt = '';
+    image.setAttribute('aria-hidden', 'true');
+    const name = document.createElement('span');
+    name.textContent = crest.name;
+    card.append(image, name);
+    container.appendChild(card);
+  });
+  _setupRenderTeamChoices();
+}
+
+document.getElementById('setup-team-presets').addEventListener('click', e => {
+  const card = e.target.closest('.setup-team-preset');
+  if (!card) return;
+  const slot = _setupActiveSlot;
+  const other = slot === 'a' ? 'b' : 'a';
+  const previous = _setupTeamSelection[slot];
+  if (_setupTeamSelection[other] === card.dataset.crestId) {
+    _setupTeamSelection[other] = previous;
+  }
+  _setupAssignCrest(slot, card.dataset.crestId);
+  _setupActiveSlot = slot === 'a' ? 'b' : 'a';
+  _setupRenderTeamChoices();
+});
+
+document.querySelectorAll('.setup-team-slot').forEach(slotEl => {
+  slotEl.addEventListener('click', () => {
+    _setupActiveSlot = slotEl.dataset.teamSlot;
+    _setupRenderTeamChoices();
+  });
+});
+
 let _setupDurationSetActive = null;
 
 function enterSetup() {
   match.initSetup();
-  document.getElementById('team-a-name').value = '';
-  document.getElementById('team-b-name').value = '';
+  _setupActiveSlot = 'a';
+  _setupTeamSelection = { a: 'eagle', b: 'wolf' };
+  _setupAssignCrest('a', _setupTeamSelection.a);
+  _setupAssignCrest('b', _setupTeamSelection.b);
+  buildSetupTeamChoices();
   const selectColorIdx = buildColorPickers();
   _setupDurationSetActive = buildDurationChips(
     document.getElementById('setup-duration-chips'),
@@ -1719,6 +1871,9 @@ function buildPresetChips(selectColorIdx) {
     document.getElementById('team-b-name').value = preset.teamB.name;
     match.setTeamName('a', preset.teamA.name);
     match.setTeamName('b', preset.teamB.name);
+    _setupSyncCrestFromName('a', preset.teamA.name);
+    _setupSyncCrestFromName('b', preset.teamB.name);
+    _setupRenderTeamChoices();
     selectColorIdx(preset.colorIndex ?? 0);
     // Spieldauer + Pausendauer aus dem Preset übernehmen
     match.setDuration(preset.durationMs ?? null);
@@ -1728,19 +1883,14 @@ function buildPresetChips(selectColorIdx) {
   });
 }
 
-document.getElementById('team-a-name').addEventListener('input', e =>
-  match.setTeamName('a', e.target.value));
-document.getElementById('team-b-name').addEventListener('input', e =>
-  match.setTeamName('b', e.target.value));
-
 document.getElementById('btn-setup-back').addEventListener('click', () =>
   router.navigateTo('screen-home'));
 
 document.getElementById('btn-start-match').addEventListener('click', () => {
   const s = match.getSetup();
   match.startMatch(
-    document.getElementById('team-a-name').value.trim(),
-    document.getElementById('team-b-name').value.trim(),
+    s.teamAName,
+    s.teamBName,
     s.colorIndex
   );
   router.navigateTo('screen-match-live');
@@ -1793,6 +1943,21 @@ function _updatePeriodLabel() {
   }
 }
 
+function _liveCrestForName(name, fallbackId) {
+  return teambuilder.TEAM_CRESTS.find(crest => crest.name === name)
+    || _setupCrestById(fallbackId)
+    || null;
+}
+
+function _setLiveCrest(slot, name, fallbackId) {
+  const card = document.getElementById(`card-team-${slot}`);
+  const image = card?.querySelector('.team-crest');
+  const crest = _liveCrestForName(name, fallbackId);
+  if (!image) return;
+  image.src = crest?.asset || TEAM_CREST_FALLBACK;
+  image.alt = crest?.name || '';
+}
+
 function enterLive() {
   const s = match.getLive();
   if (!s) return;
@@ -1802,6 +1967,8 @@ function enterLive() {
   document.getElementById('card-team-b').style.background = s.teamB.colorHex;
   document.getElementById('live-team-a-name').textContent = s.teamA.name;
   document.getElementById('live-team-b-name').textContent = s.teamB.name;
+  _setLiveCrest('a', s.teamA.name, _setupTeamSelection.a);
+  _setLiveCrest('b', s.teamB.name, _setupTeamSelection.b);
   pill.classList.toggle('running', s.running);
   _updatePeriodLabel();
   updateScores();

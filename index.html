@@ -133,20 +133,19 @@
           </button>
         </div>
 
-        <div class="home-panel home-crests" aria-hidden="true">
-          <div class="home-panel-head">
-            <img src="assets/generated/brand-assets/derived/team.png" alt="">
-            <span>Team-Wappen</span>
-          </div>
-          <div class="crest-strip">
-            <figure class="crest"><img src="assets/generated/brand-assets/derived/eagle.png" alt=""><figcaption>Adler</figcaption></figure>
-            <figure class="crest"><img src="assets/generated/brand-assets/derived/bear.png" alt=""><figcaption>Bären</figcaption></figure>
-            <figure class="crest"><img src="assets/generated/brand-assets/derived/wolf.png" alt=""><figcaption>Wölfe</figcaption></figure>
-            <figure class="crest"><img src="assets/generated/brand-assets/derived/fox.png" alt=""><figcaption>Füchse</figcaption></figure>
-            <figure class="crest"><img src="assets/generated/brand-assets/derived/tiger.png" alt=""><figcaption>Tiger</figcaption></figure>
-            <figure class="crest"><img src="assets/generated/brand-assets/derived/penguin.png" alt=""><figcaption>Pinguine</figcaption></figure>
-          </div>
-        </div>
+        <button class="home-panel home-stopwatch" id="btn-home-stopwatch" aria-label="Stoppuhr in den Werkzeugen öffnen">
+          <span class="home-stopwatch-art" aria-hidden="true">
+            <span class="home-stopwatch-halo"></span>
+            <img src="assets/generated/brand-assets/derived/stopwatch.png" alt="">
+          </span>
+          <span class="home-stopwatch-copy">
+            <span class="home-stopwatch-kicker">ZEITNAHME</span>
+            <strong>Stoppuhr</strong>
+            <small>Sekunden zählen. Fokus behalten.</small>
+            <span class="home-stopwatch-link">Öffnen <span aria-hidden="true">→</span></span>
+          </span>
+          <span class="home-stopwatch-display" aria-hidden="true">00:00</span>
+        </button>
       </div>
     </section>
 
@@ -168,15 +167,34 @@
       </div>
       <div class="setup-preset-strip" id="setup-preset-strip" aria-label="Preset wählen"></div>
       <div class="setup-form">
-        <div class="setup-team">
-          <label for="team-a-name">Team A</label>
-          <input type="text" id="team-a-name" placeholder="Name" maxlength="20" autocomplete="off">
-          <div class="color-picker" id="color-picker-a" role="group" aria-label="Farbe Team A"></div>
+        <div class="setup-team setup-team-chooser">
+          <div class="setup-team-chooser-head">
+            <span class="setup-team-kicker">Teams wählen</span>
+            <small id="setup-team-assign-hint">Team A wählen</small>
+          </div>
+          <div class="setup-team-slots" role="group" aria-label="Ausgewählte Teams">
+            <button type="button" class="setup-team-slot setup-team-slot--active" id="setup-team-slot-a" data-team-slot="a" aria-pressed="true">
+              <img id="setup-team-a-crest" src="assets/generated/brand-assets/derived/eagle.png" alt="">
+              <span><small>Team A</small><strong id="setup-team-a-label">Adler</strong></span>
+            </button>
+            <button type="button" class="setup-team-slot" id="setup-team-slot-b" data-team-slot="b" aria-pressed="false">
+              <img id="setup-team-b-crest" src="assets/generated/brand-assets/derived/wolf.png" alt="">
+              <span><small>Team B</small><strong id="setup-team-b-label">Wölfe</strong></span>
+            </button>
+          </div>
+          <div class="setup-team-presets" id="setup-team-presets" role="group" aria-label="Team-Wappen wählen"></div>
+          <input type="hidden" id="team-a-name" value="Adler">
+          <input type="hidden" id="team-b-name" value="Wölfe">
         </div>
-        <div class="setup-team">
-          <label for="team-b-name">Team B</label>
-          <input type="text" id="team-b-name" placeholder="Name" maxlength="20" autocomplete="off">
-          <div class="color-picker" id="color-picker-b" role="group" aria-label="Farbe Team B"></div>
+        <div class="setup-team setup-team-colors">
+          <div class="setup-team-chooser-head">
+            <span class="setup-team-kicker">Teamfarben</span>
+            <small>Akzent für das Live-Match</small>
+          </div>
+          <div class="setup-color-grid">
+            <div><span>Team A</span><div class="color-picker" id="color-picker-a" role="group" aria-label="Farbe Team A"></div></div>
+            <div><span>Team B</span><div class="color-picker" id="color-picker-b" role="group" aria-label="Farbe Team B"></div></div>
+          </div>
         </div>
         <div class="setup-team">
           <label>Spieldauer</label>
@@ -360,15 +378,36 @@
             <button class="tb-counter-btn" id="tb-teams-inc" aria-label="Ein Team mehr">+</button>
           </div>
         </div>
-        <div class="tb-crests" aria-hidden="true">
-          <div class="tb-crests-head"><span>Team-Wappen</span><small>Vorschau je Team</small></div>
-          <div class="tb-crest-grid">
-            <figure class="tb-crest"><img src="assets/generated/brand-assets/derived/eagle.png" alt=""><figcaption>Adler</figcaption></figure>
-            <figure class="tb-crest"><img src="assets/generated/brand-assets/derived/bear.png" alt=""><figcaption>Bären</figcaption></figure>
-            <figure class="tb-crest"><img src="assets/generated/brand-assets/derived/wolf.png" alt=""><figcaption>Wölfe</figcaption></figure>
-            <figure class="tb-crest"><img src="assets/generated/brand-assets/derived/fox.png" alt=""><figcaption>Füchse</figcaption></figure>
-            <figure class="tb-crest"><img src="assets/generated/brand-assets/derived/tiger.png" alt=""><figcaption>Tiger</figcaption></figure>
-            <figure class="tb-crest"><img src="assets/generated/brand-assets/derived/penguin.png" alt=""><figcaption>Pinguine</figcaption></figure>
+        <div class="tb-crests">
+          <div class="tb-crests-head">
+            <span>Team-Namen wählen</span>
+            <small id="tb-crest-hint">Tippe direkt auf ein Wappen</small>
+          </div>
+          <div class="tb-crest-grid" id="tb-crest-grid" role="group" aria-label="Team-Wappen wählen">
+            <button type="button" class="tb-crest is-selected" data-crest-id="eagle" aria-pressed="true">
+              <img src="assets/generated/brand-assets/derived/eagle.png" alt="">
+              <span>Adler</span>
+            </button>
+            <button type="button" class="tb-crest is-selected" data-crest-id="bear" aria-pressed="true">
+              <img src="assets/generated/brand-assets/derived/bear.png" alt="">
+              <span>Bären</span>
+            </button>
+            <button type="button" class="tb-crest" data-crest-id="wolf" aria-pressed="false">
+              <img src="assets/generated/brand-assets/derived/wolf.png" alt="">
+              <span>Wölfe</span>
+            </button>
+            <button type="button" class="tb-crest" data-crest-id="fox" aria-pressed="false">
+              <img src="assets/generated/brand-assets/derived/fox.png" alt="">
+              <span>Füchse</span>
+            </button>
+            <button type="button" class="tb-crest" data-crest-id="tiger" aria-pressed="false">
+              <img src="assets/generated/brand-assets/derived/tiger.png" alt="">
+              <span>Tiger</span>
+            </button>
+            <button type="button" class="tb-crest" data-crest-id="penguin" aria-pressed="false">
+              <img src="assets/generated/brand-assets/derived/penguin.png" alt="">
+              <span>Pinguine</span>
+            </button>
           </div>
         </div>
         <div class="tb-preview-card">

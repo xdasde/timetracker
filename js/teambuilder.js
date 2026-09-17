@@ -4,15 +4,30 @@ const TEAM_COLORS = [
   '#0891B2', '#BE185D',
 ];
 
+export const TEAM_CRESTS = [
+  { id: 'eagle',   name: 'Adler',     asset: 'assets/generated/brand-assets/derived/eagle.png' },
+  { id: 'bear',    name: 'Bären',     asset: 'assets/generated/brand-assets/derived/bear.png' },
+  { id: 'wolf',    name: 'Wölfe',     asset: 'assets/generated/brand-assets/derived/wolf.png' },
+  { id: 'fox',     name: 'Füchse',    asset: 'assets/generated/brand-assets/derived/fox.png' },
+  { id: 'tiger',   name: 'Tiger',     asset: 'assets/generated/brand-assets/derived/tiger.png' },
+  { id: 'penguin', name: 'Pinguine',  asset: 'assets/generated/brand-assets/derived/penguin.png' },
+];
+
 let personCount = 10;
 let teamCount   = 2;
+let selectedCrestIds = ['eagle', 'bear'];
 let assignments = [];
 let revealIndex = 0;
 let revealed    = false;
 let done        = false;
 
+function _crestById(id) {
+  return TEAM_CRESTS.find(crest => crest.id === id) || null;
+}
+
 export function getPersonCount() { return personCount; }
 export function getTeamCount()   { return teamCount; }
+export function getSelectedCrestIds() { return [...selectedCrestIds]; }
 
 export function setPersonCount(n) {
   personCount = Math.max(2, Math.min(50, n));
@@ -24,12 +39,36 @@ export function setTeamCount(n) {
   if (teamCount > personCount) personCount = teamCount;
 }
 
+export function toggleTeamCrest(id) {
+  if (!_crestById(id)) return false;
+  const current = selectedCrestIds.indexOf(id);
+  if (current >= 0) {
+    selectedCrestIds.splice(current, 1);
+    return true;
+  }
+
+  const limit = Math.min(teamCount, TEAM_CRESTS.length);
+  if (selectedCrestIds.length >= limit) {
+    // Ein direkter Tap ersetzt das zuletzt gewählte Wappen – kein Umweg über
+    // den Teamzähler nötig, um ein anderes Team auszuwählen.
+    selectedCrestIds[selectedCrestIds.length - 1] = id;
+  } else {
+    selectedCrestIds.push(id);
+  }
+  return true;
+}
+
 export function getTeamColor(idx) {
   return TEAM_COLORS[idx % TEAM_COLORS.length];
 }
 
+export function getTeamCrest(idx) {
+  const crest = _crestById(selectedCrestIds[idx]);
+  return crest ? { ...crest } : null;
+}
+
 export function getTeamName(idx) {
-  return `Team ${idx + 1}`;
+  return getTeamCrest(idx)?.name || `Team ${idx + 1}`;
 }
 
 export function getPreviewDistribution() {
@@ -38,6 +77,7 @@ export function getPreviewDistribution() {
   return Array.from({ length: teamCount }, (_, i) => ({
     name:  getTeamName(i),
     color: getTeamColor(i),
+    crest: getTeamCrest(i),
     count: base + (i < extra ? 1 : 0),
   }));
 }
@@ -95,6 +135,7 @@ export function getLineup() {
     idx:         i,
     name:        getTeamName(i),
     color:       getTeamColor(i),
+    crest:       getTeamCrest(i),
     memberCount: dist[i].count,
     photos:      _photos.filter(p => p.teamIdx === i),
   }));
