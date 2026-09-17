@@ -1,6 +1,6 @@
 # Sportzähler – Wiki
 
-**Sportzähler** ist eine Progressive Web App (PWA) für Spielstanderfassung, Zeitnahme und Teamverwaltung im Schul- und Jugendsport.
+**Sportzähler** ist eine Progressive Web App (PWA) für Spielstanderfassung, Zeitnahme und Teamverwaltung im Breiten-, Vereins- und Jugendsport.
 
 ## Features
 

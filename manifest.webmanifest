@@ -2,7 +2,7 @@
   "id": "/timetracker/",
   "name": "Sportzähler",
   "short_name": "Sportzähler",
-  "description": "Punktezähler und Zeitnahme für Schulsport und Jugendspiele",
+  "description": "Punktezähler und Zeitnahme für Breiten- und Jugendsport",
   "lang": "de",
   "dir": "ltr",
   "start_url": "./",

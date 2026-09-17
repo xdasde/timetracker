@@ -1,4 +1,4 @@
-const CACHE = 'sportzaehler-v23';
+const CACHE = 'sportzaehler-v24';
 const ASSETS = [
   './',
   './index.html',
@@ -24,6 +24,21 @@ const ASSETS = [
   './manifest.webmanifest',
   './icons/icon-192.png',
   './icons/icon-512.png',
+  './assets/generated/brand-assets/derived/badminton.png',
+  './assets/generated/brand-assets/derived/basketball.png',
+  './assets/generated/brand-assets/derived/bear.png',
+  './assets/generated/brand-assets/derived/clock.png',
+  './assets/generated/brand-assets/derived/eagle.png',
+  './assets/generated/brand-assets/derived/fox.png',
+  './assets/generated/brand-assets/derived/penguin.png',
+  './assets/generated/brand-assets/derived/runner.png',
+  './assets/generated/brand-assets/derived/soccer.png',
+  './assets/generated/brand-assets/derived/stopwatch.png',
+  './assets/generated/brand-assets/derived/team.png',
+  './assets/generated/brand-assets/derived/tiger.png',
+  './assets/generated/brand-assets/derived/volleyball.png',
+  './assets/generated/brand-assets/derived/whistle.png',
+  './assets/generated/brand-assets/derived/wolf.png',
 ];
 
 // Beim Installieren alle Assets FRISCH laden – { cache: 'reload' } umgeht den

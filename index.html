@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="theme-color" content="#1f2937">
+  <meta name="theme-color" content="#0b1522">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Sportzähler</title>
@@ -43,139 +43,110 @@
     </div>
   </div>
 
-  <!-- Top Navigation -->
-  <nav class="top-nav" aria-label="Hauptnavigation">
-    <span class="nav-logo">Sportzähler</span>
-    <div class="nav-tabs" role="tablist">
-      <button class="nav-tab nav-tab--active" data-tab="home" aria-label="Home">HOME</button>
-      <button class="nav-tab" data-tab="tools" aria-label="Tools">TOOLS</button>
-      <button class="nav-tab" data-tab="history" aria-label="Verlauf">LOG</button>
+  <!-- Kopfzeile -->
+  <header class="top-nav" aria-label="Sportzähler">
+    <div class="brand">
+      <img class="brand-mark" src="assets/generated/brand-assets/derived/stopwatch.png" alt="" width="40" height="46" aria-hidden="true">
+      <div class="brand-text">
+        <span class="nav-logo">Sportzähler</span>
+        <span class="brand-tagline">Für starke Sport-Momente</span>
+      </div>
     </div>
     <button class="nav-settings-btn" id="btn-open-settings" aria-label="Einstellungen">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06-.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
     </button>
+  </header>
+
+  <!-- Untere Navigation -->
+  <nav class="bottom-nav" aria-label="Hauptnavigation">
+    <div class="nav-tabs" role="tablist">
+      <button class="nav-tab nav-tab--active" data-tab="home" aria-label="Start">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 10.6 12 3l9 7.6V20a1.5 1.5 0 0 1-1.5 1.5H15v-6H9v6H4.5A1.5 1.5 0 0 1 3 20z"/></svg>
+        <span>Start</span>
+      </button>
+      <button class="nav-tab" data-tab="tools" aria-label="Tools">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0 5 5L21 13l-8 8-3-3 8-8"/><path d="M14.7 6.3 9.3 11.7"/><path d="m3 21 6.5-6.5"/><path d="M4 4l5 5"/><path d="M3 7l4-4"/></svg>
+        <span>Tools</span>
+      </button>
+      <button class="nav-tab" data-tab="history" aria-label="Verlauf">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg>
+        <span>Verlauf</span>
+      </button>
+    </div>
   </nav>
 
   <main id="app">
 
     <!-- ═══ Screen: Home ═══ -->
     <section id="screen-home" class="screen screen--active">
-      <!-- Animierte SVG-Welle im Hintergrund -->
-      <svg class="home-wave" viewBox="0 0 2880 300" preserveAspectRatio="none" aria-hidden="true">
-        <path d="M0,150 C240,60 480,240 720,150 C960,60 1200,240 1440,150 C1680,60 1920,240 2160,150 C2400,60 2640,240 2880,150 L2880,300 L0,300 Z"/>
-      </svg>
       <div class="home-grid">
-        <button class="home-tile home-tile--primary" id="btn-new-match" aria-label="Neues Match starten">
-          <div class="home-tile-text">
-            <div class="home-tile-eyebrow">Los geht's</div>
-            <div class="home-tile-label">Match starten</div>
-            <div class="home-tile-sub">Neues Spiel anpfeifen</div>
-          </div>
-          <span class="home-tile-icon home-icon-anim home-icon-play">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <circle cx="12" cy="12" r="10" class="anim-ping-ring"/>
-              <polygon points="10,8.5 17,12 10,15.5" fill="currentColor" stroke="none"/>
-            </svg>
+        <button class="home-hero" id="btn-new-match" aria-label="Neues Match starten">
+          <svg class="home-hero-play" viewBox="0 0 24 24" aria-hidden="true"><polygon points="6,3.5 21,12 6,20.5" fill="currentColor"/></svg>
+          <span class="home-hero-text">
+            <span class="home-hero-label">Match starten</span>
+            <span class="home-hero-sub">Spielen · Bewegen · Zusammen</span>
           </span>
         </button>
-        <button class="home-tile" id="btn-open-presets" aria-label="Presets verwalten">
-          <span class="home-tile-icon home-icon-anim home-icon-presets">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
-              <line x1="4" y1="6" x2="20" y2="6"/>
-              <line x1="4" y1="12" x2="20" y2="12"/>
-              <line x1="4" y1="18" x2="20" y2="18"/>
-              <circle cx="8" cy="6" r="2.5" fill="currentColor" stroke="none" class="anim-dot anim-dot-1"/>
-              <circle cx="16" cy="12" r="2.5" fill="currentColor" stroke="none" class="anim-dot anim-dot-2"/>
-              <circle cx="10" cy="18" r="2.5" fill="currentColor" stroke="none" class="anim-dot anim-dot-3"/>
-            </svg>
-          </span>
-          <div class="home-tile-text">
-            <div class="home-tile-label">Presets</div>
-            <div id="home-preset-badge" class="home-tile-badge">0 gespeichert</div>
+
+        <div class="home-quick">
+          <button class="quick-card" id="btn-goto-tools" aria-label="Werkzeuge öffnen">
+            <img src="assets/generated/brand-assets/derived/stopwatch.png" alt="" aria-hidden="true">
+            <span class="quick-card-label">Timer</span>
+            <span class="quick-card-sub">Zeit im Blick</span>
+          </button>
+          <button class="quick-card" id="btn-open-roulette" aria-label="Spiel-Roulette öffnen">
+            <svg class="quick-card-roulette" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="21" fill="currentColor"/><g fill="#0b1522"><path d="M24 24 L24 5 A19 19 0 0 1 40.5 14.5Z"/><path d="M24 24 L40.5 33.5 A19 19 0 0 1 24 43Z"/><path d="M24 24 L7.5 33.5 A19 19 0 0 1 7.5 14.5Z"/></g><circle cx="24" cy="24" r="4.5" fill="#0b1522"/><circle cx="24" cy="24" r="2" fill="currentColor"/></svg>
+            <span class="quick-card-label">Spiel-Roulette</span>
+            <span class="quick-card-sub">Zufällig &amp; fair</span>
+          </button>
+          <button class="quick-card" id="btn-open-teambuilder" aria-label="Teams zufällig einteilen">
+            <img src="assets/generated/brand-assets/derived/team.png" alt="" aria-hidden="true">
+            <span class="quick-card-label">Teams bilden</span>
+            <span class="quick-card-sub">Schnell &amp; einfach</span>
+          </button>
+        </div>
+
+        <div class="home-panel">
+          <div class="home-panel-head">
+            <img src="assets/generated/brand-assets/derived/whistle.png" alt="" aria-hidden="true">
+            <span>Spielbetrieb</span>
           </div>
-        </button>
-        <button class="home-tile" id="btn-open-roulette" aria-label="Spiel-Roulette öffnen">
-          <span class="home-tile-icon home-icon-anim home-icon-roulette">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <circle cx="12" cy="12" r="9" class="anim-roulette-wheel" style="transform-origin:12px 12px"/>
-              <circle cx="12" cy="12" r="2.2" fill="currentColor" stroke="none"/>
-              <line x1="12" y1="3" x2="12" y2="21" class="anim-roulette-wheel" style="transform-origin:12px 12px"/>
-              <line x1="3" y1="12" x2="21" y2="12" class="anim-roulette-wheel" style="transform-origin:12px 12px"/>
-            </svg>
-          </span>
-          <div class="home-tile-text">
-            <div class="home-tile-label">Spiel-Roulette</div>
-            <div class="home-tile-sub">Zufälliges Spiel auslosen</div>
+          <button class="home-row" id="btn-open-rules" aria-label="Spiele-Datenbank öffnen">
+            <img src="assets/generated/brand-assets/derived/basketball.png" alt="" aria-hidden="true">
+            <span class="home-row-text"><strong>Datenbank</strong><small>Spiele, Regeln &amp; Tipps</small></span>
+            <svg class="home-row-chevron" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 6 15 12 9 18"/></svg>
+          </button>
+          <button class="home-row" id="btn-open-fanger" aria-label="Auslosen: Auswahl &amp; Reihenfolge">
+            <img src="assets/generated/brand-assets/derived/runner.png" alt="" aria-hidden="true">
+            <span class="home-row-text"><strong>Auslosen</strong><small>Auswahl &amp; Reihenfolge</small></span>
+            <svg class="home-row-chevron" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 6 15 12 9 18"/></svg>
+          </button>
+          <button class="home-row" id="btn-open-presets" aria-label="Presets verwalten">
+            <img src="assets/generated/brand-assets/derived/soccer.png" alt="" aria-hidden="true">
+            <span class="home-row-text"><strong>Presets</strong><small id="home-preset-badge" class="home-tile-badge">0 gespeichert</small></span>
+            <svg class="home-row-chevron" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 6 15 12 9 18"/></svg>
+          </button>
+          <button class="home-row" id="btn-goto-log" aria-label="Verlauf öffnen">
+            <img src="assets/generated/brand-assets/derived/clock.png" alt="" aria-hidden="true">
+            <span class="home-row-text"><strong>Verlauf</strong><small>Gespielte Matches</small></span>
+            <svg class="home-row-chevron" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 6 15 12 9 18"/></svg>
+          </button>
+        </div>
+
+        <div class="home-panel home-crests" aria-hidden="true">
+          <div class="home-panel-head">
+            <img src="assets/generated/brand-assets/derived/team.png" alt="">
+            <span>Team-Wappen</span>
           </div>
-        </button>
-        <button class="home-tile home-tile--wide home-tile--accent" id="btn-goto-tools" aria-label="Werkzeuge öffnen">
-          <span class="home-tile-icon home-icon-anim home-icon-clock">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <circle cx="12" cy="13" r="8"/>
-              <polyline points="12,9 12,13 15,15" class="anim-clock-hand" style="transform-origin:12px 13px"/>
-              <line x1="10" y1="3" x2="14" y2="3"/>
-              <line x1="12" y1="3" x2="12" y2="5"/>
-            </svg>
-          </span>
-          <div class="home-tile-text">
-            <div class="home-tile-label">Timer</div>
-            <div class="home-tile-sub">Stoppuhr &amp; Countdown</div>
+          <div class="crest-strip">
+            <figure class="crest"><img src="assets/generated/brand-assets/derived/eagle.png" alt=""><figcaption>Adler</figcaption></figure>
+            <figure class="crest"><img src="assets/generated/brand-assets/derived/bear.png" alt=""><figcaption>Bären</figcaption></figure>
+            <figure class="crest"><img src="assets/generated/brand-assets/derived/wolf.png" alt=""><figcaption>Wölfe</figcaption></figure>
+            <figure class="crest"><img src="assets/generated/brand-assets/derived/fox.png" alt=""><figcaption>Füchse</figcaption></figure>
+            <figure class="crest"><img src="assets/generated/brand-assets/derived/tiger.png" alt=""><figcaption>Tiger</figcaption></figure>
+            <figure class="crest"><img src="assets/generated/brand-assets/derived/penguin.png" alt=""><figcaption>Pinguine</figcaption></figure>
           </div>
-        </button>
-        <button class="home-tile" id="btn-open-teambuilder" aria-label="Teams zufällig einteilen">
-          <span class="home-tile-icon home-icon-anim home-icon-team">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <circle cx="9" cy="7" r="3" class="anim-team-a"/>
-              <circle cx="15" cy="7" r="3" class="anim-team-b"/>
-              <path d="M3 21v-1a6 6 0 0 1 6-6h6a6 6 0 0 1 6 6v1"/>
-            </svg>
-          </span>
-          <div class="home-tile-text">
-            <div class="home-tile-label">Teambildung</div>
-            <div class="home-tile-sub">Zufällige Teams</div>
-          </div>
-        </button>
-        <button class="home-tile" id="btn-open-fanger" aria-label="Auslosen: Auswahl &amp; Reihenfolge">
-          <span class="home-tile-icon home-icon-anim home-icon-fanger">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <circle cx="12" cy="12" r="9" class="anim-ping-ring"/>
-              <circle cx="12" cy="12" r="4.5"/>
-              <circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/>
-            </svg>
-          </span>
-          <div class="home-tile-text">
-            <div class="home-tile-label">Auslosen</div>
-            <div class="home-tile-sub">Auswahl &amp; Reihenfolge</div>
-          </div>
-        </button>
-        <button class="home-tile" id="btn-open-rules" aria-label="Spiele-Datenbank öffnen">
-          <span class="home-tile-icon home-icon-anim home-icon-rules">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M4 5a2 2 0 0 1 2-2h9l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/>
-              <polyline points="14,3 14,8 19,8"/>
-              <line x1="8" y1="13" x2="15" y2="13" class="anim-log-line anim-log-1"/>
-              <line x1="8" y1="16" x2="13" y2="16" class="anim-log-line anim-log-2"/>
-            </svg>
-          </span>
-          <div class="home-tile-text">
-            <div class="home-tile-label">Datenbank</div>
-            <div class="home-tile-sub">Spiele, Regeln &amp; Tipps</div>
-          </div>
-        </button>
-        <button class="home-tile" id="btn-goto-log" aria-label="Verlauf öffnen">
-          <span class="home-tile-icon home-icon-anim home-icon-log">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <rect x="5" y="3" width="14" height="18" rx="2"/>
-              <line x1="9" y1="8"  x2="15" y2="8"  class="anim-log-line anim-log-1"/>
-              <line x1="9" y1="12" x2="15" y2="12" class="anim-log-line anim-log-2"/>
-              <line x1="9" y1="16" x2="13" y2="16" class="anim-log-line anim-log-3"/>
-            </svg>
-          </span>
-          <div class="home-tile-text">
-            <div class="home-tile-label">Verlauf</div>
-            <div class="home-tile-sub">Gespielte Matches</div>
-          </div>
-        </button>
+        </div>
       </div>
     </section>
 
@@ -227,6 +198,7 @@
     <section id="screen-match-live" class="screen">
       <div class="match-live">
         <div class="team-card" id="card-team-a">
+          <img class="team-crest" src="assets/generated/brand-assets/derived/eagle.png" alt="" aria-hidden="true">
           <div class="team-name" id="live-team-a-name">Team A</div>
           <div class="team-score" id="live-score-a">0</div>
           <div class="score-btns">
@@ -235,6 +207,7 @@
           </div>
         </div>
         <div class="match-center">
+          <div class="match-status" aria-hidden="true"><img src="assets/generated/brand-assets/derived/soccer.png" alt=""><strong class="match-status-sport">Live-Match</strong><span class="match-status-state match-status-state--run">Spiel läuft</span><span class="match-status-state match-status-state--idle">Uhr steht</span><i class="match-status-dot"></i></div>
           <div class="match-timer-pill" id="match-timer-pill" role="button" aria-label="Spielzeit starten / pausieren">
             <span id="match-time">00:00</span>
           </div>
@@ -253,12 +226,17 @@
           </div>
         </div>
         <div class="team-card" id="card-team-b">
+          <img class="team-crest" src="assets/generated/brand-assets/derived/wolf.png" alt="" aria-hidden="true">
           <div class="team-name" id="live-team-b-name">Team B</div>
           <div class="team-score" id="live-score-b">0</div>
           <div class="score-btns">
             <button class="btn-score btn-minus" id="btn-minus-b" aria-label="Punkt abziehen Team B">&#x2212;</button>
             <button class="btn-score btn-plus" id="btn-plus-b" aria-label="Punkt hinzufügen Team B">+1</button>
           </div>
+        </div>
+        <div class="match-colon" aria-hidden="true">:</div>
+        <div class="match-field" aria-hidden="true">
+          <svg viewBox="0 0 340 160" preserveAspectRatio="xMidYMid meet" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="332" height="152" rx="2"/><line x1="170" y1="4" x2="170" y2="156"/><circle cx="170" cy="80" r="26"/><circle cx="170" cy="80" r="2" fill="currentColor"/><rect x="4" y="38" width="42" height="84"/><rect x="4" y="60" width="16" height="40"/><path d="M46 64a18 18 0 0 1 0 32"/><rect x="294" y="38" width="42" height="84"/><rect x="320" y="60" width="16" height="40"/><path d="M294 64a18 18 0 0 0 0 32"/></svg>
         </div>
         <button class="btn-halftime" id="btn-halftime">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
@@ -357,29 +335,47 @@
 
     <!-- ═══ Screen: Teambildung Setup ═══ -->
     <section id="screen-teambuilder" class="screen screen-deco">
-      <div class="sub-header">
+      <div class="sub-header tb-header">
         <button class="btn-back" id="btn-teambuilder-back" aria-label="Zurück"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg></button>
-        <h2>Teambildung</h2>
+        <div class="tb-title">
+          <h2>Teams bilden</h2>
+          <p class="tb-subtitle">Schnell. Fair. Gemeinsam mehr spielen.</p>
+        </div>
       </div>
-      <div class="screen-body">
-        <div class="tb-counter-row">
-          <span class="tb-counter-label">Personen</span>
+      <div class="screen-body tb-body">
+        <div class="tb-counter-row tb-counter-row--persons">
+          <img class="tb-counter-icon" src="assets/generated/brand-assets/derived/team.png" alt="" aria-hidden="true">
+          <span class="tb-counter-text"><span class="tb-counter-label">Personen</span><small>zufällig verteilt</small></span>
           <div class="tb-counter">
-            <button class="tb-counter-btn" id="tb-persons-dec">&#x2212;</button>
+            <button class="tb-counter-btn" id="tb-persons-dec" aria-label="Eine Person weniger">&#x2212;</button>
             <span class="tb-counter-val" id="tb-persons-val">10</span>
-            <button class="tb-counter-btn" id="tb-persons-inc">+</button>
+            <button class="tb-counter-btn" id="tb-persons-inc" aria-label="Eine Person mehr">+</button>
           </div>
         </div>
         <div class="tb-counter-row">
-          <span class="tb-counter-label">Teams</span>
+          <span class="tb-counter-text"><span class="tb-counter-label">Anzahl Teams</span><small>2 bis 10 Teams</small></span>
           <div class="tb-counter">
-            <button class="tb-counter-btn" id="tb-teams-dec">&#x2212;</button>
+            <button class="tb-counter-btn" id="tb-teams-dec" aria-label="Ein Team weniger">&#x2212;</button>
             <span class="tb-counter-val" id="tb-teams-val">2</span>
-            <button class="tb-counter-btn" id="tb-teams-inc">+</button>
+            <button class="tb-counter-btn" id="tb-teams-inc" aria-label="Ein Team mehr">+</button>
           </div>
         </div>
-        <div class="tb-preview" id="tb-preview"></div>
-        <button class="btn-primary btn-full btn-anim" id="btn-teambuilder-start">
+        <div class="tb-crests" aria-hidden="true">
+          <div class="tb-crests-head"><span>Team-Wappen</span><small>Vorschau je Team</small></div>
+          <div class="tb-crest-grid">
+            <figure class="tb-crest"><img src="assets/generated/brand-assets/derived/eagle.png" alt=""><figcaption>Adler</figcaption></figure>
+            <figure class="tb-crest"><img src="assets/generated/brand-assets/derived/bear.png" alt=""><figcaption>Bären</figcaption></figure>
+            <figure class="tb-crest"><img src="assets/generated/brand-assets/derived/wolf.png" alt=""><figcaption>Wölfe</figcaption></figure>
+            <figure class="tb-crest"><img src="assets/generated/brand-assets/derived/fox.png" alt=""><figcaption>Füchse</figcaption></figure>
+            <figure class="tb-crest"><img src="assets/generated/brand-assets/derived/tiger.png" alt=""><figcaption>Tiger</figcaption></figure>
+            <figure class="tb-crest"><img src="assets/generated/brand-assets/derived/penguin.png" alt=""><figcaption>Pinguine</figcaption></figure>
+          </div>
+        </div>
+        <div class="tb-preview-card">
+          <span class="tb-preview-title">Vorschau</span>
+          <div class="tb-preview" id="tb-preview"></div>
+        </div>
+        <button class="btn-primary btn-full btn-anim tb-start" id="btn-teambuilder-start">
           <span class="btn-anim-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="8" cy="8" r="3" class="anim-team-a"/>
@@ -388,7 +384,7 @@
               <path d="M21 20v-1a5 5 0 0 0-5-5"/>
             </svg>
           </span>
-          <span>Einteilung starten</span>
+          <span class="tb-start-text"><span>Teams auslosen</span><small>Zufällig · Fair · Sofort startklar</small></span>
         </button>
       </div>
     </section>
@@ -450,6 +446,7 @@
         <h1 class="screen-title">Datenbank</h1>
       </div>
       <div class="screen-body">
+        <div class="screen-hero" aria-hidden="true"><img src="assets/generated/brand-assets/derived/volleyball.png" alt=""><img src="assets/generated/brand-assets/derived/basketball.png" alt=""><img src="assets/generated/brand-assets/derived/badminton.png" alt=""></div>
         <p class="rules-intro">Spiele, Sportarten &amp; Übungen mit Kurzregeln und App-Tipps. Durchsuchen, filtern und eigene Spiele beitragen.</p>
         <button class="rules-add-btn" id="btn-rules-add">
           <span aria-hidden="true">＋</span> Eigenes Spiel anlegen
@@ -631,7 +628,7 @@
             <li><strong>Kein Export</strong> – Fotos sind in keinem Datenexport enthalten und können nicht aus der App heraus gespeichert oder weitergegeben werden.</li>
             <li><strong>Technischer Schutz</strong> – Das Speichern per Rechtsklick ist deaktiviert. Nach jeder Aufnahme werden die Bilddaten im Zwischenspeicher sofort gelöscht.</li>
           </ul>
-          <p><strong>Einsatz mit Minderjährigen:</strong> Im Schul- oder Vereinssport ist für die Kameranutzung die Einwilligung der Erziehungsberechtigten erforderlich (Art. 6 Abs. 1 lit. a DSGVO). Die Verantwortung für das Vorliegen dieser Einwilligung liegt beim Gerätebetreiber. Die Funktion ist standardmäßig deaktiviert.</p>
+          <p><strong>Einsatz mit Minderjährigen:</strong> Im Breiten-, Vereins- oder Jugendsport ist für die Kameranutzung die Einwilligung der Erziehungsberechtigten erforderlich (Art. 6 Abs. 1 lit. a DSGVO). Die Verantwortung für das Vorliegen dieser Einwilligung liegt beim Gerätebetreiber. Die Funktion ist standardmäßig deaktiviert.</p>
         </div>
         <div class="setting-row">
           <span class="setting-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></span>
@@ -900,7 +897,7 @@
       </div>
       <div class="modal-field">
         <label class="modal-label" for="cg-age">Altersgruppe</label>
-        <input class="modal-input" id="cg-age" type="text" maxlength="40" autocomplete="off" placeholder="ab Klasse 1">
+        <input class="modal-input" id="cg-age" type="text" maxlength="40" autocomplete="off" placeholder="ab 8 Jahren">
       </div>
       <div class="modal-field">
         <label class="modal-label" for="cg-players">Spieleranzahl</label>
