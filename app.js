@@ -13,16 +13,12 @@ import * as teambuilder from './js/teambuilder.js';
 import * as fanger from './js/fanger.js';
 import * as rules from './js/rules.js';
 import * as customgames from './js/customgames.js';
-import * as theme from './js/theme.js';
 
 const TEAM_CREST_FALLBACK = 'assets/generated/brand-assets/derived/team.png';
 let _setupActiveSlot = 'a';
 let _setupTeamSelection = { a: 'eagle', b: 'wolf' };
 const homeQuickStopwatch = new Stopwatch();
 let homeQuickRaf = null;
-
-// Gespeichertes Vereins-Design so früh wie möglich anwenden.
-theme.initTheme();
 
 // ═══════════════════════════════════════════════════════════
 // SCREEN-REGISTRIERUNG
@@ -668,7 +664,7 @@ function _tbmShowWinner() {
     }
   });
 
-  // Konfetti-Animation (Standardfarbe folgt dem aktiven Akzent/Vereins-Design)
+  // Konfetti-Animation mit dem aktiven App-Akzent
   const accent = getComputedStyle(document.documentElement)
     .getPropertyValue('--color-amber').trim() || '#f59e0b';
   _tbmConfetti(winners.length === 1 ? winners[0].color : accent);
@@ -2761,24 +2757,6 @@ function initSettings() {
     if (!e.target.checked && fanger.hasPhotos()) fanger.clearRoster();
   });
 
-  // Vereins-Design (Theme)
-  const themeSelect = document.getElementById('select-club-theme');
-  if (themeSelect) {
-    themeSelect.replaceChildren(...theme.THEMES.map(t => {
-      const opt = document.createElement('option');
-      opt.value = t.id;
-      opt.textContent = t.name;
-      return opt;
-    }));
-    themeSelect.value = theme.getSavedThemeId();
-    // onchange (statt addEventListener), damit ein erneutes initSettings()
-    // – z. B. nach „Alle Daten löschen" – keine doppelten Handler bindet.
-    themeSelect.onchange = e => {
-      const t = theme.setTheme(e.target.value);
-      ui.showToast(`Design: ${t.name}`);
-    };
-  }
-
   const notifToggle = document.getElementById('toggle-notifications');
   if (!notificationsSupported()) {
     // Notification API nicht verfügbar (z. B. ältere iOS-Safari): Zeile ausblenden
@@ -2825,7 +2803,6 @@ function initSettings() {
     const ok2 = await ui.confirmAction('Nicht rückgängig zu machen. Wirklich fortfahren?');
     if (!ok2) return;
     storage.clearAll();
-    theme.applyTheme(theme.DEFAULT_THEME);
     ui.showToast('Alle Daten gelöscht.');
     initSettings();
   });
