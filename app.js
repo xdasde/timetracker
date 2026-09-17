@@ -18,6 +18,8 @@ import * as theme from './js/theme.js';
 const TEAM_CREST_FALLBACK = 'assets/generated/brand-assets/derived/team.png';
 let _setupActiveSlot = 'a';
 let _setupTeamSelection = { a: 'eagle', b: 'wolf' };
+const homeQuickStopwatch = new Stopwatch();
+let homeQuickRaf = null;
 
 // Gespeichertes Vereins-Design so früh wie möglich anwenden.
 theme.initTheme();
@@ -64,6 +66,7 @@ function enterHome() {
   const count = presets.getAll().length;
   const badge = document.getElementById('home-preset-badge');
   if (badge) badge.textContent = `${count} gespeichert`;
+  renderHomeQuickStopwatch();
 }
 
 document.getElementById('btn-new-match').addEventListener('click', () =>
@@ -81,8 +84,49 @@ document.getElementById('btn-open-teambuilder').addEventListener('click', () =>
 document.getElementById('btn-goto-log').addEventListener('click', () =>
   router.navigateTo('screen-history'));
 
-document.getElementById('btn-home-stopwatch').addEventListener('click', () =>
-  router.navigateTo('screen-tools'));
+function renderHomeQuickStopwatch() {
+  const card = document.getElementById('home-quick-stopwatch');
+  if (!card) return;
+  const running = homeQuickStopwatch.isRunning();
+  const hasContent = homeQuickStopwatch.hasContent();
+  card.classList.toggle('is-running', running);
+  document.getElementById('home-stopwatch-time').textContent = fmtMs(homeQuickStopwatch.getMs());
+  document.getElementById('home-stopwatch-status').textContent = running ? 'LÄUFT' : hasContent ? 'PAUSIERT' : 'BEREIT';
+  document.getElementById('home-stopwatch-hint').textContent = running
+    ? 'Zeit läuft – jederzeit pausierbar'
+    : hasContent ? 'Pausiert – weiter oder zurücksetzen' : 'Direkt auf Start drücken';
+  document.getElementById('home-stopwatch-start').textContent = running ? 'Pause' : hasContent ? 'Weiter' : 'Start';
+  document.getElementById('home-stopwatch-reset').disabled = !hasContent;
+}
+
+function tickHomeQuickStopwatch() {
+  renderHomeQuickStopwatch();
+  if (homeQuickStopwatch.isRunning()) homeQuickRaf = requestAnimationFrame(tickHomeQuickStopwatch);
+  else homeQuickRaf = null;
+}
+
+document.getElementById('home-stopwatch-start').addEventListener('click', () => {
+  const state = homeQuickStopwatch.toggle();
+  cancelAnimationFrame(homeQuickRaf);
+  homeQuickRaf = null;
+  if (state === 'running') {
+    acquireWakeLock();
+    homeQuickRaf = requestAnimationFrame(tickHomeQuickStopwatch);
+  } else {
+    releaseWakeLock();
+  }
+  renderHomeQuickStopwatch();
+});
+
+document.getElementById('home-stopwatch-reset').addEventListener('click', () => {
+  homeQuickStopwatch.reset();
+  cancelAnimationFrame(homeQuickRaf);
+  homeQuickRaf = null;
+  releaseWakeLock();
+  renderHomeQuickStopwatch();
+});
+
+renderHomeQuickStopwatch();
 
 document.getElementById('btn-open-rules').addEventListener('click', () =>
   router.navigateTo('screen-rules'));

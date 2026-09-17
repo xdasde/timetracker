@@ -1,4 +1,4 @@
-const CACHE = 'sportzaehler-v25';
+const CACHE = 'sportzaehler-v28';
 const ASSETS = [
   './',
   './index.html',
@@ -33,6 +33,7 @@ const ASSETS = [
   './assets/generated/brand-assets/derived/penguin.png',
   './assets/generated/brand-assets/derived/runner.png',
   './assets/generated/brand-assets/derived/soccer.png',
+  './assets/generated/brand-assets/derived/quick-stopwatch.png',
   './assets/generated/brand-assets/derived/stopwatch.png',
   './assets/generated/brand-assets/derived/team.png',
   './assets/generated/brand-assets/derived/tiger.png',

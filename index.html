@@ -133,19 +133,30 @@
           </button>
         </div>
 
-        <button class="home-panel home-stopwatch" id="btn-home-stopwatch" aria-label="Stoppuhr in den Werkzeugen öffnen">
-          <span class="home-stopwatch-art" aria-hidden="true">
-            <span class="home-stopwatch-halo"></span>
-            <img src="assets/generated/brand-assets/derived/stopwatch.png" alt="">
-          </span>
-          <span class="home-stopwatch-copy">
-            <span class="home-stopwatch-kicker">ZEITNAHME</span>
-            <strong>Stoppuhr</strong>
-            <small>Sekunden zählen. Fokus behalten.</small>
-            <span class="home-stopwatch-link">Öffnen <span aria-hidden="true">→</span></span>
-          </span>
-          <span class="home-stopwatch-display" aria-hidden="true">00:00</span>
-        </button>
+        <section class="home-panel home-stopwatch" id="home-quick-stopwatch" aria-label="Schnelle Stoppuhr">
+          <div class="home-stopwatch-head">
+            <div class="home-stopwatch-copy">
+              <span class="home-stopwatch-kicker">QUICK TIME</span>
+              <strong>Stoppuhr</strong>
+              <small id="home-stopwatch-hint">Direkt auf Start drücken</small>
+            </div>
+            <span class="home-stopwatch-status" id="home-stopwatch-status">BEREIT</span>
+          </div>
+          <div class="home-stopwatch-main">
+            <div class="home-stopwatch-art" aria-hidden="true">
+              <span class="home-stopwatch-halo"></span>
+              <img src="assets/generated/brand-assets/derived/quick-stopwatch.png" alt="">
+            </div>
+            <div class="home-stopwatch-readout">
+              <strong id="home-stopwatch-time">00:00.00</strong>
+              <small>Minuten · Sekunden · Hundertstel</small>
+            </div>
+          </div>
+          <div class="home-stopwatch-actions">
+            <button type="button" class="home-stopwatch-start" id="home-stopwatch-start">Start</button>
+            <button type="button" class="home-stopwatch-reset" id="home-stopwatch-reset" disabled>Reset</button>
+          </div>
+        </section>
       </div>
     </section>
 

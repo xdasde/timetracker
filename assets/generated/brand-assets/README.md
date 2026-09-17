@@ -18,5 +18,6 @@
 - Preserve the dark navy, amber/orange, mint, white, and cool-gray palette.
 - Use the animal emblems for team selection, team previews, and live-match identity where the existing UI already has those concepts.
 - Use the stopwatch emblem for the app mark and timer-related empty/default states.
+- `derived/quick-stopwatch.png` is the separately generated, compact stopwatch for the inline quick timer on the start screen.
 - Keep the existing application behavior, local persistence, routes, and event IDs intact; this asset pack is for the visual redesign only.
 - Verify the result at a 390 × 844 mobile viewport against the reference mockups.

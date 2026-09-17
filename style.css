@@ -3094,29 +3094,54 @@ textarea.modal-input { resize: vertical; min-height: 80px; }
 /* Views must never stay visually dimmed when restored from another tab. */
 .screen--active { animation: none !important; }
 
-/* ── Start: kompakte Stoppuhr-Kachel ───────────────────────── */
+/* ── Start: direkt nutzbare Quick-Stoppuhr ─────────────────── */
 .home-stopwatch {
+  position: relative;
   width: 100%;
-  min-height: 132px;
-  padding: 18px 16px;
+  min-height: 112px;
+  padding: 10px 12px;
   display: grid;
-  grid-template-columns: 92px minmax(0, 1fr) auto;
+  grid-template-columns: 58px minmax(0, 1fr) auto;
+  grid-template-rows: auto auto;
   align-items: center;
-  gap: 14px;
+  gap: 3px 10px;
   color: var(--color-text);
-  text-align: left;
-  cursor: pointer;
-  transition: transform 0.12s, border-color 0.15s, background 0.15s;
 }
-.home-stopwatch:active { transform: scale(0.985); border-color: var(--color-amber); }
+.home-stopwatch-head {
+  grid-column: 2 / 4;
+  grid-row: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.home-stopwatch-copy { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.home-stopwatch-kicker { color: var(--color-mint); font-size: 0.6rem; font-weight: 900; letter-spacing: 0.2em; }
+.home-stopwatch-copy strong { font-size: 1.2rem; line-height: 1.05; }
+.home-stopwatch-copy small { color: var(--color-muted); font-size: 0.72rem; line-height: 1.25; }
+.home-stopwatch-status {
+  flex-shrink: 0;
+  padding: 5px 8px;
+  border: 1px solid rgba(var(--color-accent-rgb), 0.35);
+  border-radius: var(--radius-pill);
+  color: var(--color-muted);
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+.home-stopwatch.is-running .home-stopwatch-status { border-color: var(--color-mint); color: var(--color-mint); }
+.home-stopwatch-main { display: contents; }
 .home-stopwatch-art {
   position: relative;
-  width: 86px;
-  height: 86px;
+  grid-column: 1;
+  grid-row: 1 / 3;
+  width: 58px;
+  height: 58px;
   display: grid;
   place-items: center;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.12), rgba(var(--color-accent-rgb), 0.10) 58%, transparent 60%);
+  flex-shrink: 0;
+  background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.12), rgba(var(--color-accent-rgb), 0.1) 58%, transparent 60%);
 }
 .home-stopwatch-art::before,
 .home-stopwatch-art::after {
@@ -3125,32 +3150,41 @@ textarea.modal-input { resize: vertical; min-height: 80px; }
   border: 1px solid rgba(var(--color-accent-rgb), 0.38);
   border-radius: 50%;
 }
-.home-stopwatch-art::before { inset: 5px; }
+.home-stopwatch-art::before { inset: 3px; }
 .home-stopwatch-art::after { inset: -3px; border-color: rgba(var(--color-accent-rgb), 0.14); }
 .home-stopwatch-halo {
   position: absolute;
-  width: 9px;
-  height: 9px;
-  top: 1px;
-  right: 18px;
+  width: 8px;
+  height: 8px;
+  top: 0;
+  right: 11px;
   border-radius: 50%;
   background: var(--color-mint);
   box-shadow: 0 0 12px rgba(var(--color-mint-rgb), 0.8);
 }
-.home-stopwatch-art img { width: 68px; height: 68px; object-fit: contain; filter: drop-shadow(0 8px 12px rgba(0,0,0,0.35)); }
-.home-stopwatch-copy { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
-.home-stopwatch-kicker { color: var(--color-mint); font-size: 0.62rem; font-weight: 900; letter-spacing: 0.2em; }
-.home-stopwatch-copy strong { font-size: 1.35rem; line-height: 1.05; }
-.home-stopwatch-copy small { color: var(--color-muted); font-size: 0.76rem; line-height: 1.25; }
-.home-stopwatch-link { margin-top: 5px; color: var(--color-amber); font-size: 0.78rem; font-weight: 800; }
-.home-stopwatch-display {
-  align-self: end;
-  color: var(--color-amber);
-  font-family: var(--font-mono);
-  font-size: 1.05rem;
+.home-stopwatch-art img { position: relative; z-index: 1; width: 46px; height: 46px; object-fit: contain; filter: drop-shadow(0 7px 10px rgba(0,0,0,0.35)); }
+.home-stopwatch.is-running .home-stopwatch-art { animation: home-stopwatch-pulse 1.8s ease-in-out infinite; }
+@keyframes home-stopwatch-pulse { 50% { filter: drop-shadow(0 0 12px rgba(var(--color-accent-rgb), 0.38)); } }
+.home-stopwatch-readout { grid-column: 2; grid-row: 2; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.home-stopwatch-readout strong { color: var(--color-amber); font-family: var(--font-mono); font-size: clamp(1.25rem, 6vw, 1.7rem); font-weight: 900; letter-spacing: -0.04em; line-height: 1; white-space: nowrap; }
+.home-stopwatch-readout small { color: var(--color-muted); font-size: 0.55rem; line-height: 1.2; white-space: nowrap; }
+.home-stopwatch-actions { grid-column: 3; grid-row: 2; display: flex; align-items: center; gap: 5px; }
+.home-stopwatch-start,
+.home-stopwatch-reset {
+  min-height: 32px;
+  padding: 7px 9px;
+  border-radius: var(--radius-sm);
+  font-size: 0.72rem;
   font-weight: 900;
-  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: transform 0.1s, filter 0.15s, background 0.15s;
 }
+.home-stopwatch-start:active,
+.home-stopwatch-reset:active { transform: scale(0.95); }
+.home-stopwatch-start { background: var(--color-amber); color: var(--color-on-accent, #111827); }
+.home-stopwatch-start:hover { filter: brightness(1.08); }
+.home-stopwatch-reset { background: rgba(255,255,255,0.08); border: 1px solid var(--color-border); color: var(--color-muted); }
+.home-stopwatch-reset:disabled { opacity: 0.35; pointer-events: none; }
 
 /* ── Match-Setup: Wappen statt manueller Team-Eingabe ─────── */
 .setup-team-chooser-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
@@ -3232,10 +3266,13 @@ textarea.modal-input { resize: vertical; min-height: 80px; }
 .tbm-team-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 @media (max-width: 360px) {
-  .home-stopwatch { grid-template-columns: 76px minmax(0, 1fr); gap: 10px; }
-  .home-stopwatch-art { width: 72px; height: 72px; }
-  .home-stopwatch-art img { width: 58px; height: 58px; }
-  .home-stopwatch-display { display: none; }
+  .home-stopwatch { gap: 8px 10px; padding-inline: 10px; }
+  .home-stopwatch-main { gap: 8px; }
+  .home-stopwatch-art { width: 64px; height: 64px; }
+  .home-stopwatch-art img { width: 52px; height: 52px; }
+  .home-stopwatch-readout strong { font-size: 1.35rem; }
+  .home-stopwatch-readout small { font-size: 0.54rem; }
+  .home-stopwatch-start, .home-stopwatch-reset { padding-inline: 10px; }
   .setup-team-preset { min-height: 76px; }
   .setup-team-preset img { width: 40px; height: 40px; }
 }
