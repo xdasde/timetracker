@@ -15,6 +15,8 @@ periods: 1
 periodLabel: Lauf
 structure: Klassische Staffel zwischen zwei Gruppenhälften auf Zeit.
 scoring: Team mit der schnellsten Gesamtzeit gewinnt.
+imageKey: pendelstaffel
+imageAlt: Ein Staffelstab pendelt zwischen zwei gegenüberstehenden Teamhälften.
 ---
 
 ## Ablauf

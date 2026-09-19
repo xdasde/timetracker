@@ -12,6 +12,8 @@ periods: 1
 periodLabel: Spiel
 structure: Fangspiel ausschließlich auf den Hallenlinien. Kein festes Zeitlimit.
 scoring: Gefangene werden zu Fängern (oder scheiden kurz aus). Zeit per Stoppuhr.
+imageKey: linienfangen
+imageAlt: Fänger und Läufer bewegen sich ausschließlich auf Hallenlinien.
 ---
 
 ## Ablauf

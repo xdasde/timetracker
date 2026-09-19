@@ -15,6 +15,8 @@ periods: 1
 periodLabel: Lauf
 structure: Staffel auf Zeit oder bis ein Team fertig ist.
 scoring: Das Team, dessen Ball zuerst sauber durch den Tunnel ist, gewinnt.
+imageKey: tunnelball
+imageAlt: Eine Reihe bildet einen Beintunnel, durch den der Ball rollt.
 ---
 
 ## Ablauf

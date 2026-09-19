@@ -15,6 +15,8 @@ periods: 1
 periodLabel: Lauf
 structure: Bewegungsparcours auf Zeit oder als ruhiger Durchlauf.
 scoring: Optional schnellste Zeit; sonst Bewegungserfahrung ohne Wertung.
+imageKey: hindernisparcours
+imageAlt: Eine Laufstrecke verbindet Matte, Hürde, Reifen und Kasten.
 ---
 
 ## Ablauf

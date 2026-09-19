@@ -497,9 +497,9 @@
       </div>
       <div class="screen-body">
         <div class="screen-hero" aria-hidden="true"><img src="assets/generated/brand-assets/derived/volleyball.png" alt=""><img src="assets/generated/brand-assets/derived/basketball.png" alt=""><img src="assets/generated/brand-assets/derived/badminton.png" alt=""></div>
-        <p class="rules-intro">Spiele, Sportarten &amp; Übungen mit Kurzregeln und App-Tipps. Durchsuchen, filtern und eigene Spiele beitragen.</p>
+        <p class="rules-intro">Spiele, Sportarten &amp; Übungen mit Kurzregeln und App-Tipps. Durchsuchen, filtern und ein neues Community-Spiel direkt einreichen.</p>
         <button class="rules-add-btn" id="btn-rules-add">
-          <span aria-hidden="true">＋</span> Eigenes Spiel anlegen
+          <span aria-hidden="true">＋</span> Community-Spiel einreichen
         </button>
         <div class="rules-search">
           <svg class="rules-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
@@ -526,6 +526,7 @@
 
         <div class="roulette-stage">
           <div class="roulette-display" id="roulette-display" aria-live="polite">
+            <div class="roulette-display-media hidden" id="roulette-media"></div>
             <span class="roulette-display-icon" id="roulette-icon">🎲</span>
             <span class="roulette-display-name" id="roulette-name">Bereit?</span>
             <span class="roulette-display-meta" id="roulette-meta">Tippe auf „Auslosen"</span>
@@ -685,6 +686,7 @@
           <label for="toggle-notifications">Benachrichtigungen</label>
           <input type="checkbox" id="toggle-notifications" role="switch">
         </div>
+        <p class="settings-section-hint" id="notifications-status" role="status"></p>
         <div class="setting-row hidden" id="install-settings-row">
           <span class="setting-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>
           <label>App installieren</label>
@@ -873,7 +875,7 @@
 
   <template id="tmpl-modal-contribute">
     <h2 id="cg-title">Eigenes Spiel</h2>
-    <p class="cg-hint">Sofort lokal nutzbar – und optional als Vorschlag für alle einreichbar.</p>
+    <p class="cg-hint" id="cg-hint">Das Spiel wird direkt an die Community gesendet.</p>
     <div class="modal-field">
       <label class="modal-label" for="cg-name">Name *</label>
       <input class="modal-input" id="cg-name" type="text" maxlength="40" autocomplete="off">
@@ -934,6 +936,16 @@
       <label class="modal-label" for="cg-tip">App-Tipp *</label>
       <textarea class="modal-input cg-textarea" id="cg-tip" rows="2" placeholder="z. B. wie Timer/Pause einzustellen sind"></textarea>
     </div>
+    <div class="modal-field cg-image-field" id="cg-image-field">
+      <label class="modal-label" for="cg-image">Bild (optional)</label>
+      <input class="cg-image-input" id="cg-image" type="file" accept="image/webp,image/png,image/jpeg" aria-describedby="cg-image-limits cg-image-status">
+      <p class="cg-image-limits" id="cg-image-limits">WebP, PNG oder JPEG · höchstens 2 MB · bitte ohne erkennbare Gesichter, Namen oder Logos.</p>
+      <figure class="cg-image-preview hidden" id="cg-image-preview">
+        <img id="cg-image-preview-img" alt="Vorschau des ausgewählten Bildes">
+        <button type="button" class="cg-image-remove" id="cg-image-remove">Bild entfernen</button>
+      </figure>
+      <p class="cg-image-status" id="cg-image-status" role="status" aria-live="polite"></p>
+    </div>
     <details class="cg-more">
       <summary>Weitere Angaben (optional)</summary>
       <div class="modal-field">
@@ -952,21 +964,15 @@
         <label class="modal-label" for="cg-source">Quelle (optional)</label>
         <input class="modal-input" id="cg-source" type="text" maxlength="120" autocomplete="off">
       </div>
+      <div class="modal-field">
+        <label class="modal-label" for="cg-author">Autor (optional)</label>
+        <input class="modal-input" id="cg-author" type="text" maxlength="40" autocomplete="name" placeholder="Name oder Gruppe">
+      </div>
     </details>
     <p id="cg-error" class="cg-error hidden" role="alert"></p>
     <div class="modal-actions" id="cg-actions">
       <button class="btn-secondary" id="cg-cancel">Abbrechen</button>
-      <button class="btn-primary" id="cg-save">Speichern</button>
-    </div>
-    <div class="cg-submit hidden" id="cg-submit">
-      <p class="cg-submit-title">✓ Lokal gespeichert. Als Vorschlag für alle einreichen?</p>
-      <button class="btn-primary btn-full" id="cg-pr">Zur Aufnahme einreichen</button>
-      <p class="cg-submit-note">Öffnet ein vorausgefülltes GitHub-Issue – <strong>kein Fork nötig</strong>. Ein (kostenloses) GitHub-Konto genügt. Ein Maintainer prüft den Vorschlag und übernimmt ihn in die App. Kein GitHub-Konto? Markdown kopieren oder als Datei senden.</p>
-      <div class="modal-row">
-        <button class="btn-secondary cg-half" id="cg-copy">Markdown kopieren</button>
-        <button class="btn-secondary cg-half" id="cg-download">.md herunterladen</button>
-      </div>
-      <button class="btn-secondary btn-full" id="cg-done">Fertig</button>
+      <button class="btn-primary" id="cg-save">Community-Spiel senden</button>
     </div>
   </template>
 

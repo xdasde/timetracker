@@ -15,6 +15,8 @@ periods: 1
 periodLabel: Spiel
 structure: Abwurfspiel; Jäger am Rand, Hasen im Feld. Rollen wechseln.
 scoring: Punkt für die Jäger pro abgeworfenem Hasen; danach Rollen tauschen und vergleichen.
+imageKey: jaeger-und-hasen
+imageAlt: Außen stehende Werfer zielen weich auf die Läufer im Feld.
 ---
 
 ## Ablauf

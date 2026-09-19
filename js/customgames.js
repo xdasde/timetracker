@@ -62,6 +62,7 @@ function normalize(g) {
     basics: Array.isArray(g.basics) ? g.basics : [],
     tip: g.tip || '',
     source: g.source ?? null,
+    author: g.author ?? null,
     custom: true,
   };
 }
@@ -122,6 +123,7 @@ export function toMarkdown(e) {
     `scoring: ${e.scoring}`,
   );
   if (e.source) L.push(`source: ${e.source}`);
+  if (e.author) L.push(`author: ${e.author}`);
   L.push('---', '', '## Ablauf', ...e.basics.map(b => `- ${b}`), '', '## Tipp', e.tip, '');
   return L.join('\n');
 }

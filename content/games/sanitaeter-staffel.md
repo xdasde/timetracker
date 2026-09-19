@@ -15,6 +15,8 @@ periods: 1
 periodLabel: Lauf
 structure: Transport-Staffel auf Zeit, kooperativ im Team.
 scoring: Schnellstes Team gewinnt; fällt der "Patient", muss neu gestartet werden.
+imageKey: sanitaeter-staffel
+imageAlt: Ein kleines Team transportiert eine weiche Trage um die Wendemarke.
 ---
 
 ## Ablauf

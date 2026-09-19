@@ -15,6 +15,8 @@ periods: 1
 periodLabel: Runde
 structure: Reaktions- und Laufspiel über mehrere Runden.
 scoring: Punkt für das Team, dessen Läufer den Gegenstand zuerst zurückbringt.
+imageKey: nummernwettlauf
+imageAlt: Zwei Läufer starten aus Reihen und sprinten zu einem Mittelgegenstand.
 ---
 
 ## Ablauf

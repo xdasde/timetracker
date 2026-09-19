@@ -15,6 +15,8 @@ periods: 1
 periodLabel: Runde
 structure: Aufwärm- und Reaktionsspiel über mehrere Runden.
 scoring: Ausscheide- oder Aufgabenspiel – wer falsch reagiert, macht eine Zusatzaufgabe.
+imageKey: reaktionsfarben
+imageAlt: Ein Läufer reagiert auf farbige Markierungen und ändert die Richtung.
 ---
 
 ## Ablauf

@@ -14,6 +14,8 @@ periods: 4
 periodLabel: Viertel
 structure: 4 × 15 Min. + 2 Min. Viertelpausen + 10 Min. Halbzeitpause
 scoring: Tore (Schuss aus dem Schusskreis = 14,63-Meter-Halbkreis)
+imageKey: hockey
+imageAlt: Feldhockey-Spieler führen den Ball mit Schlägern ins Tor.
 ---
 
 ## Ablauf

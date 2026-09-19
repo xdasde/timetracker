@@ -17,6 +17,8 @@ periods: 2
 periodLabel: Halbzeit
 structure: 2 × 10 Min. Wurfspiel mit zu verteidigendem Ziel.
 scoring: Punkt, wenn die gegnerische "Burg" (Kasten/Hütchen) mit dem Ball getroffen wird.
+imageKey: burgball
+imageAlt: Ein Team passt, um die gegnerische Burg mit dem Ball zu treffen.
 ---
 
 ## Ablauf

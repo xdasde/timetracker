@@ -17,6 +17,8 @@ periods: 2
 periodLabel: Halbzeit
 structure: 2 × 10 Min. Passspiel ohne Tore.
 scoring: Ein Punkt für eine festgelegte Anzahl Pässe in Folge (z. B. 10) ohne Ballverlust.
+imageKey: parteiball
+imageAlt: Ein Team hält den Ball mit schnellen Pässen in Bewegung.
 ---
 
 ## Ablauf

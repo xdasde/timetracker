@@ -15,6 +15,8 @@ periods: 1
 periodLabel: Runde
 structure: Ausscheidespiel über mehrere Runden, bis ein Kind übrig ist.
 scoring: Wer zuletzt einen Sitzplatz ergattert, gewinnt.
+imageKey: reise-nach-jerusalem
+imageAlt: Kinder laufen um eine Reihe weniger Stühle und greifen nach einem Platz.
 ---
 
 ## Ablauf

@@ -4,18 +4,34 @@ Die Spiele-, Sportarten- und Übungsdatenbank lebt von Beiträgen. Jeder Eintrag
 ist eine einfache **Markdown-Datei** in `content/games/`. Du brauchst dafür
 keine Programmierkenntnisse – eine Textdatei genügt.
 
-## Am einfachsten: direkt in der App
+## Community-Spiele über die App
 
-In der App unter **Datenbank → „＋ Eigenes Spiel anlegen"** kannst du ein Spiel
-über ein Formular erstellen. Es wird sofort lokal gespeichert (nutzbar im
-Roulette und Match-Setup). Anschließend kannst du es mit einem Klick
+In der App unter **Datenbank → „＋ Community-Spiel einreichen"** kannst du ein
+Spiel über das Formular eintragen. Bei aktivierter Community-Konfiguration wird
+es direkt an die Google-Apps-Script-Web-App gesendet und erscheint nach der
+bestätigten Antwort sofort als **Community-Spiel** – ohne separate Freigabe und
+ohne direkte Bearbeitung des Google Sheets. Das Feld **Autor (optional)** kann
+mit einem Namen oder einer Gruppe gefüllt werden. Community-Spiele sind in der
+App nicht bearbeitbar oder löschbar und können mit 1–5 Sternen bewertet werden.
 
-- **per GitHub einreichen** – öffnet GitHub mit vorausgefülltem Eintrag; GitHub
-  legt automatisch eine Kopie (Fork) und einen Pull-Request an, oder
-- als **Markdown kopieren** / **`.md` herunterladen**, falls du keinen
-  GitHub-Account hast.
+Ist `COMMUNITY_ENDPOINT` in `js/config.js` leer, zeigt die App einen Hinweis und
+speichert den Entwurf nicht fälschlich als Community-Spiel. Die Einrichtung des
+Sheets und des Endpunkts steht in
+[`scripts/google-apps-script/README.md`](scripts/google-apps-script/README.md).
 
-Die folgenden Wege beschreiben dasselbe manuell.
+### Benachrichtigungen für neue Community-Spiele
+
+Web-Push ist standardmäßig deaktiviert. Für einen echten Betrieb werden ein
+konfiguriertes Relay, ein VAPID-Schlüsselpaar und die beiden Apps-Script-
+`ScriptProperties` benötigt; private Schlüssel und Publish-Secrets bleiben
+außerhalb des Repositories. Die PWA fragt die Berechtigung nur nach einem
+ausdrücklichen Schalter-Klick an. Setup, iOS-Hinweise, Live-Testplan und offene
+Deployment-/Datenschutzschritte stehen in [`docs/web-push.md`](docs/web-push.md).
+
+## Offizielle Einträge im Repository
+
+Die folgenden Wege beschreiben die direkte Pflege der gebündelten, offiziellen
+Datenbank durch Maintainer:innen.
 
 ## Neuen Eintrag anlegen (über GitHub, ohne lokales Setup)
 

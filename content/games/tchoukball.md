@@ -14,6 +14,8 @@ periods: 3
 periodLabel: Periode
 structure: 3 × 15 Min. + 5 Min. Pausen
 scoring: Punkt: Ball prallt von Rahmen und landet im Spielfeld ohne gefangen zu werden
+imageKey: tchoukball
+imageAlt: Ein Ball prallt von einem Rebound-Rahmen zurück ins Spielfeld.
 ---
 
 ## Ablauf

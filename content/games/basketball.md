@@ -14,6 +14,8 @@ periods: 4
 periodLabel: Viertel
 structure: 4 × 10 Min. (FIBA) oder 4 × 12 Min. (NBA)
 scoring: 2 Punkte (normaler Korb), 3 Punkte (hinter der 3-Punkte-Linie), 1 Punkt (Freiwurf)
+imageKey: basketball
+imageAlt: Spieler dribbeln und werfen auf einen Korb.
 ---
 
 ## Ablauf

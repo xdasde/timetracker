@@ -14,6 +14,8 @@ periods: 1
 periodLabel: Runde
 structure: Partner-Aufwärmübung ohne Wertung.
 scoring: Keine Wertung – Ziel ist genaues Nachahmen.
+imageKey: schattenlauf
+imageAlt: Zwei Partner laufen versetzt, die hintere Figur spiegelt die vordere.
 ---
 
 ## Ablauf

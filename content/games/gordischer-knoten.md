@@ -14,6 +14,8 @@ periods: 1
 periodLabel: Runde
 structure: Kooperationsaufgabe ohne Zeitdruck (optional auf Zeit).
 scoring: Gelöst, wenn ein offener Kreis ohne gelöste Hände entsteht.
+imageKey: gordischer-knoten
+imageAlt: Kinder greifen Hände und entwirren sich zu einem offenen Kreis.
 ---
 
 ## Ablauf

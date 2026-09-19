@@ -13,6 +13,8 @@ periods: 1
 periodLabel: Runde
 structure: Mehrere Runden bis wenige Kinder übrig sind. Kein festes Zeitlimit.
 scoring: Ausscheidespiel – die zuletzt übrigen Kinder gewinnen.
+imageKey: zahlenecken
+imageAlt: Läufer wählen eine von vier sicheren Hallenecken.
 ---
 
 ## Ablauf

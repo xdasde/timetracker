@@ -12,6 +12,8 @@ periods: 3
 periodLabel: Satz
 structure: Best of 3 Sätze. Satz bis 15 Punkte (Zwei-Punkte-Vorsprung).
 scoring: Punkt: Ball landet im Feld des Gegners oder Gegner macht Fehler
+imageKey: prellball
+imageAlt: Der Ball wird vor dem Rückspiel auf der eigenen Seite geprellt.
 ---
 
 ## Ablauf

@@ -14,6 +14,8 @@ periods: 1
 periodLabel: Runde
 structure: Lauf- und Reaktionsspiel über mehrere Runden.
 scoring: Ausscheidespiel – wer keine Gruppe findet, scheidet aus oder macht eine Zusatzaufgabe.
+imageKey: atomspiel
+imageAlt: Kinder bewegen sich aufeinander zu und bilden kleine Molekülgruppen.
 ---
 
 ## Ablauf

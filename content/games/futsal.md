@@ -14,6 +14,8 @@ periods: 2
 periodLabel: Halbzeit
 structure: 2 × 20 Min. netto + 15 Min. Pause (Uhr stoppt bei Unterbrechungen)
 scoring: Tore (Ball über die Torlinie)
+imageKey: futsal
+imageAlt: Kleines Hallenfeld, Dribbling, Pass und Torabschluss.
 ---
 
 ## Ablauf

@@ -12,6 +12,8 @@ periods: 2
 periodLabel: Halbzeit
 structure: Flexibel konfigurierbar. Ideal für nicht standardisierte Schulspiele.
 scoring: Punkte oder Tore nach eigenen Regeln.
+imageKey: schulsport
+imageAlt: Eine neutrale Teamspiel-Szene mit Ball, Hütchen und Bewegungsrichtung.
 ---
 
 ## Ablauf

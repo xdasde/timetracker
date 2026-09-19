@@ -12,6 +12,8 @@ periods: 5
 periodLabel: Spiel
 structure: Best of 5 oder 7 Spiele. Spiel bis 11 Punkte. Zwei-Punkte-Vorsprung nötig.
 scoring: Rally-Punkte: Jeder Fehler des Gegners gibt Punkt
+imageKey: tabletennis
+imageAlt: Zwei Spieler schlagen einen kleinen Ball über die Tischtennisplatte.
 ---
 
 ## Ablauf

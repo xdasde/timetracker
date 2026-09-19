@@ -2,6 +2,7 @@ import * as storage from './storage.js';
 import * as ui from './ui.js';
 import { CONTENT } from './content.generated.js';
 import * as customgames from './customgames.js';
+import * as communitygames from './communitygames.js';
 
 const ICONS = ['⚽', '🏀', '🏐', '🏈', '🎾', '🏓', '🥊', '🏒', '🤾', '🏑', '🏸', '🥏', '🔥', '⚾', '🏅', '🎿'];
 
@@ -65,10 +66,11 @@ export { BUILT_IN_PRESETS };
 
 // Kategorien für das Spiel-Roulette. 'all' ist der Standard-Filter.
 export const ROULETTE_CATEGORIES = [
-  { key: 'all',  label: 'Alle',      icon: '🎲' },
-  { key: 'lauf', label: 'Laufspiel', icon: '🏃' },
-  { key: 'ball', label: 'Ballspiel', icon: '⚽' },
-  { key: 'team', label: 'Teamspiel', icon: '👥' },
+  { key: 'all',       label: 'Alle',      icon: '🎲' },
+  { key: 'community', label: 'Community', icon: '🌐' },
+  { key: 'lauf',      label: 'Laufspiel', icon: '🏃' },
+  { key: 'ball',      label: 'Ballspiel', icon: '⚽' },
+  { key: 'team',      label: 'Teamspiel', icon: '👥' },
 ];
 
 // Aus einem eigenen Spiel (customgames) ein nutzbares Preset ableiten.
@@ -90,26 +92,55 @@ function customGameToPreset(g) {
   };
 }
 
+// Aus einem Community-Spiel ein nutzbares Preset ableiten. Community-Presets
+// sind reine Lese-Einträge: kein Bearbeiten, kein Löschen, kein Überschreiben.
+function communityGameToPreset(g) {
+  return {
+    id: `communitygame-${g.id}`,
+    name: g.shortName || g.name,
+    icon: g.icon,
+    teamA: { name: g.teamA },
+    teamB: { name: g.teamB },
+    colorIndex: g.colorIndex,
+    durationMs: g.durationMs,
+    breakMs: g.breakMs,
+    periods: g.periods,
+    rulesKey: g.id,
+    categories: g.categories,
+    builtIn: false,
+    fromCommunity: true,
+    author: g.author,
+  };
+}
+
 export function getAll() {
   const custom = storage.getCollection('presets');
   const hidden = new Set(storage.getItem('hiddenPresets') || []);
   const ownGames = customgames.getAll().map(customGameToPreset);
-  return [...BUILT_IN_PRESETS.filter(p => !hidden.has(p.id)), ...ownGames, ...custom];
+  const communityPresets = communitygames.getAll().map(communityGameToPreset);
+  return [...BUILT_IN_PRESETS.filter(p => !hidden.has(p.id)), ...ownGames, ...communityPresets, ...custom];
+}
+
+export function matchesRouletteCategory(preset, category = 'all') {
+  if (category === 'all') return true;
+  if (category === 'community') return preset?.fromCommunity === true;
+  return Array.isArray(preset?.categories) && preset.categories.includes(category);
 }
 
 // Liefert alle für das Roulette in Frage kommenden Presets:
-// gefiltert nach Kategorie (außer 'all') und ohne ausgeschlossene IDs.
+// gefiltert nach Kategorie und ohne ausgeschlossene IDs.
 // Presets ohne Kategorien (z. B. eigene) erscheinen nur unter 'Alle'.
 export function getRouletteCandidates(category = 'all', excludedIds = []) {
   const excluded = new Set(excludedIds);
   return getAll().filter(p => {
     if (excluded.has(p.id)) return false;
-    if (category === 'all') return true;
-    return Array.isArray(p.categories) && p.categories.includes(category);
+    return matchesRouletteCategory(p, category);
   });
 }
 
 export function save(data) {
+  // Community-Presets leben im geteilten Sheet und werden lokal nie verändert.
+  if (data?.fromCommunity || String(data?.id || '').startsWith('communitygame-')) return;
   if (data.builtIn) {
     // Overwrite built-in by saving a custom override with same id
     const customs = storage.getCollection('presets');
@@ -128,6 +159,7 @@ export function save(data) {
 }
 
 export function remove(id) {
+  if (String(id).startsWith('communitygame-')) return;
   if (BUILT_IN_PRESETS.some(p => p.id === id)) {
     // Built-ins are hidden (not permanently deleted, restored on data-clear)
     const hidden = storage.getItem('hiddenPresets') || [];
@@ -177,6 +209,11 @@ export function renderList(onEdit, onRules) {
       lock.className = 'preset-card-lock';
       lock.textContent = 'Standard';
       card.appendChild(lock);
+    } else if (preset.fromCommunity) {
+      const lock = document.createElement('span');
+      lock.className = 'preset-card-lock preset-card-lock--community';
+      lock.textContent = 'Community';
+      card.appendChild(lock);
     }
 
     const rulesBtn = document.createElement('button');
@@ -187,7 +224,9 @@ export function renderList(onEdit, onRules) {
     rulesBtn.addEventListener('click', e => { e.stopPropagation(); onRules?.(preset); });
     card.appendChild(rulesBtn);
 
-    card.addEventListener('click', () => onEdit(preset));
+    // Community-Presets sind nicht bearbeitbar – ein Tipp öffnet die Regeln.
+    card.addEventListener('click', () =>
+      (preset.fromCommunity ? onRules?.(preset) : onEdit(preset)));
     list.appendChild(card);
   });
 
@@ -199,17 +238,28 @@ export function renderList(onEdit, onRules) {
   list.appendChild(addBtn);
 }
 
-export function renderChips(container, onSelect) {
+export function renderChips(container, onSelect, selectedId = null) {
   container.replaceChildren();
   getAll().forEach(preset => {
     const chip = document.createElement('button');
     chip.className = 'setup-preset-chip';
     chip.dataset.presetId = preset.id;
+    if (preset.fromCommunity) {
+      chip.classList.add('setup-preset-chip--community');
+      chip.setAttribute('aria-label', `${preset.name} · Community`);
+    }
+    if (preset.id === selectedId) chip.classList.add('setup-preset-chip--active');
     const iconSpan = document.createElement('span');
     iconSpan.textContent = preset.icon;
     const nameSpan = document.createElement('span');
     nameSpan.textContent = preset.name;
     chip.append(iconSpan, nameSpan);
+    if (preset.fromCommunity) {
+      const source = document.createElement('small');
+      source.className = 'setup-preset-chip-source';
+      source.textContent = 'Community';
+      chip.appendChild(source);
+    }
     chip.addEventListener('click', () => {
       container.querySelectorAll('.setup-preset-chip').forEach(c =>
         c.classList.remove('setup-preset-chip--active'));
@@ -221,6 +271,8 @@ export function renderChips(container, onSelect) {
 }
 
 export function openModal(preset, onSaved, onDeleted) {
+  // Auch bei direktem API-Aufruf darf ein Community-Preset keinen Editor öffnen.
+  if (preset?.fromCommunity || String(preset?.id || '').startsWith('communitygame-')) return;
   ui.openModal('tmpl-modal-preset', () => {
     const isNew = !preset;
     const editing = preset ? { ...preset } : {
@@ -303,7 +355,7 @@ export function openModal(preset, onSaved, onDeleted) {
     const catRow = document.getElementById('pm-categories');
     if (catRow) {
       catRow.replaceChildren();
-      ROULETTE_CATEGORIES.filter(c => c.key !== 'all').forEach(cat => {
+      ROULETTE_CATEGORIES.filter(c => !['all', 'community'].includes(c.key)).forEach(cat => {
         const btn = document.createElement('button');
         btn.type = 'button';
         const active = editing.categories.includes(cat.key);

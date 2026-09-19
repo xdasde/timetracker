@@ -15,6 +15,8 @@ periods: 1
 periodLabel: Runde
 structure: Lauf- und Fangspiel; sichere "Inseln" verteilt in der Halle.
 scoring: Wer vom Hai (Fänger) erwischt wird, wird selbst zum Fänger.
+imageKey: inselhuepfen
+imageAlt: Läufer springen über sichere Inselmatten vor dem Fänger davon.
 ---
 
 ## Ablauf

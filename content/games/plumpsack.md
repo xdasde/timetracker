@@ -15,6 +15,8 @@ periods: 1
 periodLabel: Runde
 structure: Kreisspiel ohne festes Ende, Fänger wechseln laufend.
 scoring: Kein Punktestand – wer den Platz nicht rechtzeitig erreicht, ist der neue Plumpsack.
+imageKey: plumpsack
+imageAlt: Ein Kind läuft außen um einen Sitzkreis und legt unbemerkt ein Tuch ab.
 ---
 
 ## Ablauf

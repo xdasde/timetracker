@@ -13,6 +13,8 @@ periods: 1
 periodLabel: Spiel
 structure: Fangspiel. Kein festes Zeitlimit, Fänger regelmäßig wechseln.
 scoring: Fänger gewinnt, wenn alle gleichzeitig versteinert sind. Dauer per Stoppuhr.
+imageKey: versteinern
+imageAlt: Ein Fänger versteinert Läufer, eine freie Person befreit sie.
 ---
 
 ## Ablauf

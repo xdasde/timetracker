@@ -14,6 +14,8 @@ periods: 3
 periodLabel: Drittel
 structure: 3 × 20 Min. netto + 10 Min. Pause
 scoring: Tore (Ball über Torlinie ins Netz)
+imageKey: floorball
+imageAlt: Zwei Teams führen den Ball mit kurzen Stöcken Richtung Tor.
 ---
 
 ## Ablauf

@@ -14,6 +14,8 @@ periods: 1
 periodLabel: Runde
 structure: Reaktions- und Laufspiel; Teams stehen sich an der Mittellinie gegenüber.
 scoring: Punkt für jedes gefangene Kind der anderen Mannschaft.
+imageKey: tag-und-nacht
+imageAlt: Zwei Linien stehen sich an der Mittellinie gegenüber und starten auf Ruf.
 ---
 
 ## Ablauf

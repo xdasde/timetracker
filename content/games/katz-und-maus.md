@@ -14,6 +14,8 @@ periods: 1
 periodLabel: Runde
 structure: Lauf- und Fangspiel mit schützendem Kreis (Gasse).
 scoring: Fängt die Katze die Maus, werden neue Rollen bestimmt.
+imageKey: katz-und-maus
+imageAlt: Eine Maus läuft durch eine Gasse aus Kindern vor der Katze weg.
 ---
 
 ## Ablauf

@@ -17,6 +17,8 @@ periods: 2
 periodLabel: Halbzeit
 structure: 2 × 10 Min. Passspiel mit Grundlinie als Tor.
 scoring: Punkt, wenn ein Mitspieler den Ball hinter der gegnerischen Grundlinie fängt.
+imageKey: linienball
+imageAlt: Ein Pass erreicht einen Mitspieler hinter der gegnerischen Grundlinie.
 ---
 
 ## Ablauf

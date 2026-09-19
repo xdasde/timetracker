@@ -15,6 +15,8 @@ periods: 1
 periodLabel: Spiel
 structure: Fangspiel; gefangene Bänder zählen am Ende. Mehrere Durchgänge.
 scoring: Wer am Ende die meisten Bänder gesammelt hat, gewinnt.
+imageKey: baenderfangen
+imageAlt: Läufer mit flatternden Bändern weichen einem Fänger aus.
 ---
 
 ## Ablauf

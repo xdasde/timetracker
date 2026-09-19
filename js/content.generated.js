@@ -35,7 +35,10 @@ export const CONTENT = [
       "Faire Variante: Übrige machen eine kleine Aufgabe und spielen weiter"
     ],
     "tip": "Bewegungsart pro Runde vorgeben (hüpfen, krabbeln). Timer für die Laufphasen nutzen.",
-    "source": null
+    "source": null,
+    "imageKey": "atomspiel",
+    "image": "assets/games/atomspiel.webp",
+    "imageAlt": "Kinder bewegen sich aufeinander zu und bilden kleine Molekülgruppen."
   },
   {
     "id": "badminton",
@@ -70,7 +73,10 @@ export const CONTENT = [
       "Seitenwechsel: Nach jedem Satz + im 3. Satz bei 11 Punkten"
     ],
     "tip": "Kein Zeitlimit → Punkte eintragen. Satz vorbei (21 Punkte) → Halbzeit drücken für Satzwechsel.",
-    "source": null
+    "source": null,
+    "imageKey": "badminton",
+    "image": "assets/games/badminton.webp",
+    "imageAlt": "Zwei Spieler schlagen den Federball über ein Netz."
   },
   {
     "id": "baellebad",
@@ -108,7 +114,10 @@ export const CONTENT = [
       "Mehrere Runden spielen und die Kinder in der Mitte austauschen"
     ],
     "tip": "Timer als Countdown auf 60 Sek. stellen. Zum Auslosen der 2–3 Kinder in der Mitte die „Fänger-Auslosung\" nutzen. Genug Softbälle bereitlegen – es sollten immer mehr Bälle als Kinder sein. </content> </invoke>",
-    "source": ""
+    "source": "",
+    "imageKey": "baellebad",
+    "image": "assets/games/baellebad.webp",
+    "imageAlt": "Ein Team wirft Softbälle aus dem Bank-Viereck, das andere sammelt."
   },
   {
     "id": "baenderfangen",
@@ -143,7 +152,10 @@ export const CONTENT = [
       "Variante: feste Fänger, die Läufern die Bänder abjagen"
     ],
     "tip": "Spielzeit per Timer auf 2–3 Min. begrenzen, dann zählen. Genug Bänder bereitlegen.",
-    "source": null
+    "source": null,
+    "imageKey": "baenderfangen",
+    "image": "assets/games/baenderfangen.webp",
+    "imageAlt": "Läufer mit flatternden Bändern weichen einem Fänger aus."
   },
   {
     "id": "ball-ueber-die-schnur",
@@ -180,7 +192,10 @@ export const CONTENT = [
       "Variante: im Sitzen spielen oder mit zwei Bällen gleichzeitig"
     ],
     "tip": "Kein Zeitlimit → bis 15 Punkte spielen, dann Halbzeit drücken für den Satzwechsel.",
-    "source": null
+    "source": null,
+    "imageKey": "ball-ueber-die-schnur",
+    "image": "assets/games/ball-ueber-die-schnur.webp",
+    "imageAlt": "Zwei Teams werfen einen Ball über die gespannte Schnur."
   },
   {
     "id": "balltransport",
@@ -216,7 +231,10 @@ export const CONTENT = [
       "Variante: zu dritt mit zwei Bällen"
     ],
     "tip": "Stoppuhr mit Lap-Funktion für die Paarzeiten. Körperstelle ans Alter anpassen.",
-    "source": null
+    "source": null,
+    "imageKey": "balltransport",
+    "image": "assets/games/balltransport.webp",
+    "imageAlt": "Ein Paar transportiert einen Ball ohne Hände um Hütchen."
   },
   {
     "id": "basketball",
@@ -253,7 +271,10 @@ export const CONTENT = [
       "Auszeit: 2 Auszeiten pro Halbzeit, je 1 Min."
     ],
     "tip": "40 Min. einstellen → nach jedem Viertel (10 Min.) auf \"Halbzeit\" drücken.",
-    "source": null
+    "source": null,
+    "imageKey": "basketball",
+    "image": "assets/games/basketball.webp",
+    "imageAlt": "Spieler dribbeln und werfen auf einen Korb."
   },
   {
     "id": "bewegungsstaffel",
@@ -291,7 +312,10 @@ export const CONTENT = [
       "Variante: an jeder Station eine Übung (5 Hampelmänner) einbauen"
     ],
     "tip": "Stoppuhr mit Lap-Funktion für die Teamzeiten. Stationen vorher gemeinsam zeigen.",
-    "source": null
+    "source": null,
+    "imageKey": "bewegungsstaffel",
+    "image": "assets/games/bewegungsstaffel.webp",
+    "imageAlt": "Zwei Staffeln laufen durch Reifen, Hütchen und eine kleine Hürde."
   },
   {
     "id": "brennball",
@@ -329,7 +353,10 @@ export const CONTENT = [
       "Variante: Läufer darf am Brennmal warten und beim nächsten Schlag laufen"
     ],
     "tip": "40 Min. einstellen → nach 20 Min. Halbzeit drücken → Schlag-/Wurfmannschaft tauscht.",
-    "source": null
+    "source": null,
+    "imageKey": "brennball",
+    "image": "assets/games/brennball.webp",
+    "imageAlt": "Schlag, Bases und Laufweg werden als kompakte Spielszene gezeigt."
   },
   {
     "id": "burgball",
@@ -366,7 +393,10 @@ export const CONTENT = [
       "Kein Körperkontakt – nur der Ball wird abgefangen"
     ],
     "tip": "40 Min. einstellen → nach 20 Min. Halbzeit drücken. Schutzkreis deutlich markieren.",
-    "source": null
+    "source": null,
+    "imageKey": "burgball",
+    "image": "assets/games/burgball.webp",
+    "imageAlt": "Ein Team passt, um die gegnerische Burg mit dem Ball zu treffen."
   },
   {
     "id": "faustball",
@@ -401,7 +431,10 @@ export const CONTENT = [
       "Netz/Seilberührung: Punkt für Gegner"
     ],
     "tip": "Kein Zeitlimit → bis 11 Punkte spielen, dann Halbzeit drücken für nächsten Satz.",
-    "source": null
+    "source": null,
+    "imageKey": "faustball",
+    "image": "assets/games/faustball.webp",
+    "imageAlt": "Ein Spieler schlägt den Ball mit der Faust über das Seil."
   },
   {
     "id": "feuerwassersturm",
@@ -435,7 +468,10 @@ export const CONTENT = [
       "Kommandos und Bewegungen vorher gemeinsam festlegen"
     ],
     "tip": "Kommandos an die vorhandenen Hallengeräte anpassen. Top als Aufwärmspiel.",
-    "source": null
+    "source": null,
+    "imageKey": "feuerwassersturm",
+    "image": "assets/games/feuerwassersturm.webp",
+    "imageAlt": "Bewegte Kinder reagieren auf Naturkommandos mit verschiedenen Positionen."
   },
   {
     "id": "fischer-wie-tief",
@@ -468,7 +504,10 @@ export const CONTENT = [
       "Gefangene werden zu Fischern und fangen mit"
     ],
     "tip": "Fortbewegungsarten gut variieren. Spieldauer per Stoppuhr messen.",
-    "source": null
+    "source": null,
+    "imageKey": "fischer-wie-tief",
+    "image": "assets/games/fischer-wie-tief.webp",
+    "imageAlt": "Ein Fänger steht in der Mitte, Läufer queren das Feld."
   },
   {
     "id": "floorball",
@@ -505,7 +544,10 @@ export const CONTENT = [
       "Freischlag: Bei Regelverstoß → Ball liegt, 3 Sekunden zum Abspielen"
     ],
     "tip": "60 Min. einstellen → nach jedem Drittel (20 Min.) Halbzeit drücken.",
-    "source": null
+    "source": null,
+    "imageKey": "floorball",
+    "image": "assets/games/floorball.webp",
+    "imageAlt": "Zwei Teams führen den Ball mit kurzen Stöcken Richtung Tor."
   },
   {
     "id": "futsal",
@@ -542,7 +584,10 @@ export const CONTENT = [
       "Blaue Karte = Auszeit 2 Minuten"
     ],
     "tip": "40 Min. einstellen → nach 20 Min. Halbzeit drücken. Auszeit für Spielunterbrechungen nutzen.",
-    "source": null
+    "source": null,
+    "imageKey": "futsal",
+    "image": "assets/games/futsal.webp",
+    "imageAlt": "Kleines Hallenfeld, Dribbling, Pass und Torabschluss."
   },
   {
     "id": "gordischer-knoten",
@@ -575,7 +620,10 @@ export const CONTENT = [
       "Manchmal entstehen zwei getrennte Kreise – das ist auch eine Lösung"
     ],
     "tip": "Optional die Lösungszeit per Stoppuhr nehmen und mehrere Durchgänge vergleichen.",
-    "source": null
+    "source": null,
+    "imageKey": "gordischer-knoten",
+    "image": "assets/games/gordischer-knoten.webp",
+    "imageAlt": "Kinder greifen Hände und entwirren sich zu einem offenen Kreis."
   },
   {
     "id": "handball",
@@ -613,7 +661,10 @@ export const CONTENT = [
       "Gelbe Karte (Verwarnung), Rote Karte (Spielausschluss)"
     ],
     "tip": "60 Min. einstellen, 10 Min. Pause → nach 30 Min. Halbzeit drücken.",
-    "source": null
+    "source": null,
+    "imageKey": "handball",
+    "image": "assets/games/handball.webp",
+    "imageAlt": "Ein Team passt, ein Spieler wirft auf das Handballtor."
   },
   {
     "id": "hindernisparcours",
@@ -651,7 +702,10 @@ export const CONTENT = [
       "Variante: in zwei spiegelgleichen Parcours als Staffel"
     ],
     "tip": "Stoppuhr mit Lap-Funktion für Einzel- oder Teamzeiten. Sicherheit vor Geschwindigkeit.",
-    "source": null
+    "source": null,
+    "imageKey": "hindernisparcours",
+    "image": "assets/games/hindernisparcours.webp",
+    "imageAlt": "Eine Laufstrecke verbindet Matte, Hürde, Reifen und Kasten."
   },
   {
     "id": "hockey",
@@ -687,7 +741,10 @@ export const CONTENT = [
       "Gelbe Karte: Temporäre Sperre. Grüne Karte: Verwarnung. Rote Karte: Ausschluss."
     ],
     "tip": "60 Min. einstellen, 4 Viertel à 15 Min. → nach jedem Viertel Halbzeit drücken.",
-    "source": null
+    "source": null,
+    "imageKey": "hockey",
+    "image": "assets/games/hockey.webp",
+    "imageAlt": "Feldhockey-Spieler führen den Ball mit Schlägern ins Tor."
   },
   {
     "id": "huetchen-chaos",
@@ -723,7 +780,10 @@ export const CONTENT = [
       "Danach Rollen tauschen und erneut spielen"
     ],
     "tip": "Timer auf 2–3 Min. stellen. Ein deutliches Endsignal vereinbaren, dann zählen.",
-    "source": null
+    "source": null,
+    "imageKey": "huetchen-chaos",
+    "image": "assets/games/huetchen-chaos.webp",
+    "imageAlt": "Ein Team stellt Hütchen auf, das andere kippt sie wieder um."
   },
   {
     "id": "inselhuepfen",
@@ -758,7 +818,10 @@ export const CONTENT = [
       "Variante: Inseln nach und nach entfernen, dann wird es enger"
     ],
     "tip": "Spieldauer per Stoppuhr messen. Inselzahl an die Gruppengröße anpassen.",
-    "source": null
+    "source": null,
+    "imageKey": "inselhuepfen",
+    "image": "assets/games/inselhuepfen.webp",
+    "imageAlt": "Läufer springen über sichere Inselmatten vor dem Fänger davon."
   },
   {
     "id": "jaeger-und-hasen",
@@ -793,7 +856,10 @@ export const CONTENT = [
       "Danach Rollen tauschen – welche Gruppe war schneller?"
     ],
     "tip": "Nur weiche Bälle, immer tief werfen. Spielzeit oder \"alle gefangen\"-Zeit per Stoppuhr messen.",
-    "source": null
+    "source": null,
+    "imageKey": "jaeger-und-hasen",
+    "image": "assets/games/jaeger-und-hasen.webp",
+    "imageAlt": "Außen stehende Werfer zielen weich auf die Läufer im Feld."
   },
   {
     "id": "kaiser-schritte",
@@ -826,7 +892,10 @@ export const CONTENT = [
       "Wer den Kaiser zuerst erreicht, übernimmt dessen Rolle"
     ],
     "tip": "Schrittarten vorher gemeinsam festlegen (Riese, Maus, Frosch). Kurze Distanz wählen.",
-    "source": null
+    "source": null,
+    "imageKey": "kaiser-schritte",
+    "image": "assets/games/kaiser-schritte.webp",
+    "imageAlt": "Ein Kind als Kaiser wartet am Ziel, andere nähern sich in Schrittfolgen."
   },
   {
     "id": "katz-und-maus",
@@ -860,7 +929,10 @@ export const CONTENT = [
       "Fängt die Katze die Maus, werden neue Kinder bestimmt"
     ],
     "tip": "Kommando zum Drehen klar geben. Spieldauer und Rollenwechsel per Stoppuhr takten.",
-    "source": null
+    "source": null,
+    "imageKey": "katz-und-maus",
+    "image": "assets/games/katz-und-maus.webp",
+    "imageAlt": "Eine Maus läuft durch eine Gasse aus Kindern vor der Katze weg."
   },
   {
     "id": "kettenfangen",
@@ -894,7 +966,10 @@ export const CONTENT = [
       "Großes, klar begrenztes Spielfeld nutzen"
     ],
     "tip": "Gesamtdauer mit der Stoppuhr stoppen – wie schnell ist die ganze Gruppe gefangen?",
-    "source": null
+    "source": null,
+    "imageKey": "kettenfangen",
+    "image": "assets/games/kettenfangen.webp",
+    "imageAlt": "Eine wachsende Fängerkette verfolgt die letzten freien Läufer."
   },
   {
     "id": "koenigsvoelkerball",
@@ -930,7 +1005,10 @@ export const CONTENT = [
       "Variante: König erst am Ende verraten, um Spannung zu halten"
     ],
     "tip": "Kein Zeitlimit nötig – die Stoppuhr zeigt nur die Spieldauer. König den Schiris/Leitung melden.",
-    "source": null
+    "source": null,
+    "imageKey": "koenigsvoelkerball",
+    "image": "assets/games/koenigsvoelkerball.webp",
+    "imageAlt": "Zwei Teams spielen Abwurfball, eine Figur trägt eine schlichte Krone."
   },
   {
     "id": "komm-mit-lauf-weg",
@@ -963,7 +1041,10 @@ export const CONTENT = [
       "Begegnen sich beide, geben sie sich kurz die Hand und laufen weiter"
     ],
     "tip": "Reines Bewegungsspiel – Stoppuhr nur für die Gesamtdauer. Klar verständliche Kommandos wählen.",
-    "source": null
+    "source": null,
+    "imageKey": "komm-mit-lauf-weg",
+    "image": "assets/games/komm-mit-lauf-weg.webp",
+    "imageAlt": "Eine laufende Person löst ein Duell am Außenkreis aus."
   },
   {
     "id": "krankenhausfangen",
@@ -997,7 +1078,10 @@ export const CONTENT = [
       "Fänger nach einigen Minuten wechseln"
     ],
     "tip": "Spielzeit mit der Stoppuhr messen, dann neue Fänger bestimmen.",
-    "source": null
+    "source": null,
+    "imageKey": "krankenhausfangen",
+    "image": "assets/games/krankenhausfangen.webp",
+    "imageAlt": "Ein Fänger verfolgt Läufer, die sich an einer Trefferstelle halten."
   },
   {
     "id": "laufsport",
@@ -1030,7 +1114,10 @@ export const CONTENT = [
       "Hindernislauf: Zeitmessung wie normaler Lauf, Plus-Strafsekunden für umgeworfene Hürden"
     ],
     "tip": "Tools-Screen → Stoppuhr mit Lap-Funktion für Rundenzeiten. Gruppen-Modus: 2 Stoppuhren parallel.",
-    "source": null
+    "source": null,
+    "imageKey": "laufsport",
+    "image": "assets/games/laufsport.webp",
+    "imageAlt": "Mehrere Läufer sprinten auf klaren Hallenbahnen Richtung Ziellinie."
   },
   {
     "id": "linienball",
@@ -1066,7 +1153,10 @@ export const CONTENT = [
       "Nach einem Punkt Anwurf von der Mittellinie"
     ],
     "tip": "40 Min. einstellen → nach 20 Min. Halbzeit drücken. Punkte am Scoreboard mitzählen.",
-    "source": null
+    "source": null,
+    "imageKey": "linienball",
+    "image": "assets/games/linienball.webp",
+    "imageAlt": "Ein Pass erreicht einen Mitspieler hinter der gegnerischen Grundlinie."
   },
   {
     "id": "linienfangen",
@@ -1099,7 +1189,10 @@ export const CONTENT = [
       "Variante: Gefangene werden selbst zu Fängern (Kette wächst)"
     ],
     "tip": "Funktioniert nur in Hallen mit vielen Bodenlinien. Tempo bewusst niedrig halten.",
-    "source": null
+    "source": null,
+    "imageKey": "linienfangen",
+    "image": "assets/games/linienfangen.webp",
+    "imageAlt": "Fänger und Läufer bewegen sich ausschließlich auf Hallenlinien."
   },
   {
     "id": "mattenball",
@@ -1136,7 +1229,10 @@ export const CONTENT = [
       "Nach einem Punkt Anwurf von der Mittellinie durch das andere Team"
     ],
     "tip": "40 Min. einstellen → nach 20 Min. Halbzeit drücken. Matten rutschfest legen.",
-    "source": null
+    "source": null,
+    "imageKey": "mattenball",
+    "image": "assets/games/mattenball.webp",
+    "imageAlt": "Ein Ball wird auf der gegnerischen Zielmatte gefangen."
   },
   {
     "id": "mattenfangen",
@@ -1165,7 +1261,10 @@ export const CONTENT = [
       "Spielfeld sind die Matten, wer daneben tritt ist raus und setzt sich auf den Boden neben die Matten (mit etwas Abstand). Wer gefangen wurde setzt sich ebenfalls auf den Boden."
     ],
     "tip": "Geschichte erzählen! Man ist auf Eisschollen unterwegs und der Eisbär versucht einen zu fressen. Wenn man ins Wasser tritt ist man aber auch raus.",
-    "source": null
+    "source": null,
+    "imageKey": "mattenfangen",
+    "image": "assets/games/mattenfangen.webp",
+    "imageAlt": "Kinder balancieren auf Eismatten, ein Fänger lauert im Wasser."
   },
   {
     "id": "mattenrutschen",
@@ -1202,7 +1301,10 @@ export const CONTENT = [
       "Variante: Kind zieht sich an einem Seil selbst über den Boden"
     ],
     "tip": "Stoppuhr mit Lap-Funktion: jede Übergabe als Runde markieren. Auf sicheren Boden achten.",
-    "source": null
+    "source": null,
+    "imageKey": "mattenrutschen",
+    "image": "assets/games/mattenrutschen.webp",
+    "imageAlt": "Ein Team zieht ein sitzendes Kind auf einer Matte zur Wendemarke."
   },
   {
     "id": "nummernwettlauf",
@@ -1238,7 +1340,10 @@ export const CONTENT = [
       "Variante: zwei Nummern gleichzeitig rufen"
     ],
     "tip": "Punkte am Scoreboard mitzählen. Nummern gut mischen, damit alle drankommen.",
-    "source": null
+    "source": null,
+    "imageKey": "nummernwettlauf",
+    "image": "assets/games/nummernwettlauf.webp",
+    "imageAlt": "Zwei Läufer starten aus Reihen und sprinten zu einem Mittelgegenstand."
   },
   {
     "id": "ochs-am-berg",
@@ -1271,7 +1376,10 @@ export const CONTENT = [
       "Wer als Erstes die Wand berührt, hat gewonnen"
     ],
     "tip": "Reines Spielleiter-Spiel. Genug Abstand zwischen Start- und Ziellinie einplanen.",
-    "source": null
+    "source": null,
+    "imageKey": "ochs-am-berg",
+    "image": "assets/games/ochs-am-berg.webp",
+    "imageAlt": "Ein Rufer dreht sich um, während die Läufer mitten in der Bewegung einfrieren."
   },
   {
     "id": "parteiball",
@@ -1307,7 +1415,10 @@ export const CONTENT = [
       "Variante: nur mit der schwächeren Hand oder als Brustpass"
     ],
     "tip": "40 Min. einstellen → nach 20 Min. Halbzeit drücken. Punkte am Scoreboard mitzählen.",
-    "source": null
+    "source": null,
+    "imageKey": "parteiball",
+    "image": "assets/games/parteiball.webp",
+    "imageAlt": "Ein Team hält den Ball mit schnellen Pässen in Bewegung."
   },
   {
     "id": "pendelstaffel",
@@ -1344,7 +1455,10 @@ export const CONTENT = [
       "Variante: Fortbewegungsart vorgeben (rückwärts, seitlich)"
     ],
     "tip": "Stoppuhr mit Lap-Funktion: jede Übergabe als Runde markieren.",
-    "source": null
+    "source": null,
+    "imageKey": "pendelstaffel",
+    "image": "assets/games/pendelstaffel.webp",
+    "imageAlt": "Ein Staffelstab pendelt zwischen zwei gegenüberstehenden Teamhälften."
   },
   {
     "id": "plumpsack",
@@ -1379,7 +1493,10 @@ export const CONTENT = [
       "Wird das Tuch nicht bemerkt, bis der Plumpsack einmal herum ist, muss das Kind in die Mitte"
     ],
     "tip": "Reines Spielleiter-Spiel – Stoppuhr nur für die Gesamtdauer. Klare Laufrichtung vereinbaren.",
-    "source": null
+    "source": null,
+    "imageKey": "plumpsack",
+    "image": "assets/games/plumpsack.webp",
+    "imageAlt": "Ein Kind läuft außen um einen Sitzkreis und legt unbemerkt ein Tuch ab."
   },
   {
     "id": "prellball",
@@ -1415,7 +1532,10 @@ export const CONTENT = [
       "Ball außerhalb Feld: Punkt für Gegner"
     ],
     "tip": "Kein Zeitlimit → bis 15 Punkte spielen, dann Halbzeit drücken für nächsten Satz.",
-    "source": null
+    "source": null,
+    "imageKey": "prellball",
+    "image": "assets/games/prellball.webp",
+    "imageAlt": "Der Ball wird vor dem Rückspiel auf der eigenen Seite geprellt."
   },
   {
     "id": "reaktionsfarben",
@@ -1450,7 +1570,10 @@ export const CONTENT = [
       "Tempo und Farbfolge steigern, um es schwerer zu machen"
     ],
     "tip": "Zuordnungen vorher gemeinsam üben. Timer hilft, die Runden gleich lang zu halten.",
-    "source": null
+    "source": null,
+    "imageKey": "reaktionsfarben",
+    "image": "assets/games/reaktionsfarben.webp",
+    "imageAlt": "Ein Läufer reagiert auf farbige Markierungen und ändert die Richtung."
   },
   {
     "id": "reise-nach-jerusalem",
@@ -1486,7 +1609,10 @@ export const CONTENT = [
       "Faire Variante: Ausgeschiedene werden zu Musik-Stoppern oder helfen beim Stühle wegräumen"
     ],
     "tip": "Stoppuhr oder Timer für gleichmäßige Musikphasen. Bewegungsart pro Runde wechseln (hüpfen, rückwärts).",
-    "source": null
+    "source": null,
+    "imageKey": "reise-nach-jerusalem",
+    "image": "assets/games/reise-nach-jerusalem.webp",
+    "imageAlt": "Kinder laufen um eine Reihe weniger Stühle und greifen nach einem Platz."
   },
   {
     "id": "sanitaeter-staffel",
@@ -1522,7 +1648,10 @@ export const CONTENT = [
       "Variante: leichten Gegenstand statt Kind transportieren"
     ],
     "tip": "Sicherheit geht vor Tempo – nur erlaubte Tragegriffe. Zeit per Stoppuhr nehmen.",
-    "source": null
+    "source": null,
+    "imageKey": "sanitaeter-staffel",
+    "image": "assets/games/sanitaeter-staffel.webp",
+    "imageAlt": "Ein kleines Team transportiert eine weiche Trage um die Wendemarke."
   },
   {
     "id": "schattenlauf",
@@ -1555,7 +1684,10 @@ export const CONTENT = [
       "Variante: zur Musik mit Tanzbewegungen"
     ],
     "tip": "Ideal zum Aufwärmen. Timer für gleich lange Phasen pro Rolle nutzen.",
-    "source": null
+    "source": null,
+    "imageKey": "schattenlauf",
+    "image": "assets/games/schattenlauf.webp",
+    "imageAlt": "Zwei Partner laufen versetzt, die hintere Figur spiegelt die vordere."
   },
   {
     "id": "schlagball",
@@ -1591,7 +1723,10 @@ export const CONTENT = [
       "Teamgröße: 8–12 Spieler pro Team"
     ],
     "tip": "40 Min. einstellen → nach 20 Min. Halbzeit drücken → Teams wechseln die Seiten.",
-    "source": null
+    "source": null,
+    "imageKey": "schlagball",
+    "image": "assets/games/schlagball.webp",
+    "imageAlt": "Schläger, Ball und Bases zeigen den Lauf nach einem Schlag."
   },
   {
     "id": "schulsport",
@@ -1624,7 +1759,10 @@ export const CONTENT = [
       "Auszeit für kurze Pausen nutzen"
     ],
     "tip": "Preset bearbeiten und eigene Teambezeichnungen, Farben und Spielzeit eintragen.",
-    "source": null
+    "source": null,
+    "imageKey": "schulsport",
+    "image": "assets/games/schulsport.webp",
+    "imageAlt": "Eine neutrale Teamspiel-Szene mit Ball, Hütchen und Bewegungsrichtung."
   },
   {
     "id": "schwarzer-mann",
@@ -1657,7 +1795,10 @@ export const CONTENT = [
       "Die hinteren Linien sind sichere Zonen, dort darf nicht abgeschlagen werden"
     ],
     "tip": "Großes Feld nutzen. Gesamtdauer per Stoppuhr stoppen – wie lange hält das letzte Kind durch?",
-    "source": null
+    "source": null,
+    "imageKey": "schwarzer-mann",
+    "image": "assets/games/schwarzer-mann.webp",
+    "imageAlt": "Ein Fänger wartet in der Mitte, Läufer queren zur sicheren Grundlinie."
   },
   {
     "id": "seilspringen",
@@ -1692,7 +1833,10 @@ export const CONTENT = [
       "Variante: kleine Choreografie zu zweit"
     ],
     "tip": "Timer auf 1 Min. stellen und Sprünge zählen lassen – schöner persönlicher Vergleich.",
-    "source": null
+    "source": null,
+    "imageKey": "seilspringen",
+    "image": "assets/games/seilspringen.webp",
+    "imageAlt": "Ein Kind springt durch ein Seil, weitere Stationen liegen im Hintergrund."
   },
   {
     "id": "soccer",
@@ -1727,7 +1871,10 @@ export const CONTENT = [
       "Verlängerung & Elfmeterschießen bei Gleichstand (Pokalmodus)"
     ],
     "tip": "90 Min. einstellen → Halbzeit nach 45 Min. drücken → Spielstand notiert + Pause startet.",
-    "source": null
+    "source": null,
+    "imageKey": "soccer",
+    "image": "assets/games/soccer.webp",
+    "imageAlt": "Zwei Teams spielen auf ein Tor, der Ball zieht eine klare Laufspur."
   },
   {
     "id": "spiegelbild",
@@ -1760,7 +1907,10 @@ export const CONTENT = [
       "Gute Übung zum Beruhigen am Stundenende"
     ],
     "tip": "Ruhige Musik unterstützt. Timer für gleich lange Phasen pro Rolle.",
-    "source": null
+    "source": null,
+    "imageKey": "spiegelbild",
+    "image": "assets/games/spiegelbild.webp",
+    "imageAlt": "Zwei Kinder stehen sich gegenüber und führen spiegelgleiche Bewegungen aus."
   },
   {
     "id": "staffellauf",
@@ -1795,7 +1945,10 @@ export const CONTENT = [
       "Sporthallen-Variante: Gegenstände übergeben statt Stab"
     ],
     "tip": "Tools-Screen → Stoppuhr mit Lap-Funktion. Jede Übergabe als Lap markieren.",
-    "source": null
+    "source": null,
+    "imageKey": "staffellauf",
+    "image": "assets/games/staffellauf.webp",
+    "imageAlt": "Ein Staffelstab wechselt in der Übergabezone zwischen sprintenden Läufern."
   },
   {
     "id": "tabletennis",
@@ -1829,7 +1982,10 @@ export const CONTENT = [
       "Seitenwechsel: Zwischen jedem Spiel. Im Entscheidungsspiel bei 5 Punkten."
     ],
     "tip": "Kein Zeitlimit → bis 11 Punkte spielen, dann Halbzeit drücken für nächstes Spiel.",
-    "source": null
+    "source": null,
+    "imageKey": "tabletennis",
+    "image": "assets/games/tabletennis.webp",
+    "imageAlt": "Zwei Spieler schlagen einen kleinen Ball über die Tischtennisplatte."
   },
   {
     "id": "tag-und-nacht",
@@ -1863,7 +2019,10 @@ export const CONTENT = [
       "Danach zurück zur Mittellinie und neuer Ruf"
     ],
     "tip": "Ruf-Wort spannend in die Länge ziehen (\"Taaa-Nacht\"). Punkte am Scoreboard mitzählen.",
-    "source": null
+    "source": null,
+    "imageKey": "tag-und-nacht",
+    "image": "assets/games/tag-und-nacht.webp",
+    "imageAlt": "Zwei Linien stehen sich an der Mittellinie gegenüber und starten auf Ruf."
   },
   {
     "id": "tchoukball",
@@ -1899,7 +2058,10 @@ export const CONTENT = [
       "Wechsel: Fliegend, jederzeit möglich"
     ],
     "tip": "45 Min. einstellen, 3 Perioden → nach 15 Min. jeweils Halbzeit drücken.",
-    "source": null
+    "source": null,
+    "imageKey": "tchoukball",
+    "image": "assets/games/tchoukball.webp",
+    "imageAlt": "Ein Ball prallt von einem Rebound-Rahmen zurück ins Spielfeld."
   },
   {
     "id": "tunnelball",
@@ -1935,7 +2097,10 @@ export const CONTENT = [
       "Variante: Ball über Kopf nach hinten reichen statt rollen"
     ],
     "tip": "Mit der Stoppuhr die Zeit pro Durchgang messen und Teams gegeneinander antreten lassen.",
-    "source": null
+    "source": null,
+    "imageKey": "tunnelball",
+    "image": "assets/games/tunnelball.webp",
+    "imageAlt": "Eine Reihe bildet einen Beintunnel, durch den der Ball rollt."
   },
   {
     "id": "ultimate",
@@ -1973,7 +2138,10 @@ export const CONTENT = [
       "Zählen als Foul: Kontakt der Arme, Körper, Blockieren des Flusses"
     ],
     "tip": "Bis 15 Punkte oder Zeitlimit → Punkte eintragen, Halbzeit bei 8 Punkten oder Zeitmitte.",
-    "source": null
+    "source": null,
+    "imageKey": "ultimate",
+    "image": "assets/games/ultimate.webp",
+    "imageAlt": "Ein Team passt eine Scheibe in die gegenüberliegende Endzone."
   },
   {
     "id": "versteinern",
@@ -2006,7 +2174,10 @@ export const CONTENT = [
       "Nach einigen Minuten neue Fänger bestimmen"
     ],
     "tip": "Spieldauer mit der Stoppuhr messen. Genug Fänger wählen, sonst dauert es zu lange.",
-    "source": null
+    "source": null,
+    "imageKey": "versteinern",
+    "image": "assets/games/versteinern.webp",
+    "imageAlt": "Ein Fänger versteinert Läufer, eine freie Person befreit sie."
   },
   {
     "id": "voelkerball",
@@ -2042,7 +2213,10 @@ export const CONTENT = [
       "Schulsport: Zeitlimit → Team mit mehr Spielern im Innenfeld gewinnt"
     ],
     "tip": "20 Min. einstellen → Halbzeitpause nach 10 Min. → Teams wechseln Seite.",
-    "source": null
+    "source": null,
+    "imageKey": "voelkerball",
+    "image": "assets/games/voelkerball.webp",
+    "imageAlt": "Zwei Teams werfen Softbälle über eine Mittellinie."
   },
   {
     "id": "volleyball",
@@ -2078,7 +2252,10 @@ export const CONTENT = [
       "Aufschlag muss innerhalb 8 Sekunden nach Pfeiff ausgeführt werden"
     ],
     "tip": "Kein Zeitlimit → Punkte nach jedem Rally eintragen. Satz vorbei → Halbzeit-Button für Satzwechsel.",
-    "source": null
+    "source": null,
+    "imageKey": "volleyball",
+    "image": "assets/games/volleyball.webp",
+    "imageAlt": "Zwei Teams spielen den Ball über ein Netz mit Blockbewegung."
   },
   {
     "id": "zahlenecken",
@@ -2112,7 +2289,10 @@ export const CONTENT = [
       "Bewegungsart variieren: hüpfen, rückwärts laufen, auf allen Vieren"
     ],
     "tip": "Stoppuhr im Tools-Bereich für die Laufphasen. Ideal als Aufwärmspiel.",
-    "source": null
+    "source": null,
+    "imageKey": "zahlenecken",
+    "image": "assets/games/zahlenecken.webp",
+    "imageAlt": "Läufer wählen eine von vier sicheren Hallenecken."
   },
   {
     "id": "zehnerball",
@@ -2148,7 +2328,10 @@ export const CONTENT = [
       "Kein Körperkontakt – nur der Ball wird gespielt"
     ],
     "tip": "Knapp 40 Min.? 16 Min. einstellen → nach 8 Min. Halbzeit. Pässe laut mitzählen lassen.",
-    "source": null
+    "source": null,
+    "imageKey": "zehnerball",
+    "image": "assets/games/zehnerball.webp",
+    "imageAlt": "Ein Passkreis hält den Ball über viele Stationen im eigenen Team."
   },
   {
     "id": "zombieball",
@@ -2184,6 +2367,9 @@ export const CONTENT = [
       "Trifft ein Zombie jemanden, darf er wieder aufstehen und mitlaufen"
     ],
     "tip": "Nur weiche Bälle, immer unterhalb der Hüfte werfen. Gesamtdauer per Stoppuhr messen.",
-    "source": null
+    "source": null,
+    "imageKey": "zombieball",
+    "image": "assets/games/zombieball.webp",
+    "imageAlt": "Stehende und kniende Spieler bewegen einen Softball durch die Halle."
   }
 ];

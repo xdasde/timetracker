@@ -14,6 +14,8 @@ periods: 1
 periodLabel: Runde
 structure: Lauf- und Fangspiel von Grundlinie zu Grundlinie.
 scoring: Gefangene werden zu Fängern; gewonnen hat, wer zuletzt frei ist.
+imageKey: schwarzer-mann
+imageAlt: Ein Fänger wartet in der Mitte, Läufer queren zur sicheren Grundlinie.
 ---
 
 ## Ablauf

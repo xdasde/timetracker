@@ -16,14 +16,17 @@
 // Build in gesperrten CI-Umgebungen lauffähig und die Runtime build-frei.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, readdirSync, existsSync, statSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, basename } from 'node:path';
+import { resolveBuiltinImageFields, sniffImageType, extensionMatchesType } from '../js/gameimages.js';
+import { validateImageManifest, MANIFEST_FILE } from './image-manifest.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..');
 const CONTENT_DIR = join(ROOT, 'content', 'games');
 const OUT_FILE = join(ROOT, 'js', 'content.generated.js');
+const IMAGE_DIR = join(ROOT, 'assets', 'games');
 
 const CHECK_ONLY = process.argv.includes('--check');
 const VALIDATE_ONLY = process.argv.includes('--validate');
@@ -32,6 +35,7 @@ const VALIDATE_ONLY = process.argv.includes('--validate');
 const KINDS = ['sport', 'spiel', 'uebung'];
 const CATEGORIES = ['lauf', 'ball', 'team'];
 const DIFFICULTIES = ['einfach', 'mittel', 'schwer'];
+const MAX_IMAGE_BYTES = 400 * 1024;
 
 // ── Mini-YAML-Parser (Teilmenge: Skalare, null, Zahlen, Inline-/Block-Listen) ──
 function parseFrontmatter(yaml, file) {
@@ -147,8 +151,48 @@ function parseFile(file) {
     source: meta.source ?? null,
   };
 
+  // Optionale Bildfelder nur ausgeben, wenn sie gesetzt sind – Einträge ohne
+  // Bild bleiben im Bundle unverändert.
+  const img = resolveBuiltinImageFields(meta);
+  if (img.errors.length) throw new Error(`${basename(file)}: ${img.errors[0]}`);
+  if (img.imageKey) entry.imageKey = img.imageKey;
+  if (img.image) {
+    validateImageFile(img.image, basename(file));
+    entry.image = img.image;
+    if (img.imageAlt) entry.imageAlt = img.imageAlt;
+  }
+
   validate(entry, basename(file));
   return entry;
+}
+
+// Das referenzierte Bild muss lokal existieren, klein genug sein und seinem
+// Dateityp entsprechen (keine umbenannten SVG/HTML-Dateien).
+function validateImageFile(path, file) {
+  const abs = join(ROOT, path);
+  if (!existsSync(abs)) throw new Error(`${file}: Bild "${path}" existiert nicht`);
+  const { size } = statSync(abs);
+  if (size > MAX_IMAGE_BYTES) throw new Error(`${file}: Bild "${path}" ist größer als ${MAX_IMAGE_BYTES / 1024} KB`);
+  const type = sniffImageType(readFileSync(abs).subarray(0, 16));
+  if (!type || !extensionMatchesType(path, type)) {
+    throw new Error(`${file}: Bild "${path}" ist kein gültiges WebP/PNG/JPEG/AVIF passend zur Endung`);
+  }
+}
+
+// Gelieferte Spielbilder: Manifest (Provenienz, Hashes, Anzahl) muss zu den
+// Dateien in assets/games/ und zu den Markdown-Einträgen passen.
+function validateImages(entries) {
+  const manifestPath = join(IMAGE_DIR, MANIFEST_FILE);
+  if (!existsSync(manifestPath)) {
+    if (entries.some(e => e.image)) throw new Error(`assets/games/${MANIFEST_FILE} fehlt`);
+    return;
+  }
+  const errors = validateImageManifest(JSON.parse(readFileSync(manifestPath, 'utf8')), {
+    contentEntries: entries,
+    readAsset: path => readFileSync(join(ROOT, path)),
+    listAssets: () => readdirSync(IMAGE_DIR),
+  });
+  if (errors.length) throw new Error(`assets/games/${MANIFEST_FILE}: ${errors.slice(0, 5).join('; ')}`);
 }
 
 function validate(e, file) {
@@ -183,6 +227,7 @@ function build() {
     seen.add(entry.id);
     entries.push(entry);
   }
+  validateImages(entries);
 
   const header =
 `// ╔═══════════════════════════════════════════════════════════════════════════╗

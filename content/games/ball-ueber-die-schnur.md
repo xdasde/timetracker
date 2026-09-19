@@ -15,6 +15,8 @@ periods: 3
 periodLabel: Satz
 structure: Best of 3 Sätze, Satz bis 15 Punkte (Vorstufe zu Volleyball).
 scoring: Punkt, wenn der Ball im gegnerischen Feld den Boden berührt oder ins Aus geworfen wird.
+imageKey: ball-ueber-die-schnur
+imageAlt: Zwei Teams werfen einen Ball über die gespannte Schnur.
 ---
 
 ## Ablauf

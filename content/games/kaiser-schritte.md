@@ -14,6 +14,8 @@ periods: 1
 periodLabel: Runde
 structure: Lauf- und Reaktionsspiel mit verschiedenen Schrittarten.
 scoring: Wer den Kaiser zuerst erreicht, gewinnt und wird neuer Kaiser.
+imageKey: kaiser-schritte
+imageAlt: Ein Kind als Kaiser wartet am Ziel, andere nähern sich in Schrittfolgen.
 ---
 
 ## Ablauf

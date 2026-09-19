@@ -14,6 +14,8 @@ periods: 1
 periodLabel: Runde
 structure: Lauf- und Reaktionsspiel ("Rotes Licht / Grünes Licht").
 scoring: Wer zuerst die Wand erreicht, gewinnt und wird neuer Rufer.
+imageKey: ochs-am-berg
+imageAlt: Ein Rufer dreht sich um, während die Läufer mitten in der Bewegung einfrieren.
 ---
 
 ## Ablauf

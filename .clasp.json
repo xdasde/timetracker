@@ -1,0 +1,16 @@
+{
+  "scriptId": "1BQPudr5XrNz-ONT-WXu6A9xkkIF2kY21VnK19IdfoEqODsdSqZmWZW1D",
+  "rootDir": ".tmp/sportzaehler-clasp",
+  "scriptExtensions": [
+    ".js",
+    ".gs"
+  ],
+  "htmlExtensions": [
+    ".html"
+  ],
+  "jsonExtensions": [
+    ".json"
+  ],
+  "filePushOrder": [],
+  "skipSubdirectories": false
+}

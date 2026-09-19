@@ -15,6 +15,8 @@ periods: 1
 periodLabel: Lauf
 structure: Pendelstaffel mit Bewegungsaufgaben auf Zeit.
 scoring: Schnellstes Team gewinnt.
+imageKey: bewegungsstaffel
+imageAlt: Zwei Staffeln laufen durch Reifen, Hütchen und eine kleine Hürde.
 ---
 
 ## Ablauf

@@ -14,6 +14,8 @@ periods: 2
 periodLabel: Halbzeit
 structure: 2 Hälften. Häufig begrenzt durch Anzahl der Outs oder Spielzeit.
 scoring: Punkte durch Erreichen der Bases und Home Base
+imageKey: schlagball
+imageAlt: Schläger, Ball und Bases zeigen den Lauf nach einem Schlag.
 ---
 
 ## Ablauf

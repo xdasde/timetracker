@@ -14,6 +14,8 @@ periods: 1
 periodLabel: Runde
 structure: Reaktions- und Laufspiel im Kreis.
 scoring: Kein fester Punktestand – wer als Läufer ankommt, behält den Platz.
+imageKey: komm-mit-lauf-weg
+imageAlt: Eine laufende Person löst ein Duell am Außenkreis aus.
 ---
 
 ## Ablauf

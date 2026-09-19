@@ -12,6 +12,8 @@ periods: 1
 periodLabel: Lauf
 structure: Zeitmessung per Stoppuhr. Kein Zeitlimit, keine Punkte.
 scoring: Schnellste Zeit gewinnt. Runden/Splits mit Stoppuhr-Runden-Funktion.
+imageKey: laufsport
+imageAlt: Mehrere Läufer sprinten auf klaren Hallenbahnen Richtung Ziellinie.
 ---
 
 ## Ablauf

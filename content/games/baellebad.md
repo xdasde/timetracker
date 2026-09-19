@@ -18,6 +18,8 @@ durationMs: 60000
 structure: Aus 4 Bänken ein Viereck bauen; Mitte-Team wirft Bälle raus, Außen-Team sammelt zurück. 60 Sek. pro Runde, dann Teams tauschen.
 scoring: Viereck vor Ablauf leer = Mitte gewinnt; sonst gewinnt das äußere Team.
 source: ""
+imageKey: baellebad
+imageAlt: Ein Team wirft Softbälle aus dem Bank-Viereck, das andere sammelt.
 ---
 
 ## Ablauf

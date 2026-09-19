@@ -14,6 +14,8 @@ periods: 1
 periodLabel: Halbzeit
 structure: Kleine blauen Matten rund um Mittelkreis verteilen. Kreuz und quer, kleinen Abstand zwischen den Matten.
 scoring: Wer als letztes noch nicht gefangen wurde
+imageKey: mattenfangen
+imageAlt: Kinder balancieren auf Eismatten, ein Fänger lauert im Wasser.
 ---
 
 ## Ablauf

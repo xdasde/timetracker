@@ -12,6 +12,8 @@ periods: 3
 periodLabel: Satz
 structure: Best of 3 oder 5 Sätze. Satz bis 11 Punkte (Zwei-Punkte-Vorsprung bis max. 15).
 scoring: Punkt wenn Ball im gegnerischen Feld aufkommt oder Gegner Fehler macht
+imageKey: faustball
+imageAlt: Ein Spieler schlägt den Ball mit der Faust über das Seil.
 ---
 
 ## Ablauf

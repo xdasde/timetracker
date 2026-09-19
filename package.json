@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "build:content": "node scripts/build-content.mjs",
-    "validate:content": "node scripts/build-content.mjs --check"
+    "validate:content": "node scripts/build-content.mjs --check",
+    "test": "node --test"
   }
 }

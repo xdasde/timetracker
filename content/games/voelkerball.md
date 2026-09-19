@@ -14,6 +14,8 @@ periods: 2
 periodLabel: Halbzeit
 structure: 2 × 10 Min. + 5 Min. Pause (Schulsport-Variante)
 scoring: Punkte für jeden eliminierten Gegner (oder nach Spieleranzahl am Ende)
+imageKey: voelkerball
+imageAlt: Zwei Teams werfen Softbälle über eine Mittellinie.
 ---
 
 ## Ablauf

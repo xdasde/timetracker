@@ -14,6 +14,8 @@ periods: 2
 periodLabel: Halbzeit
 structure: 2 × 30 Min. + 10 Min. Halbzeitpause
 scoring: Tore (Ball muss vollständig die Torlinie überqueren)
+imageKey: handball
+imageAlt: Ein Team passt, ein Spieler wirft auf das Handballtor.
 ---
 
 ## Ablauf

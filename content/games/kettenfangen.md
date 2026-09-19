@@ -12,6 +12,8 @@ periods: 1
 periodLabel: Spiel
 structure: Fangspiel – die Fängerkette wächst, bis alle gefangen sind.
 scoring: Spielende, wenn alle Teil der Kette sind. Gesamtdauer per Stoppuhr.
+imageKey: kettenfangen
+imageAlt: Eine wachsende Fängerkette verfolgt die letzten freien Läufer.
 ---
 
 ## Ablauf

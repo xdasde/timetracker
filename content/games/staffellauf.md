@@ -12,6 +12,8 @@ periods: 1
 periodLabel: Lauf
 structure: Stoppuhr-Modus. Zeitmessung pro Läufer oder Gesamtzeit.
 scoring: Schnellste Gesamtzeit der Staffel gewinnt
+imageKey: staffellauf
+imageAlt: Ein Staffelstab wechselt in der Übergabezone zwischen sprintenden Läufern.
 ---
 
 ## Ablauf

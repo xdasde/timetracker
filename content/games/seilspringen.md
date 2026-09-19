@@ -15,6 +15,8 @@ periods: 1
 periodLabel: Runde
 structure: Stations-Übung zur Ausdauer und Koordination, ohne Wertung.
 scoring: Keine Wertung – optional Sprünge pro Minute zählen.
+imageKey: seilspringen
+imageAlt: Ein Kind springt durch ein Seil, weitere Stationen liegen im Hintergrund.
 ---
 
 ## Ablauf

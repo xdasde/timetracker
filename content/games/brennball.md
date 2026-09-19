@@ -14,6 +14,8 @@ periods: 2
 periodLabel: Halbzeit
 structure: 2 Halbzeiten. Meist 20 Min. oder bis alle Schläger einmal dran waren.
 scoring: Läufer erreicht Brennmal = 1 Punkt für Schlagmannschaft
+imageKey: brennball
+imageAlt: Schlag, Bases und Laufweg werden als kompakte Spielszene gezeigt.
 ---
 
 ## Ablauf

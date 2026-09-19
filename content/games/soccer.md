@@ -14,6 +14,8 @@ periods: 2
 periodLabel: Halbzeit
 structure: 2 × 45 Min. Spielzeit + 15 Min. Halbzeitpause
 scoring: Tore. Ball muss vollständig die Torlinie überqueren.
+imageKey: soccer
+imageAlt: Zwei Teams spielen auf ein Tor, der Ball zieht eine klare Laufspur.
 ---
 
 ## Ablauf

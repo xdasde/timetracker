@@ -17,6 +17,8 @@ periods: 2
 periodLabel: Halbzeit
 structure: 2 × 8 Min. Passspiel; reines Zusammenspiel-Training.
 scoring: Ein Punkt für zehn erfolgreiche Pässe in Folge im eigenen Team.
+imageKey: zehnerball
+imageAlt: Ein Passkreis hält den Ball über viele Stationen im eigenen Team.
 ---
 
 ## Ablauf

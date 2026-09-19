@@ -24,7 +24,8 @@ timetracker/
 │   ├── games/*.md          # Quelle der Spiele-/Übungsdatenbank (je 1 Datei)
 │   └── SCHEMA.md           # Feldreferenz der Markdown-Einträge
 ├── scripts/
-│   └── build-content.mjs   # kompiliert content/games/*.md → js/content.generated.js
+│   ├── build-content.mjs   # kompiliert content/games/*.md → js/content.generated.js
+│   └── google-apps-script/ # optionale Community-Sheet-Web-App
 ├── js/
 │   ├── router.js           # Screen-Navigation (CSS-Toggle)
 │   ├── storage.js          # localStorage-Wrapper (tt.*)
@@ -32,6 +33,9 @@ timetracker/
 │   ├── timer.js            # Countdown-Klasse
 │   ├── stopwatch.js        # Stoppuhr-Klasse mit Lap-Funktion
 │   ├── content.generated.js # AUTO-GENERIERT aus content/games/*.md
+│   ├── communitygames.js    # Community-Sheet-Adapter, Cache und Ratings
+│   ├── community-deeplink.js # wartet vor Push-Links auf den Community-Refresh
+│   ├── config.js            # öffentliche Konfiguration (Endpunkt, keine Secrets)
 │   ├── presets.js          # Preset-Verwaltung (leitet Built-ins aus content ab)
 │   ├── rules.js            # Regelwerk-API (leitet RULES aus content ab)
 │   ├── ui.js               # Modal, Toast, Bestätigungsdialog
@@ -39,7 +43,8 @@ timetracker/
 │   ├── export.js           # CSV/JSON-Export
 │   ├── audio.js            # Web Audio API Sounds
 │   ├── wakelock.js         # Screen Wake Lock
-│   └── teambuilder.js      # Team-Zulosung mit Kamera
+│   ├── teambuilder.js      # Team-Zulosung mit Kamera
+│   └── webpush.js           # config-gated Browser-Subscription
 ├── icons/
 │   ├── icon-192.png
 │   └── icon-512.png
@@ -82,8 +87,9 @@ timetracker/
 
 ### Presets
 
-- 19 Built-in Presets (können versteckt, nicht gelöscht werden)
+- Built-in Presets (können versteckt, nicht gelöscht werden)
 - Custom Presets: beliebig erstell- und löschbar
+- Community-Presets: aus `communitygames.js`, sichtbar markiert und read-only
 - Felder: `id`, `name`, `icon`, `teamA`, `teamB`, `colorIndex`, `durationMs`, `breakMs`, `periods`, `rulesKey`
 
 ## Module
@@ -103,7 +109,7 @@ Verwaltet den Live-Match-Zustand. Alle State-Mutationen gehen durch dieses Modul
 ### presets.js
 
 - Built-in Presets werden aus `content.generated.js` abgeleitet (+ Custom Presets aus localStorage)
-- `getAll()` – Alle aktiven Presets (Built-in + Custom)
+- `getAll()` – Alle aktiven Presets (Built-in + Custom + Community)
 - `save()` / `remove()` – CRUD für Custom Presets
 - `renderList()` / `renderChips()` – UI-Rendering
 
@@ -112,6 +118,8 @@ Verwaltet den Live-Match-Zustand. Alle State-Mutationen gehen durch dieses Modul
 - Regelwerk-API, abgeleitet aus `content.generated.js`
 - `getRule(key)` – Regel/Eintrag per id
 - `getAllRules()` – Alle Einträge als Array (inkl. `kind`, `difficulty`, `material`, …)
+- Community-Einträge tragen zusätzlich `community: true`, `author`, `ratingAverage`
+  und `ratingCount`; sie bieten keine lokalen Mutationsfunktionen.
 
 ## Spiele-/Übungsdatenbank (Content-Pipeline)
 
@@ -140,15 +148,32 @@ content/games/*.md  ──(scripts/build-content.mjs)──►  js/content.gener
 
 ### Eigene Spiele in der App (`customgames.js`)
 
-- Nutzer:innen legen über „＋ Eigenes Spiel anlegen" Einträge an; diese werden
-  als content-förmige Objekte in `localStorage` (`tt.customGames`) gespeichert.
+- Bereits lokal angelegte eigene Spiele werden als content-förmige Objekte in
+  `localStorage` (`tt.customGames`) gespeichert und bleiben bearbeitbar.
 - `customgames.js` liefert Speicherung, Validierung (Spiegel der Build-Prüfung),
   Markdown-Serialisierung (`toMarkdown`) und die GitHub-Prefill-URL
   (`prefillUrl`). `rules.js` und `presets.js` mischen eigene Spiele in
   Datenbank-Liste bzw. nutzbare Presets (Roulette/Setup) ein.
-- Einreichen ist backend-frei: Die App öffnet GitHubs „neue Datei"-Seite mit
-  vorausgefülltem Inhalt; GitHub erstellt für Beitragende ohne Schreibrechte
-  automatisch Fork + Pull-Request. Fallback: Markdown kopieren / `.md` laden.
+
+### Community-Spiele (`communitygames.js`)
+
+- Das Formular „Community-Spiel einreichen“ sendet neue Spiele an den in
+  `js/config.js` eingetragenen öffentlichen Apps-Script-Endpunkt. Es gibt keinen
+  `pending`-/Approval-Schritt; eine bestätigte Antwort wird direkt lokal in den
+  Cache übernommen.
+- `GET` liest `Games` und berechnete Bewertungswerte, `POST` schreibt Spiele bzw.
+  Bewertungen in `Games`/`Ratings`. Die App-Nutzer:innen bearbeiten das Sheet
+  nicht direkt.
+- Der Cache liegt unter `tt.communityGamesCache`, eigene Bewertungen unter
+  `tt.communityRatings` und die zufällige Gerätekennung unter
+  `tt.communityDeviceId`. Netzwerkfehler lassen den letzten gültigen Cache
+  sichtbar; Einträge werden ausschließlich mit DOM-/Text-APIs gerendert.
+- Community-Presets sind in Setup und Roulette auswählbar, aber nicht bearbeitbar
+  oder löschbar. `webpush.js` hält die config-gated Browser-Subscription für
+  neue Community-Spiele; `service-worker.js` zeigt die Push-Meldung und
+  validiert den same-origin-Deep-Link beim Klick. Das ausführbare, secret-freie
+  Relay-Gerüst liegt unter `push-relay/`; Einrichtung und offene Provider-/DPA-
+  Schritte stehen in `docs/web-push.md`.
 
 ### timer.js / stopwatch.js
 
@@ -167,11 +192,18 @@ Web Audio API Sounds (keine Audiodateien):
 
 ## Router
 
-Keine URL-basierte Navigation. Screens sind `<section>`-Elemente, aktiver Screen bekommt `.screen--active`. `router.register(id, enter, leave)` registriert Callbacks.
+Screens sind `<section>`-Elemente, der aktive Screen bekommt `.screen--active`.
+`router.register(id, enter, leave)` registriert Callbacks. Der Web-Push-Click
+öffnet `?communityGame=community~<id>`; `app.js` lädt den Community-Cache und
+öffnet den passenden Datenbank-Eintrag automatisch.
 
 ## Offline-Strategie
 
-Service Worker verwendet **Cache-First**: Assets werden beim ersten Laden gecacht, danach aus dem Cache geliefert. Update erfolgt beim nächsten App-Start.
+Der Service Worker verwendet für Code und Navigation **Network-First**, für
+übrige Assets Cache-First: Assets werden beim ersten Laden gecacht, danach aus
+dem Cache geliefert. Update erfolgt beim nächsten App-Start. Push-Zustellung
+benötigt den Browser-/Provider-Hintergrunddienst und ist nicht offline
+simulierbar.
 
 ## localStorage-Keys
 
@@ -183,4 +215,4 @@ Service Worker verwendet **Cache-First**: Assets werden beim ersten Laden gecach
 | `tt.presets` | Array aller Custom-Presets |
 | `tt.hiddenPresets` | Array versteckter Built-in-Preset-IDs |
 | `tt.session` | Laufendes Match (Recovery) |
-| `tt.settings` | Einstellungen (sound, vibration, tbPhotos) |
+| `tt.settings` | Einstellungen (sound, vibration, tbPhotos, notifications) |

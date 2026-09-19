@@ -15,6 +15,8 @@ periods: 1
 periodLabel: Spiel
 structure: Abwurfspiel ohne Teams; jeder gegen jeden, bis einer übrig ist.
 scoring: Wer als Letztes nicht "Zombie" ist, gewinnt.
+imageKey: zombieball
+imageAlt: Stehende und kniende Spieler bewegen einen Softball durch die Halle.
 ---
 
 ## Ablauf

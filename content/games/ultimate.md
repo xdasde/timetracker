@@ -12,6 +12,8 @@ periods: 2
 periodLabel: Halbzeit
 structure: Bis 15 Punkte (oder 2 Halbzeiten × 22 Min. mit Cap bei 17). Kein Schiedsrichter – Spirit of the Game.
 scoring: Punkt: Scheibe in der Endzone fangen
+imageKey: ultimate
+imageAlt: Ein Team passt eine Scheibe in die gegenüberliegende Endzone.
 ---
 
 ## Ablauf

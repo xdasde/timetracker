@@ -14,6 +14,8 @@ periods: 1
 periodLabel: Runde
 structure: Ruhige Partnerübung zur Körperwahrnehmung, ohne Wertung.
 scoring: Keine Wertung – Ziel ist möglichst synchrones Spiegeln.
+imageKey: spiegelbild
+imageAlt: Zwei Kinder stehen sich gegenüber und führen spiegelgleiche Bewegungen aus.
 ---
 
 ## Ablauf

@@ -15,6 +15,8 @@ periods: 1
 periodLabel: Lauf
 structure: Kooperative Transport-Staffel auf Zeit.
 scoring: Schnellstes Team gewinnt; fällt der Ball, wird an der Stelle neu gestartet.
+imageKey: balltransport
+imageAlt: Ein Paar transportiert einen Ball ohne Hände um Hütchen.
 ---
 
 ## Ablauf

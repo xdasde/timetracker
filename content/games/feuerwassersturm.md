@@ -13,6 +13,8 @@ periods: 1
 periodLabel: Runde
 structure: Reaktions- und Laufspiel über mehrere Runden. Kein fester Punktestand.
 scoring: Ausscheide-/Reaktionsspiel – wer zuletzt übrig ist, gewinnt.
+imageKey: feuerwassersturm
+imageAlt: Bewegte Kinder reagieren auf Naturkommandos mit verschiedenen Positionen.
 ---
 
 ## Ablauf

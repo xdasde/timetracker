@@ -1,0 +1,4 @@
+# Runtime data is local and may contain pseudonymous push endpoints.
+data/
+.env
+node_modules/

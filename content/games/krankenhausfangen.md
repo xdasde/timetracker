@@ -12,6 +12,8 @@ periods: 1
 periodLabel: Spiel
 structure: Fangspiel ohne festes Zeitlimit. 1–3 Fänger je nach Gruppengröße.
 scoring: Kein klassischer Punktestand – Spieldauer per Stoppuhr, dann Fänger wechseln.
+imageKey: krankenhausfangen
+imageAlt: Ein Fänger verfolgt Läufer, die sich an einer Trefferstelle halten.
 ---
 
 ## Ablauf

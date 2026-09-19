@@ -12,6 +12,8 @@ periods: 5
 periodLabel: Satz
 structure: Best of 5 Sätze. Satz bis 25 Punkte (5. Satz bis 15). Mindest-Zwei-Punkte-Vorsprung.
 scoring: Jeder Ballkontakt, bei dem der Ball auf dem Boden des Gegners aufkommt oder Gegner ins Aus spielt.
+imageKey: volleyball
+imageAlt: Zwei Teams spielen den Ball über ein Netz mit Blockbewegung.
 ---
 
 ## Ablauf

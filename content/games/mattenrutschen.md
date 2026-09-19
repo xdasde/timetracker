@@ -15,6 +15,8 @@ periods: 1
 periodLabel: Lauf
 structure: Staffel auf Zeit, jedes Teammitglied einmal.
 scoring: Schnellstes Team gewinnt.
+imageKey: mattenrutschen
+imageAlt: Ein Team zieht ein sitzendes Kind auf einer Matte zur Wendemarke.
 ---
 
 ## Ablauf

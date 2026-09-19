@@ -16,6 +16,8 @@ periods: 1
 periodLabel: Runde
 structure: Hektisches Lauf-Duell auf Zeit (eine feste Spielzeit).
 scoring: Das Team mit mehr Hütchen in seiner Position bei Spielende gewinnt.
+imageKey: huetchen-chaos
+imageAlt: Ein Team stellt Hütchen auf, das andere kippt sie wieder um.
 ---
 
 ## Ablauf

@@ -12,6 +12,8 @@ periods: 3
 periodLabel: Satz
 structure: Best of 3 Sätze. Satz bis 21 Punkte. Bei 20:20 bis Zwei-Punkte-Vorsprung (max. 30:29).
 scoring: Rally-Punkte: Jeder gewonnene Rally gibt Punkt, unabhängig wer aufgeschlagen hat
+imageKey: badminton
+imageAlt: Zwei Spieler schlagen den Federball über ein Netz.
 ---
 
 ## Ablauf

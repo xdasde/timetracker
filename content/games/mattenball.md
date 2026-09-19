@@ -17,6 +17,8 @@ periods: 2
 periodLabel: Halbzeit
 structure: 2 × 10 Min. Passspiel mit Matten als Tore.
 scoring: Punkt, wenn ein Mitspieler den Ball auf der gegnerischen Matte fängt.
+imageKey: mattenball
+imageAlt: Ein Ball wird auf der gegnerischen Zielmatte gefangen.
 ---
 
 ## Ablauf

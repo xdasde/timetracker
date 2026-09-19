@@ -13,6 +13,11 @@ import * as teambuilder from './js/teambuilder.js';
 import * as fanger from './js/fanger.js';
 import * as rules from './js/rules.js';
 import * as customgames from './js/customgames.js';
+import * as communitygames from './js/communitygames.js';
+import { loadCommunityGameForDeepLink } from './js/community-deeplink.js';
+import { hasCommunityEndpoint } from './js/config.js';
+import * as webpush from './js/webpush.js';
+import { createGameVisual, validateCommunityImageFile, communityImageNotice } from './js/gameimages.js';
 
 const TEAM_CREST_FALLBACK = 'assets/generated/brand-assets/derived/team.png';
 let _setupActiveSlot = 'a';
@@ -63,6 +68,56 @@ function enterHome() {
   const badge = document.getElementById('home-preset-badge');
   if (badge) badge.textContent = `${count} gespeichert`;
   renderHomeQuickStopwatch();
+  loadCommunityGames();
+}
+
+function refreshCommunityViews() {
+  const badge = document.getElementById('home-preset-badge');
+  if (badge) badge.textContent = `${presets.getAll().length} gespeichert`;
+
+  const current = router.getCurrent();
+  if (current === 'screen-rules') renderRulesList();
+  if (current === 'screen-presets') renderPresetList();
+  if (current === 'screen-match-setup' && _setupColorSetActive) {
+    buildPresetChips(_setupColorSetActive, _setupSelectedPresetId);
+  }
+  if (current === 'screen-roulette' && !_rouletteSpinning) {
+    buildRouletteCats();
+    if (!_rouletteResult) resetRouletteDisplay();
+  }
+  if (current === 'screen-roulette-exclude') renderRouletteExclusion();
+}
+
+function loadCommunityGames(force = true) {
+  communitygames.load({ force }).then(refreshCommunityViews);
+}
+
+function openCommunityGameFromUrl() {
+  const id = new URL(window.location.href).searchParams.get('communityGame');
+  if (!communitygames.isCommunityId(id)) return;
+
+  const reveal = () => {
+    if (!communitygames.getById(id)) return false;
+    router.navigateTo('screen-rules', { skipCommunityLoad: true });
+    requestAnimationFrame(() => {
+      const item = [...document.querySelectorAll('.rules-item')]
+        .find(candidate => candidate.dataset.rulesKey === id);
+      if (!item) return;
+      const header = item.querySelector('.rules-item-header');
+      if (header?.getAttribute('aria-expanded') !== 'true') header?.click();
+      item.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    return true;
+  };
+
+  loadCommunityGameForDeepLink(id, {
+    isCommunityId: communitygames.isCommunityId,
+    load: communitygames.load,
+    getById: communitygames.getById,
+  }).then(found => {
+    refreshCommunityViews();
+    if (!found || !reveal()) ui.showToast('Das Community-Spiel ist nicht verfügbar.');
+  });
 }
 
 document.getElementById('btn-new-match').addEventListener('click', () =>
@@ -308,10 +363,21 @@ function tbUpdateRevealUI() {
     promptEl.classList.add('hidden');
     teamEl.classList.remove('hidden');
     teamEl.className = 'tb-reveal-team';
-    teamEl.innerHTML =
-      (crest ? `<img class="tb-reveal-team-crest" src="${crest.asset}" alt="">` : '') +
-      `<div class="tb-reveal-team-name">${name}</div>` +
-      `<div class="tb-reveal-team-sub">Das ist dein Team!</div>`;
+    teamEl.replaceChildren();
+    if (crest) {
+      const crestImg = document.createElement('img');
+      crestImg.className = 'tb-reveal-team-crest';
+      crestImg.src = crest.asset;
+      crestImg.alt = '';
+      teamEl.appendChild(crestImg);
+    }
+    const teamName = document.createElement('div');
+    teamName.className = 'tb-reveal-team-name';
+    teamName.textContent = name;
+    const teamSub = document.createElement('div');
+    teamSub.className = 'tb-reveal-team-sub';
+    teamSub.textContent = 'Das ist dein Team!';
+    teamEl.append(teamName, teamSub);
     revealEl.style.background = color;
   } else {
     promptEl.classList.remove('hidden');
@@ -722,6 +788,7 @@ document.getElementById('btn-tbm-close').addEventListener('click', () => {
 // ═══════════════════════════════════════════════════════════
 function enterPresets() {
   renderPresetList();
+  loadCommunityGames();
 }
 
 function renderPresetList() {
@@ -779,7 +846,7 @@ const RULES_DIFF_FILTERS = [
 const _rulesFilter = { search: '', kind: 'all', diff: 'all' };
 let _rulesWired = false;
 
-function enterRules() {
+function enterRules(opts = {}) {
   // Beim Betreten Filter zurücksetzen (sorgt u. a. dafür, dass der "?"-Sprung
   // aus den Presets jeden Eintrag findet).
   _rulesFilter.search = '';
@@ -797,6 +864,7 @@ function enterRules() {
   }
   buildRulesFilterChips();
   renderRulesList();
+  if (!opts.skipCommunityLoad) loadCommunityGames();
 }
 
 function buildRulesFilterChips() {
@@ -858,7 +926,33 @@ function renderRulesList() {
     const header = document.createElement('button');
     header.className = 'rules-item-header';
     header.setAttribute('aria-expanded', 'false');
-    header.innerHTML = `<span class="rules-item-icon" aria-hidden="true">${rule.icon}</span><span class="rules-item-name">${rule.name}</span><span class="rules-item-sub">${rule.structure.split('+')[0].trim()}</span><svg class="rules-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>`;
+    // Vorschaubild, falls vorhanden – sonst (oder bei Ladefehler) das Icon.
+    const icon = createGameVisual(rule, {
+      iconClass: 'rules-item-icon',
+      imageClass: 'rules-item-thumb',
+    });
+
+    const name = document.createElement('span');
+    name.className = 'rules-item-name';
+    name.textContent = rule.name;
+
+    const sub = document.createElement('span');
+    sub.className = 'rules-item-sub';
+    sub.textContent = String(rule.structure || '').split('+')[0].trim();
+
+    const chevron = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    chevron.classList.add('rules-chevron');
+    chevron.setAttribute('viewBox', '0 0 24 24');
+    chevron.setAttribute('fill', 'none');
+    chevron.setAttribute('stroke', 'currentColor');
+    chevron.setAttribute('stroke-width', '2.2');
+    chevron.setAttribute('stroke-linecap', 'round');
+    chevron.setAttribute('stroke-linejoin', 'round');
+    chevron.setAttribute('aria-hidden', 'true');
+    const chevronLine = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+    chevronLine.setAttribute('points', '6 9 12 15 18 9');
+    chevron.appendChild(chevronLine);
+    header.append(icon, name, sub, chevron);
 
     const body = document.createElement('div');
     body.className = 'rules-item-body';
@@ -877,6 +971,7 @@ function renderRulesList() {
     if (rule.difficulty) addBadge(rule.difficulty, `rules-badge--diff-${rule.difficulty}`);
     addBadge(rule.ageGroup);
     if (rule.custom) addBadge('Eigenes', 'rules-badge--custom');
+    if (rule.community) addBadge('Community', 'rules-badge--community');
 
     const scoring = document.createElement('div');
     scoring.className = 'rules-scoring';
@@ -894,6 +989,15 @@ function renderRulesList() {
       ul.appendChild(li);
     });
 
+    // Detailbild oben im aufgeklappten Eintrag. Ohne Bild oder bei Ladefehler
+    // steht dort eine Icon-Fläche – nie eine leere Box.
+    const hero = document.createElement('div');
+    hero.className = 'rules-item-media';
+    hero.appendChild(createGameVisual(rule, {
+      imageClass: 'rules-item-hero',
+      iconClass: 'rules-item-hero-icon',
+    }));
+    body.appendChild(hero);
     body.append(badges, scoring, structure, ul);
 
     if (rule.material && rule.material.length) {
@@ -912,6 +1016,18 @@ function renderRulesList() {
     tipEl.append(tipLabel, document.createTextNode(rule.tip));
     body.appendChild(tipEl);
 
+    // Community-Einträge: Herkunft zeigen und bewerten lassen.
+    // Kein Bearbeiten/Löschen – sie gehören allen, nicht diesem Gerät.
+    if (rule.community) {
+      const origin = document.createElement('div');
+      origin.className = 'rules-community-origin';
+      origin.textContent = rule.author
+        ? `Community-Spiel · von ${rule.author}`
+        : 'Community-Spiel';
+      body.appendChild(origin);
+      body.appendChild(buildRatingBlock(rule));
+    }
+
     // Aktionen für eigene (lokal angelegte) Einträge
     if (rule.custom) {
       const actions = document.createElement('div');
@@ -925,10 +1041,6 @@ function renderRulesList() {
       };
       actions.append(
         mkBtn('Bearbeiten', 'rules-custom-btn', () => openContributeModal(rule.key)),
-        mkBtn('Einreichen', 'rules-custom-btn', () => {
-          const g = customgames.getById(rule.key);
-          if (g) window.open(customgames.prefillUrl(g), '_blank', 'noopener');
-        }),
         mkBtn('Löschen', 'rules-custom-btn rules-custom-btn--danger', async () => {
           const ok = await ui.confirmAction(`"${rule.name}" wirklich löschen?`);
           if (!ok) return;
@@ -949,6 +1061,94 @@ function renderRulesList() {
       item.classList.toggle('rules-item--open', isOpen);
     });
   });
+}
+
+// ── Sternbewertung für Community-Spiele ──────────────────────────────────────
+// Zugängliche Radiogruppe (1–5). Alles hier ist unkritisch: schlägt das Senden
+// fehl, bleibt die eigene Bewertung lokal stehen und nichts blockiert die App.
+function buildRatingBlock(rule) {
+  const wrap = document.createElement('div');
+  wrap.className = 'rules-rating';
+
+  const summary = document.createElement('div');
+  summary.className = 'rules-rating-summary';
+
+  const group = document.createElement('div');
+  group.className = 'rules-rating-stars';
+  group.setAttribute('role', 'radiogroup');
+  group.setAttribute('aria-label', `${rule.name} bewerten`);
+
+  const status = document.createElement('p');
+  status.className = 'rules-rating-status';
+  status.setAttribute('role', 'status');
+
+  let own = communitygames.getOwnRating(rule.key);
+  const stars = [];
+  let sending = false;
+
+  const renderSummary = game => {
+    const count = Number(game?.ratingCount) || 0;
+    const average = Number(game?.ratingAverage);
+    summary.textContent = count
+      ? `★ ${Number.isFinite(average) ? average.toFixed(1) : '–'} · ${count} ${count === 1 ? 'Bewertung' : 'Bewertungen'}`
+      : 'Noch keine Bewertungen';
+  };
+  const paint = () => stars.forEach((btn, i) => {
+    const value = i + 1;
+    const active = own !== null && value <= own;
+    btn.classList.toggle('rules-star--on', active);
+    btn.setAttribute('aria-checked', String(own === value));
+    // Roving tabindex: genau ein Stern ist per Tab erreichbar.
+    btn.tabIndex = (own === null ? value === 1 : value === own) ? 0 : -1;
+  });
+
+  const send = async value => {
+    if (sending) return;
+    const previous = own;
+    own = value;
+    paint();
+    sending = true;
+    stars.forEach(btn => { btn.disabled = true; });
+    status.textContent = previous ? 'Bewertung geändert.' : 'Danke für die Bewertung!';
+    try {
+      const updated = await communitygames.rateGame(rule.key, value);
+      renderSummary(updated);
+      if (!hasCommunityEndpoint()) status.textContent = 'Nur auf diesem Gerät gespeichert.';
+    } catch {
+      status.textContent = 'Bewertung lokal gespeichert; Übermittlung fehlgeschlagen.';
+    } finally {
+      sending = false;
+      stars.forEach(btn => { btn.disabled = false; });
+    }
+  };
+
+  for (let value = 1; value <= 5; value++) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'rules-star';
+    btn.dataset.rating = String(value);
+    btn.setAttribute('role', 'radio');
+    btn.setAttribute('aria-label', `${value} von 5 Sternen`);
+    btn.textContent = '★';
+    btn.addEventListener('click', e => { e.stopPropagation(); send(value); });
+    btn.addEventListener('keydown', e => {
+      const dir = e.key === 'ArrowRight' || e.key === 'ArrowUp' ? 1
+        : e.key === 'ArrowLeft' || e.key === 'ArrowDown' ? -1 : 0;
+      if (!dir) return;
+      e.preventDefault();
+      const current = own || Number(btn.dataset.rating);
+      const next = Math.min(5, Math.max(1, current + dir));
+      send(next);
+      stars[next - 1].focus();
+    });
+    group.appendChild(btn);
+    stars.push(btn);
+  }
+
+  renderSummary(rule);
+  paint();
+  wrap.append(summary, group, status);
+  return wrap;
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1024,18 +1224,85 @@ function cgChipGroup(container, options, getVal, setVal, multi = false) {
   });
 }
 
+// ── Optionales Bild im Community-Formular ────────────────────────────────────
+// Die Datei wird nur lokal geprüft und als Vorschau (Object-URL, kein Base64)
+// angezeigt. Gesendet wird sie nicht: Die öffentliche Web-App nimmt keine
+// Bilddaten an; Bilder geben Betreiber:innen über den GameImages-Vertrag frei.
+let _cgImagePreviewUrl = null;
+
+function _cgReleaseImagePreview() {
+  if (_cgImagePreviewUrl) URL.revokeObjectURL(_cgImagePreviewUrl);
+  _cgImagePreviewUrl = null;
+}
+
+// Liefert eine Funktion, die meldet, ob gerade ein gültiges Bild gewählt ist.
+function setupCommunityImagePicker($, enabled) {
+  _cgReleaseImagePreview();
+  const field = $('cg-image-field');
+  if (!enabled) { field?.remove(); return () => false; }
+
+  const input = $('cg-image');
+  const preview = $('cg-image-preview');
+  const img = $('cg-image-preview-img');
+  const status = $('cg-image-status');
+  let selected = false;
+
+  const setStatus = (message, isError = false) => {
+    status.textContent = message;
+    status.classList.toggle('cg-image-status--error', isError);
+  };
+  const resetPreview = () => {
+    _cgReleaseImagePreview();
+    selected = false;
+    img.removeAttribute('src');
+    preview.classList.add('hidden');
+    setStatus('');
+  };
+  const clear = (message = '', isError = false) => {
+    resetPreview();
+    input.value = '';
+    setStatus(message, isError);
+  };
+
+  img.addEventListener('error', () => {
+    if (selected) clear('Das Bild konnte nicht angezeigt werden. Das Spiel wird ohne Bild gesendet.', true);
+  });
+  input.addEventListener('change', async () => {
+    const file = input.files?.[0] || null;
+    resetPreview();
+    if (!file) return;
+    let head = null;
+    try { head = new Uint8Array(await file.slice(0, 16).arrayBuffer()); } catch { /* unten als ungültig gemeldet */ }
+    if (input.files?.[0] !== file) return; // inzwischen andere Auswahl
+    const check = validateCommunityImageFile(file, head);
+    if (!check.ok) { clear(check.error, true); return; }
+    _cgImagePreviewUrl = URL.createObjectURL(file);
+    img.src = _cgImagePreviewUrl;
+    preview.classList.remove('hidden');
+    selected = true;
+    setStatus(communityImageNotice(true));
+  });
+  $('cg-image-remove').addEventListener('click', () => clear());
+  return () => selected;
+}
+
 function openContributeModal(existingId = null) {
   const existing = existingId ? customgames.getById(existingId) : null;
   const editing = existing ? { ...existing, categories: [...existing.categories], material: [...existing.material] } : {
     id: null, name: '', icon: '🎯', kind: 'spiel', categories: [], difficulty: 'einfach',
     ageGroup: null, material: [], players: null, teamA: 'Team A', teamB: 'Team B',
     colorIndex: 0, durationMs: null, breakMs: null, periods: 1, periodLabel: 'Halbzeit',
-    structure: '', scoring: '', basics: [], tip: '', source: null,
+    structure: '', scoring: '', basics: [], tip: '', source: null, author: null,
   };
 
   ui.openModal('tmpl-modal-contribute', () => {
     const $ = id => document.getElementById(id);
-    $('cg-title').textContent = existing ? 'Spiel bearbeiten' : 'Eigenes Spiel';
+    $('cg-title').textContent = existing ? 'Eigenes Spiel bearbeiten' : 'Community-Spiel einreichen';
+    $('cg-hint').textContent = existing
+      ? 'Dieses lokale eigene Spiel bleibt auf dem Gerät und kann weiter bearbeitet werden.'
+      : hasCommunityEndpoint()
+        ? 'Das Spiel wird direkt an die Community gesendet und erscheint nach erfolgreicher Übermittlung sofort in der App.'
+        : 'Die Community ist noch nicht eingerichtet. Das Spiel wird erst nach Eintragen des Endpunkts gesendet und nicht lokal als Community-Spiel gespeichert.';
     $('cg-name').value = editing.name;
     $('cg-icon').value = editing.icon;
     $('cg-team-a').value = editing.teamA;
@@ -1048,6 +1315,7 @@ function openContributeModal(existingId = null) {
     $('cg-age').value = editing.ageGroup || '';
     $('cg-players').value = editing.players || '';
     $('cg-source').value = editing.source || '';
+    $('cg-author').value = editing.author || '';
 
     cgChipGroup($('cg-kind'), CG_KINDS, () => editing.kind, v => { editing.kind = v; });
     cgChipGroup($('cg-diff'), CG_DIFFS, () => editing.difficulty, v => { editing.difficulty = v; });
@@ -1078,8 +1346,12 @@ function openContributeModal(existingId = null) {
     cgTimeChips($('cg-duration'), CG_DURATION_OPTIONS, editing.durationMs, ms => { editing.durationMs = ms; });
     cgTimeChips($('cg-break'), CG_BREAK_OPTIONS, editing.breakMs, ms => { editing.breakMs = ms; });
 
-    $('cg-cancel').onclick = ui.closeModal;
-    $('cg-save').onclick = () => {
+    const hasImage = setupCommunityImagePicker($, !existing);
+    $('cg-cancel').onclick = () => { _cgReleaseImagePreview(); ui.closeModal(); };
+    let saving = false;
+    $('cg-save').textContent = existing ? 'Speichern' : 'Community-Spiel senden';
+    $('cg-save').onclick = async () => {
+      if (saving) return;
       editing.name = $('cg-name').value.trim();
       editing.icon = $('cg-icon').value.trim() || '🎯';
       editing.teamA = $('cg-team-a').value.trim() || 'Team A';
@@ -1092,7 +1364,8 @@ function openContributeModal(existingId = null) {
       editing.ageGroup = $('cg-age').value.trim() || null;
       editing.players = $('cg-players').value.trim() || null;
       editing.source = $('cg-source').value.trim() || null;
-      editing.id = editing.id || customgames.uniqueId(editing.name);
+      editing.author = $('cg-author').value.trim() || null;
+      if (existing) editing.id = editing.id || customgames.uniqueId(editing.name);
 
       const errors = customgames.validate(editing);
       const errEl = $('cg-error');
@@ -1104,27 +1377,48 @@ function openContributeModal(existingId = null) {
       }
       errEl.classList.add('hidden');
 
-      const entry = { ...editing, custom: true };
-      customgames.save(entry);
-      ui.showToast('Eigenes Spiel gespeichert!');
+      if (existing) {
+        customgames.save({ ...editing, custom: true });
+        ui.closeModal();
+        ui.showToast('Eigenes Spiel gespeichert!');
+        renderRulesList();
+        return;
+      }
 
-      // Zur Einreichen-Ansicht wechseln
-      $('cg-actions').classList.add('hidden');
-      $('cg-submit').classList.remove('hidden');
-      $('cg-pr').onclick = () => window.open(customgames.prefillUrl(entry), '_blank', 'noopener');
-      $('cg-copy').onclick = async () => {
-        try { await navigator.clipboard.writeText(customgames.toMarkdown(entry)); ui.showToast('Markdown kopiert'); }
-        catch { ui.showToast('Kopieren nicht möglich'); }
-      };
-      $('cg-download').onclick = () => {
-        const blob = new Blob([customgames.toMarkdown(entry)], { type: 'text/markdown' });
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = `${entry.id}.md`;
-        a.click();
-        URL.revokeObjectURL(a.href);
-      };
-      $('cg-done').onclick = () => { ui.closeModal(); renderRulesList(); };
+      if (!hasCommunityEndpoint()) {
+        errEl.textContent = 'Community-Endpunkt fehlt. Bitte zuerst die URL in js/config.js eintragen; das Spiel wurde nicht lokal gespeichert.';
+        errEl.classList.remove('hidden');
+        errEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+
+      saving = true;
+      const saveBtn = $('cg-save');
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Wird gesendet …';
+      let saved = null;
+      try {
+        saved = await communitygames.submitGame(editing);
+      } catch (err) {
+        errEl.textContent = `Senden fehlgeschlagen: ${err.message}`;
+        errEl.classList.remove('hidden');
+        errEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } finally {
+        saving = false;
+        if (saveBtn) {
+          saveBtn.disabled = false;
+          saveBtn.textContent = 'Community-Spiel senden';
+        }
+      }
+      if (saved) {
+        const withoutImage = hasImage();
+        _cgReleaseImagePreview();
+        ui.closeModal();
+        refreshCommunityViews();
+        ui.showToast(withoutImage
+          ? `Community-Spiel „${saved.name}“ eingereicht – ohne Bild (Upload noch nicht freigeschaltet)`
+          : `Community-Spiel „${saved.name}“ eingereicht`);
+      }
     };
   });
 }
@@ -1146,6 +1440,7 @@ function enterRoulette() {
   _rouletteSpinning = false;
   buildRouletteCats();
   resetRouletteDisplay();
+  loadCommunityGames();
 }
 
 function buildRouletteCats() {
@@ -1170,9 +1465,35 @@ function buildRouletteCats() {
 }
 
 function _setRouletteFace(icon, name, meta) {
+  _clearRouletteImage();
   document.getElementById('roulette-icon').textContent = icon;
   document.getElementById('roulette-name').textContent = name;
   document.getElementById('roulette-meta').textContent = meta ?? '';
+}
+
+// Gewinnerbild oben in der Roulette-Anzeige. Ohne Bild bzw. bei Ladefehler
+// bleibt das Icon sichtbar – die Fläche wird nie leer angezeigt.
+function _clearRouletteImage() {
+  const media = document.getElementById('roulette-media');
+  if (media) { media.replaceChildren(); media.classList.add('hidden'); }
+  document.getElementById('roulette-icon')?.classList.remove('hidden');
+}
+
+function _showRouletteImage(preset) {
+  const media = document.getElementById('roulette-media');
+  const rule = preset.rulesKey ? rules.getRule(preset.rulesKey) : null;
+  if (!media || !rule) return;
+  const iconEl = document.getElementById('roulette-icon');
+  const img = createGameVisual({ ...rule, icon: preset.icon }, {
+    imageClass: 'roulette-display-image',
+    fallback: 'remove',
+    eager: true,
+    onFallback: _clearRouletteImage,
+  });
+  if (!img) return;
+  media.replaceChildren(img);
+  media.classList.remove('hidden');
+  iconEl?.classList.add('hidden');
 }
 
 function resetRouletteDisplay() {
@@ -1236,7 +1557,9 @@ function _finishSpin(preset) {
   const meta = [];
   if (preset.durationMs) meta.push(`${Math.floor(preset.durationMs / 60000)} Min.`);
   meta.push(`${preset.teamA.name} vs. ${preset.teamB.name}`);
+  if (preset.fromCommunity) meta.push('Community');
   _setRouletteFace(preset.icon, preset.name, meta.join(' · '));
+  _showRouletteImage(preset);
   renderRouletteRules(preset);
   document.getElementById('roulette-result-actions').classList.remove('hidden');
   document.getElementById('btn-roulette-spin').disabled = false;
@@ -1416,8 +1739,13 @@ function fangerRenderHistory() {
     const cell = document.createElement('div');
     cell.className = 'fanger-hist-cell';
     if (h.count > 0 && h.count === maxCount) cell.classList.add('fanger-hist-cell--hot');
-    cell.innerHTML = `<span class="fanger-hist-num">${h.number}</span>` +
-                     `<span class="fanger-hist-count">${h.count}×</span>`;
+    const number = document.createElement('span');
+    number.className = 'fanger-hist-num';
+    number.textContent = h.number;
+    const count = document.createElement('span');
+    count.className = 'fanger-hist-count';
+    count.textContent = `${h.count}×`;
+    cell.append(number, count);
     grid.appendChild(cell);
   });
   const rounds = hist.length ? Math.max(...hist.map(h => h.count)) : 0;
@@ -1842,22 +2170,26 @@ document.querySelectorAll('.setup-team-slot').forEach(slotEl => {
 });
 
 let _setupDurationSetActive = null;
+let _setupColorSetActive = null;
+let _setupSelectedPresetId = null;
 
 function enterSetup() {
   match.initSetup();
   _setupActiveSlot = 'a';
+  _setupSelectedPresetId = null;
   _setupTeamSelection = { a: 'eagle', b: 'wolf' };
   _setupAssignCrest('a', _setupTeamSelection.a);
   _setupAssignCrest('b', _setupTeamSelection.b);
   buildSetupTeamChoices();
-  const selectColorIdx = buildColorPickers();
+  _setupColorSetActive = buildColorPickers();
   _setupDurationSetActive = buildDurationChips(
     document.getElementById('setup-duration-chips'),
     DURATION_OPTIONS,
     null,
     ms => match.setDuration(ms)
   );
-  buildPresetChips(selectColorIdx);
+  buildPresetChips(_setupColorSetActive, _setupSelectedPresetId);
+  loadCommunityGames();
 }
 
 function buildColorPickers() {
@@ -1904,9 +2236,10 @@ function buildColorPickers() {
   return selectIdx;
 }
 
-function buildPresetChips(selectColorIdx) {
+function buildPresetChips(selectColorIdx, selectedPresetId = null) {
   const strip = document.getElementById('setup-preset-strip');
   presets.renderChips(strip, preset => {
+    _setupSelectedPresetId = preset.id;
     document.getElementById('team-a-name').value = preset.teamA.name;
     document.getElementById('team-b-name').value = preset.teamB.name;
     match.setTeamName('a', preset.teamA.name);
@@ -1920,7 +2253,7 @@ function buildPresetChips(selectColorIdx) {
     match.setBreak(preset.breakMs ?? null);
     match.setPeriods(preset.periods ?? 2);
     _setupDurationSetActive?.(preset.durationMs ?? null);
-  });
+  }, selectedPresetId);
 }
 
 document.getElementById('btn-setup-back').addEventListener('click', () =>
@@ -2758,35 +3091,56 @@ function initSettings() {
   });
 
   const notifToggle = document.getElementById('toggle-notifications');
-  if (!notificationsSupported()) {
-    // Notification API nicht verfügbar (z. B. ältere iOS-Safari): Zeile ausblenden
+  const notifStatus = document.getElementById('notifications-status');
+  const pushSupport = webpush.classifyWebPushSupport();
+  const pushConfigured = webpush.isWebPushConfigured();
+  const setNotifStatus = message => {
+    if (notifStatus) notifStatus.textContent = message || '';
+  };
+
+  if (!pushSupport.supported) {
     notifToggle.checked = false;
     notifToggle.disabled = true;
-    const row = notifToggle.closest('.setting-row');
-    if (row) row.classList.add('hidden');
+    setNotifStatus(webpush.webPushStatusMessage(pushSupport.reason));
+  } else if (!pushConfigured) {
+    notifToggle.checked = false;
+    notifToggle.disabled = true;
+    setNotifStatus('Für neue Community-Spiele noch nicht eingerichtet.');
   } else {
+    notifToggle.disabled = false;
     notifToggle.checked = cfg.notifications === true && Notification.permission === 'granted';
+    setNotifStatus(notifToggle.checked
+      ? 'Aktiv – neue Community-Spiele werden gemeldet.'
+      : 'Nur nach ausdrücklicher Aktivierung verwendet.');
 
-    notifToggle.addEventListener('change', e => {
+    notifToggle.onchange = async e => {
       const c = storage.getItem('settings') || {};
-      if (e.target.checked) {
-        requestNotificationPermission().then(perm => {
-          if (perm === 'granted') {
-            c.notifications = true;
-            storage.setItem('settings', c);
-            ui.showToast('Benachrichtigungen aktiviert');
-          } else {
-            e.target.checked = false;
-            c.notifications = false;
-            storage.setItem('settings', c);
-            ui.showToast('Im Browser blockiert');
-          }
-        });
-      } else {
+      if (!e.target.checked) {
         c.notifications = false;
         storage.setItem('settings', c);
+        setNotifStatus('Deaktiviert.');
+        try { await webpush.disableCommunityPush(); } catch { /* lokal deaktiviert */ }
+        return;
       }
-    });
+
+      e.target.disabled = true;
+      setNotifStatus('Berechtigung und Push-Abo werden eingerichtet …');
+      try {
+        await webpush.enableCommunityPush();
+        c.notifications = true;
+        storage.setItem('settings', c);
+        setNotifStatus('Aktiv – neue Community-Spiele werden gemeldet.');
+        ui.showToast('Benachrichtigungen aktiviert');
+      } catch (error) {
+        e.target.checked = false;
+        c.notifications = false;
+        storage.setItem('settings', c);
+        setNotifStatus(error.message || 'Benachrichtigungen konnten nicht aktiviert werden.');
+        ui.showToast('Benachrichtigungen nicht aktiviert');
+      } finally {
+        e.target.disabled = false;
+      }
+    };
   }
 
   renderRouletteExclusion();
@@ -3004,3 +3358,4 @@ window.addEventListener('pagehide', () => {
 initSettings();
 checkSession();
 router.navigateTo('screen-home');
+openCommunityGameFromUrl();

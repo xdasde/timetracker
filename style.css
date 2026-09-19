@@ -438,6 +438,10 @@ body.live-active #app { inset: 0; }
   padding: 2px 8px;
   flex-shrink: 0;
 }
+.preset-card-lock--community {
+  background: rgba(56,189,248,0.18);
+  color: #7dd3fc;
+}
 
 .preset-add-btn {
   display: flex;
@@ -492,6 +496,19 @@ body.live-active #app { inset: 0; }
   background: var(--color-amber);
   border-color: var(--color-amber);
   color: var(--color-on-accent, #111827);
+}
+.setup-preset-chip--community {
+  border-color: rgba(56,189,248,0.55);
+}
+.setup-preset-chip-source {
+  color: #7dd3fc;
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.setup-preset-chip--active .setup-preset-chip-source {
+  color: inherit;
 }
 
 .setup-form {
@@ -2299,6 +2316,7 @@ textarea.modal-input { resize: vertical; min-height: 80px; }
   padding: 0.5rem 0 0.25rem;
 }
 .rules-badge--custom { background: rgba(245,158,11,0.22); color: var(--color-amber, #f59e0b); }
+.rules-badge--community { background: rgba(56,189,248,0.18); color: #7dd3fc; }
 
 /* Button "Eigenes Spiel anlegen" */
 .rules-add-btn {
@@ -2359,6 +2377,69 @@ textarea.modal-input { resize: vertical; min-height: 80px; }
   margin-top: 0.5rem;
 }
 .cg-more { margin-top: 0.25rem; }
+
+/* Optionales Bild im Community-Formular (nur Vorschau, kein Upload). */
+.cg-image-field { min-width: 0; }
+.cg-image-input {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.75);
+}
+.cg-image-input::file-selector-button {
+  margin-right: 0.6rem;
+  padding: 0.45rem 0.8rem;
+  border: 0;
+  border-radius: var(--radius-pill, 999px);
+  background: rgba(255,255,255,0.1);
+  color: var(--color-text, #fff);
+  font: inherit;
+  font-weight: 700;
+}
+.cg-image-limits {
+  margin-top: 0.35rem;
+  font-size: 0.74rem;
+  line-height: 1.35;
+  color: rgba(255,255,255,0.55);
+}
+.cg-image-preview {
+  position: relative;
+  margin: 0.6rem 0 0;
+  width: 100%;
+  max-width: 320px;
+  aspect-ratio: 3 / 2;
+  border-radius: var(--radius-sm, 12px);
+  overflow: hidden;
+  background: rgba(255,255,255,0.06);
+}
+.cg-image-preview img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.cg-image-remove {
+  position: absolute;
+  right: 0.45rem;
+  bottom: 0.45rem;
+  padding: 0.35rem 0.7rem;
+  border: 0;
+  border-radius: var(--radius-pill, 999px);
+  background: rgba(17,24,39,0.82);
+  color: #fff;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+.cg-image-status {
+  margin-top: 0.4rem;
+  font-size: 0.76rem;
+  line-height: 1.35;
+  color: #7dd3fc;
+  overflow-wrap: anywhere;
+}
+.cg-image-status:empty { display: none; }
+.cg-image-status--error { color: #f87171; }
 .cg-more summary {
   cursor: pointer;
   font-size: 0.85rem;
@@ -2366,17 +2447,57 @@ textarea.modal-input { resize: vertical; min-height: 80px; }
   color: var(--color-amber, #f59e0b);
   padding: 0.4rem 0;
 }
-.cg-submit {
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-  margin-top: 0.5rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid rgba(255,255,255,0.1);
+.rules-community-origin {
+  margin-top: 0.75rem;
+  font-size: 0.78rem;
+  color: #7dd3fc;
 }
-.cg-submit-title { font-weight: 800; font-size: 0.92rem; }
-.cg-submit-note { font-size: 0.74rem; color: rgba(255,255,255,0.55); line-height: 1.35; }
-.cg-half { flex: 1; }
+.rules-rating {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem 0.7rem;
+  margin-top: 0.75rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+.rules-rating-summary {
+  flex: 1 1 100%;
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.7);
+}
+.rules-rating-stars {
+  display: flex;
+  gap: 0.1rem;
+}
+.rules-star {
+  width: 2rem;
+  min-height: 2rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: rgba(255,255,255,0.32);
+  font-size: 1.55rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.rules-star--on,
+.rules-star:hover,
+.rules-star:focus-visible {
+  color: #fbbf24;
+}
+.rules-star:focus-visible {
+  outline: 2px solid #fbbf24;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+.rules-rating-status {
+  flex: 1 1 100%;
+  min-height: 1.1em;
+  margin: 0;
+  font-size: 0.74rem;
+  color: rgba(255,255,255,0.58);
+}
 
 .rules-list {
   display: flex;
@@ -2415,10 +2536,54 @@ textarea.modal-input { resize: vertical; min-height: 80px; }
   line-height: 1;
 }
 
+/* Optionales Spielbild: Vorschau im Kopf (ersetzt das Icon) und Detailbild
+   im aufgeklappten Eintrag. Feste Maße verhindern Layoutsprünge beim Laden. */
+.rules-item-thumb {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  object-fit: cover;
+  background: rgba(255,255,255,0.08);
+}
+
+.rules-item-media {
+  width: 100%;
+  max-width: 100%;
+  aspect-ratio: 3 / 2;
+  max-height: 240px;
+  margin: 0.75rem 0 0.6rem;
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.06);
+}
+
+.rules-item-hero {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Fallback ohne Bild bzw. nach Ladefehler: Icon-Fläche statt leerer Box. */
+.rules-item-hero-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font-size: 3.4rem;
+  line-height: 1;
+  background:
+    radial-gradient(90% 90% at 50% 20%, rgba(var(--color-amber-rgb, 245,158,11), 0.16), transparent 70%),
+    rgba(255,255,255,0.04);
+}
+
 .rules-item-name {
   font-size: 1rem;
   font-weight: 700;
   flex: 1;
+  min-width: 0;
 }
 
 .rules-item-sub {
@@ -2571,6 +2736,27 @@ textarea.modal-input { resize: vertical; min-height: 80px; }
   font-size: 3.4rem;
   line-height: 1;
   display: inline-block;
+}
+.roulette-display-media {
+  width: 100%;
+  max-width: 300px;
+  aspect-ratio: 3 / 2;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: rgba(var(--color-amber-rgb), 0.08);
+}
+.roulette-display-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.roulette-display--win .roulette-display-media {
+  animation: roulette-media-in 0.35s ease-out;
+}
+@keyframes roulette-media-in {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1); }
 }
 .roulette-display-name {
   font-size: 1.35rem;
@@ -3234,4 +3420,5 @@ textarea.modal-input { resize: vertical; min-height: 80px; }
   .home-stopwatch-start, .home-stopwatch-reset { padding-inline: 10px; }
   .setup-team-preset { min-height: 76px; }
   .setup-team-preset img { width: 40px; height: 40px; }
+  .rules-item-hero-icon { font-size: 2.8rem; }
 }

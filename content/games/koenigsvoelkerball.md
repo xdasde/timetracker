@@ -15,6 +15,8 @@ periods: 1
 periodLabel: Spiel
 structure: Völkerball-Variante mit geheimem König, ohne festes Zeitlimit.
 scoring: Gewonnen, wenn der gegnerische König abgeworfen ist.
+imageKey: koenigsvoelkerball
+imageAlt: Zwei Teams spielen Abwurfball, eine Figur trägt eine schlichte Krone.
 ---
 
 ## Ablauf

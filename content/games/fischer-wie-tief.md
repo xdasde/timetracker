@@ -14,6 +14,8 @@ periods: 1
 periodLabel: Runde
 structure: Lauf- und Fangspiel mit wechselnden Fortbewegungsarten.
 scoring: Gefangene helfen beim Fangen; übrig bleibende Kinder gewinnen.
+imageKey: fischer-wie-tief
+imageAlt: Ein Fänger steht in der Mitte, Läufer queren das Feld.
 ---
 
 ## Ablauf
