@@ -92,8 +92,8 @@
         <button class="home-hero" id="btn-new-match" aria-label="Neues Match starten">
           <svg class="home-hero-play" viewBox="0 0 24 24" aria-hidden="true"><polygon points="6,3.5 21,12 6,20.5" fill="currentColor"/></svg>
           <span class="home-hero-text">
-            <span class="home-hero-label">Match starten</span>
-            <span class="home-hero-sub">Spielen · Bewegen · Zusammen</span>
+            <span class="home-hero-label" id="home-hero-label">Match starten</span>
+            <span class="home-hero-sub" id="home-hero-sub">Spielen · Bewegen · Zusammen</span>
           </span>
         </button>
 
@@ -105,8 +105,8 @@
           </button>
           <button class="quick-card" id="btn-open-roulette" aria-label="Spiel-Roulette öffnen">
             <svg class="quick-card-roulette" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="21" fill="currentColor"/><g fill="#0b1522"><path d="M24 24 L24 5 A19 19 0 0 1 40.5 14.5Z"/><path d="M24 24 L40.5 33.5 A19 19 0 0 1 24 43Z"/><path d="M24 24 L7.5 33.5 A19 19 0 0 1 7.5 14.5Z"/></g><circle cx="24" cy="24" r="4.5" fill="#0b1522"/><circle cx="24" cy="24" r="2" fill="currentColor"/></svg>
-            <span class="quick-card-label">Spiel-Roulette</span>
-            <span class="quick-card-sub">Zufällig &amp; fair</span>
+            <span class="quick-card-label" id="quick-roulette-label">Spiel-Roulette</span>
+            <span class="quick-card-sub" id="quick-roulette-sub">Zufällig &amp; fair</span>
           </button>
           <button class="quick-card" id="btn-open-teambuilder" aria-label="Teams zufällig einteilen">
             <img src="assets/generated/brand-assets/derived/team.png" alt="" aria-hidden="true">
@@ -115,16 +115,17 @@
           </button>
         </div>
 
-        <div class="home-panel">
+        <!-- Datenbank: nachgelagerter Wissensbereich unterhalb von CTA und
+             Schnellwerkzeugen. Presets sind hier ein Unterbereich und haben
+             keinen eigenen Startseitenblock mehr. -->
+        <section class="home-panel home-database" id="home-database" aria-labelledby="home-database-title">
           <div class="home-panel-head">
             <img src="assets/generated/brand-assets/derived/whistle.png" alt="" aria-hidden="true">
-            <span>Spielbetrieb</span>
+            <span class="home-panel-head-text">
+              <strong id="home-database-title">Datenbank</strong>
+              <small id="home-database-sub">Spiele, Übungen, Regeln &amp; gespeicherte Presets</small>
+            </span>
           </div>
-          <button class="home-row" id="btn-open-rules" aria-label="Spiele-Datenbank öffnen">
-            <img src="assets/generated/brand-assets/derived/basketball.png" alt="" aria-hidden="true">
-            <span class="home-row-text"><strong>Datenbank</strong><small>Spiele, Regeln &amp; Tipps</small></span>
-            <svg class="home-row-chevron" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 6 15 12 9 18"/></svg>
-          </button>
           <button class="home-row home-row--sport hidden" id="btn-open-sport-rules" aria-label="Übungen öffnen">
             <span class="home-row-sport-icon" id="sport-rules-icon" aria-hidden="true">⚽</span>
             <span class="home-row-text"><strong id="sport-rules-title">Übungen</strong><small id="sport-rules-sub">Übungsdatenbank</small></span>
@@ -135,14 +136,26 @@
             <span class="home-row-text"><strong id="sport-rulebook-title">Regeln</strong><small id="sport-rulebook-sub">Altersklassen · Quellen · Stand</small></span>
             <svg class="home-row-chevron" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 6 15 12 9 18"/></svg>
           </button>
-          <button class="home-row" id="btn-open-fanger" aria-label="Auslosen: Auswahl &amp; Reihenfolge">
-            <img src="assets/generated/brand-assets/derived/runner.png" alt="" aria-hidden="true">
-            <span class="home-row-text"><strong>Auslosen</strong><small>Auswahl &amp; Reihenfolge</small></span>
-            <svg class="home-row-chevron" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 6 15 12 9 18"/></svg>
-          </button>
           <button class="home-row" id="btn-open-presets" aria-label="Presets verwalten">
             <img src="assets/generated/brand-assets/derived/soccer.png" alt="" aria-hidden="true">
             <span class="home-row-text"><strong>Presets</strong><small id="home-preset-badge" class="home-tile-badge">0 gespeichert</small></span>
+            <svg class="home-row-chevron" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 6 15 12 9 18"/></svg>
+          </button>
+          <button class="home-row" id="btn-open-rules" aria-label="Spiele-Datenbank öffnen">
+            <img src="assets/generated/brand-assets/derived/basketball.png" alt="" aria-hidden="true">
+            <span class="home-row-text"><strong id="home-rules-title">Datenbank</strong><small id="home-rules-sub">Spiele, Regeln &amp; Tipps</small></span>
+            <svg class="home-row-chevron" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 6 15 12 9 18"/></svg>
+          </button>
+        </section>
+
+        <div class="home-panel">
+          <div class="home-panel-head">
+            <img src="assets/generated/brand-assets/derived/runner.png" alt="" aria-hidden="true">
+            <span class="home-panel-head-text"><strong>Weitere Werkzeuge</strong></span>
+          </div>
+          <button class="home-row" id="btn-open-fanger" aria-label="Auslosen: Auswahl &amp; Reihenfolge">
+            <img src="assets/generated/brand-assets/derived/runner.png" alt="" aria-hidden="true">
+            <span class="home-row-text"><strong>Auslosen</strong><small>Auswahl &amp; Reihenfolge</small></span>
             <svg class="home-row-chevron" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 6 15 12 9 18"/></svg>
           </button>
           <button class="home-row" id="btn-goto-log" aria-label="Verlauf öffnen">
@@ -186,6 +199,7 @@
         <h2>Presets</h2>
         <button class="btn-icon" id="btn-preset-add" aria-label="Preset hinzufügen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
       </div>
+      <p class="rules-count" id="preset-status" aria-live="polite">Presets werden geladen…</p>
       <div class="preset-list" id="preset-list" role="list"></div>
     </section>
 
@@ -193,8 +207,9 @@
     <section id="screen-match-setup" class="screen screen-deco">
       <div class="sub-header">
         <button class="btn-back" id="btn-setup-back" aria-label="Zurück"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg></button>
-        <h2>Match einrichten</h2>
+        <h2 id="setup-title">Match einrichten</h2>
       </div>
+      <p class="rules-count" id="setup-context-hint" aria-live="polite"></p>
       <div class="setup-preset-strip" id="setup-preset-strip" aria-label="Preset wählen"></div>
       <div class="setup-form">
         <div class="setup-team setup-team-chooser">
@@ -226,6 +241,19 @@
             <div><span>Team B</span><div class="color-picker" id="color-picker-b" role="group" aria-label="Farbe Team B"></div></div>
           </div>
         </div>
+        <!-- Altersklasse & Spielzeit: nur im Fußball-Preset sichtbar. Inhalte
+             stammen aus den hinterlegten Regelkarten, nicht aus fixen Werten. -->
+        <section class="setup-team setup-agegroups hidden" id="setup-agegroups" aria-labelledby="setup-agegroups-title">
+          <div class="setup-team-chooser-head">
+            <span class="setup-team-kicker" id="setup-agegroups-title">Altersklasse &amp; Spielzeit</span>
+            <small id="setup-agegroups-hint">Vorschläge aus den Regelkarten</small>
+          </div>
+          <div class="roulette-cat-row" id="setup-age-chips" role="group" aria-label="Altersklasse wählen"></div>
+          <div class="duration-chips" id="setup-phase-chips" role="group" aria-label="Spielzeit-Phase wählen"></div>
+          <p class="rules-count" id="setup-phase-empty"></p>
+          <ul class="rules-basics" id="setup-age-sources"></ul>
+          <p class="rule-season-hint" id="setup-age-note"></p>
+        </section>
         <div class="setup-team">
           <label>Spieldauer</label>
           <div class="duration-chips" id="setup-duration-chips" role="group" aria-label="Spieldauer wählen"></div>
@@ -255,7 +283,10 @@
           </div>
         </div>
         <div class="match-center">
-          <div class="match-status" aria-hidden="true"><img src="assets/generated/brand-assets/derived/soccer.png" alt=""><strong class="match-status-sport">Live-Match</strong><span class="match-status-state match-status-state--run">Spiel läuft</span><span class="match-status-state match-status-state--idle">Uhr steht</span><i class="match-status-dot"></i></div>
+          <div class="match-status" aria-hidden="true"><img src="assets/generated/brand-assets/derived/soccer.png" alt=""><strong class="match-status-sport" id="live-sport-label">Live-Match</strong><span class="match-status-state match-status-state--run">Spiel läuft</span><span class="match-status-state match-status-state--idle">Uhr steht</span><i class="match-status-dot"></i></div>
+          <!-- Sportkontext des laufenden Matches für Screenreader: die sichtbare
+               Statuszeile ist dekorativ (aria-hidden) und trägt ihn nicht vor. -->
+          <span class="sr-only" id="live-sport-context" aria-live="polite">Live-Match</span>
           <div class="match-timer-pill" id="match-timer-pill" role="button" aria-label="Spielzeit starten / pausieren">
             <span id="match-time">00:00</span>
           </div>
@@ -517,6 +548,14 @@
       <div class="screen-body">
         <div class="screen-hero" aria-hidden="true"><img src="assets/generated/brand-assets/derived/volleyball.png" alt=""><img src="assets/generated/brand-assets/derived/basketball.png" alt=""><img src="assets/generated/brand-assets/derived/badminton.png" alt=""></div>
         <p class="rules-intro">Spiele, Sportarten &amp; Übungen mit Kurzregeln und App-Tipps. Durchsuchen, filtern und ein neues Community-Spiel direkt einreichen.</p>
+        <!-- Unterbereiche der Datenbank. Presets sind hier ein verwalteter
+             Datenbankbereich und kein zweiter, unabhängiger Datentyp. -->
+        <nav class="db-subnav" id="rules-subnav" aria-label="Datenbank-Bereiche">
+          <button type="button" class="db-subnav-item db-subnav-item--active" id="btn-db-section-games" aria-current="page">Spiele &amp; Übungen</button>
+          <button type="button" class="db-subnav-item hidden" id="btn-db-section-exercises">Übungen</button>
+          <button type="button" class="db-subnav-item hidden" id="btn-db-section-rules">Regeln</button>
+          <button type="button" class="db-subnav-item" id="btn-db-section-presets">Presets</button>
+        </nav>
         <button class="rules-add-btn" id="btn-rules-add">
           <span aria-hidden="true">＋</span> Community-Spiel einreichen
         </button>
@@ -612,11 +651,11 @@
     <section id="screen-roulette" class="screen screen-deco">
       <div class="sub-header">
         <button class="btn-back" id="btn-roulette-back" aria-label="Zurück"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg></button>
-        <h2>Spiel-Roulette</h2>
+        <h2 id="roulette-title">Spiel-Roulette</h2>
         <button class="btn-icon" id="btn-roulette-exclude-open" aria-label="Ausschlussliste bearbeiten"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="9" cy="6" r="2" fill="currentColor" stroke="none"/><circle cx="15" cy="12" r="2" fill="currentColor" stroke="none"/><circle cx="9" cy="18" r="2" fill="currentColor" stroke="none"/></svg></button>
       </div>
       <div class="screen-body">
-        <p class="roulette-intro">Wähle eine Kategorie und lose ein zufälliges Spiel aus.</p>
+        <p class="roulette-intro" id="roulette-intro">Wähle eine Kategorie und lose ein zufälliges Spiel aus.</p>
         <div class="roulette-cat-row" id="roulette-cats" role="tablist" aria-label="Kategorie"></div>
 
         <div class="roulette-stage">
@@ -637,6 +676,7 @@
           <button class="btn-primary" id="btn-roulette-start">Match starten</button>
         </div>
         <p class="roulette-empty hidden" id="roulette-empty">Keine Spiele in dieser Kategorie verfügbar. Passe die Ausschlussliste an (Symbol oben rechts).</p>
+        <button type="button" class="btn-secondary roulette-reset-btn hidden" id="btn-roulette-reset" aria-label="Filter des Übungs-Roulettes zurücksetzen">Filter zurücksetzen</button>
       </div>
     </section>
 

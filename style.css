@@ -434,6 +434,14 @@ body.live-active #app { inset: 0; }
   padding: 8px 16px 20px;
 }
 
+/* The fixed install banner starts below the top navigation and would
+   otherwise cover the home hero. Keep the hero in normal scroll flow while
+   the banner is shown; the banner's compact height fits both desktop and
+   narrow mobile layouts. */
+body:has(#install-banner:not(.hidden)) #screen-home .home-grid {
+  padding-top: 84px;
+}
+
 /* Hero: Match starten */
 .home-hero {
   display: flex;
@@ -478,8 +486,8 @@ body.live-active #app { inset: 0; }
 .quick-card:active { transform: scale(0.97); border-color: rgba(var(--color-amber-rgb), 0.6); }
 .quick-card img, .quick-card svg { width: 46px; height: 46px; object-fit: contain; margin-bottom: 6px; }
 .quick-card-roulette { color: var(--color-mint); }
-.quick-card-label { font-size: 0.95rem; font-weight: 700; color: var(--color-text); white-space: nowrap; }
-.quick-card-sub { font-size: 0.74rem; color: var(--color-muted); white-space: nowrap; }
+.quick-card-label { font-size: 0.95rem; font-weight: 700; color: var(--color-text); line-height: 1.12; }
+.quick-card-sub { font-size: 0.74rem; color: var(--color-muted); line-height: 1.2; }
 
 /* Panels (Spielbetrieb, Team-Wappen) */
 .home-panel {
@@ -516,6 +524,32 @@ body.live-active #app { inset: 0; }
 .home-row-chevron {
   width: 20px; height: 20px; flex-shrink: 0;
   fill: none; stroke: var(--color-muted); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;
+}
+
+/* Datenbankbereiche: kompakt auf Mobile, klarer aktiver Tastaturzustand. */
+.db-subnav {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 2px 0 10px;
+  scrollbar-width: none;
+}
+.db-subnav::-webkit-scrollbar { display: none; }
+.db-subnav-item {
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 9px 13px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  color: var(--color-muted);
+  font-weight: 700;
+  white-space: nowrap;
+}
+.db-subnav-item--active {
+  border-color: var(--color-amber);
+  background: rgba(var(--color-amber-rgb), 0.16);
+  color: var(--color-text);
 }
 
 .crest-strip {
@@ -2957,6 +2991,12 @@ textarea.modal-input { resize: vertical; min-height: 80px; }
   color: var(--color-muted);
   text-align: center;
   line-height: 1.4;
+}
+
+/* Filter-Reset direkt unter dem Leer-Hinweis des Übungs-Roulettes */
+.roulette-reset-btn {
+  align-self: center;
+  margin-top: 0.4rem;
 }
 
 /* Spielregeln im Roulette-Ergebnis */

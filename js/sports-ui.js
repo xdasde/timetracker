@@ -97,6 +97,11 @@ export function renderSwitcher() {
     }
   }
 
+  // Die Datenbank-Unterbereiche spiegeln denselben Sportkontext wie die
+  // Startseiten-Einträge; im Allgemeinsport bleiben nur Spiele & Übungen.
+  $('btn-db-section-exercises')?.classList.toggle('hidden', isGeneral);
+  $('btn-db-section-rules')?.classList.toggle('hidden', isGeneral || !sports.hasRuleSets(sport.sportId));
+
   renderPopover();
 }
 

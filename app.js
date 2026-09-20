@@ -12,8 +12,12 @@ import { acquireWakeLock, releaseWakeLock } from './js/wakelock.js';
 import * as teambuilder from './js/teambuilder.js';
 import * as fanger from './js/fanger.js';
 import * as rules from './js/rules.js';
+import * as sports from './js/sports.js';
 import * as sportmode from './js/sportmode.js';
 import * as sportsUI from './js/sports-ui.js';
+import * as sportRules from './js/sportrules.js';
+import * as footballsetup from './js/footballsetup.js';
+import * as exerciseroulette from './js/exerciseroulette.js';
 import * as customgames from './js/customgames.js';
 import * as communitygames from './js/communitygames.js';
 import { loadCommunityGameForDeepLink } from './js/community-deeplink.js';
@@ -71,8 +75,47 @@ function enterHome() {
   const count = presets.getAll().length;
   const badge = document.getElementById('home-preset-badge');
   if (badge) badge.textContent = `${count} gespeichert`;
+  renderHomeSportContext();
   renderHomeQuickStopwatch();
   loadCommunityGames();
+}
+
+// Beschriftet CTA und Schnellwerkzeug nach dem aktiven Sportmodus. Im
+// Allgemeinsport steht hier weiterhin exakt der bisherige Wortlaut.
+function renderHomeSportContext() {
+  const general = sportmode.isGeneral();
+  const sport = sportmode.getSelectedSport();
+  const name = general ? null : sport?.name;
+
+  const databaseSub = document.getElementById('home-database-sub');
+  if (databaseSub) databaseSub.textContent = name
+    ? `${name}-Übungen, Regeln & gespeicherte Presets`
+    : 'Spiele, Übungen, Regeln & gespeicherte Presets';
+
+  const heroLabel = document.getElementById('home-hero-label');
+  const heroSub = document.getElementById('home-hero-sub');
+  const heroBtn = document.getElementById('btn-new-match');
+  const matchLabel = name === 'Fußball' ? 'Fußballmatch starten' : (name ? `${name}-Match starten` : 'Match starten');
+  if (heroLabel) heroLabel.textContent = matchLabel;
+  if (heroSub) heroSub.textContent = name ? 'Altersklasse · Spielzeit · Anpfiff' : 'Spielen · Bewegen · Zusammen';
+  const matchAriaLabel = name === 'Fußball' ? 'Fußballmatch starten' : (name ? `Neues ${name}-Match starten` : 'Neues Match starten');
+  if (heroBtn) heroBtn.setAttribute('aria-label', matchAriaLabel);
+
+  const l = general ? exerciseroulette.GENERAL_LABELS : exerciseroulette.labels(name);
+  const quickLabel = document.getElementById('quick-roulette-label');
+  const quickSub = document.getElementById('quick-roulette-sub');
+  const quickBtn = document.getElementById('btn-open-roulette');
+  if (quickLabel) quickLabel.textContent = l.quickLabel;
+  if (quickSub) quickSub.textContent = l.quickSub;
+  if (quickBtn) quickBtn.setAttribute('aria-label', l.quickAria);
+}
+
+// Ein Sportwechsel darf keinen Screen in einem fremden Kontext stehen lassen.
+// Registriert wird der Listener am Dateiende, direkt vor sportmode.restore().
+function syncSportContext() {
+  _exerciseRouletteCategory = exerciseroulette.ALL_CATEGORY;
+  renderHomeSportContext();
+  if (router.getCurrent() === 'screen-roulette' && !_rouletteSpinning) enterRoulette();
 }
 
 function refreshCommunityViews() {
@@ -144,8 +187,10 @@ function openCommunityGameFromUrl() {
 document.getElementById('btn-new-match').addEventListener('click', () =>
   router.navigateTo('screen-match-setup'));
 
-document.getElementById('btn-open-presets').addEventListener('click', () =>
-  router.navigateTo('screen-presets'));
+document.getElementById('btn-open-presets').addEventListener('click', () => {
+  _presetReturnScreen = 'screen-home';
+  router.navigateTo('screen-presets');
+});
 
 document.getElementById('btn-goto-tools').addEventListener('click', () =>
   router.navigateTo('screen-tools'));
@@ -823,6 +868,8 @@ function enterPresets() {
   loadCommunityGames();
 }
 
+let _presetReturnScreen = 'screen-home';
+
 function renderPresetList() {
   presets.renderList(
     preset => {
@@ -847,7 +894,7 @@ function renderPresetList() {
 }
 
 document.getElementById('btn-presets-back').addEventListener('click', () =>
-  router.navigateTo('screen-home'));
+  router.navigateTo(_presetReturnScreen));
 
 document.getElementById('btn-rules-back').addEventListener('click', () =>
   router.navigateTo('screen-home'));
@@ -892,6 +939,28 @@ function enterRules(opts = {}) {
     searchInput?.addEventListener('input', e => {
       _rulesFilter.search = e.target.value.trim().toLowerCase();
       renderRulesList();
+    });
+    const setDatabaseSection = activeId => {
+      document.querySelectorAll('#rules-subnav .db-subnav-item').forEach(btn => {
+        const active = btn.id === activeId;
+        btn.classList.toggle('db-subnav-item--active', active);
+        if (active) btn.setAttribute('aria-current', 'page');
+        else btn.removeAttribute('aria-current');
+      });
+    };
+    document.getElementById('btn-db-section-games')?.addEventListener('click', () => {
+      setDatabaseSection('btn-db-section-games');
+    });
+    document.getElementById('btn-db-section-presets')?.addEventListener('click', () => {
+      setDatabaseSection('btn-db-section-presets');
+      _presetReturnScreen = 'screen-rules';
+      router.navigateTo('screen-presets');
+    });
+    document.getElementById('btn-db-section-exercises')?.addEventListener('click', () => {
+      if (!sportmode.isGeneral()) router.navigateTo('screen-sport-exercises');
+    });
+    document.getElementById('btn-db-section-rules')?.addEventListener('click', () => {
+      if (!sportmode.isGeneral()) router.navigateTo('screen-sport-rules');
     });
   }
   buildRulesFilterChips();
@@ -1461,34 +1530,80 @@ document.getElementById('btn-rules-add').addEventListener('click', () => openCon
 // SPIEL-ROULETTE
 // ═══════════════════════════════════════════════════════════
 let _rouletteCategory = 'all';
-let _rouletteResult   = null;   // aktuell ausgelostes Preset
+let _rouletteResult   = null;   // aktuell ausgelostes Preset bzw. Übung
 let _rouletteSpinning = false;
+// Kategorie des Übungs-Roulettes. Bewusst getrennt von _rouletteCategory:
+// Spielkategorien und Übungskategorien dürfen sich nie überschreiben.
+let _exerciseRouletteCategory = exerciseroulette.ALL_CATEGORY;
 
 function _getRouletteExcluded() {
   return (storage.getItem('settings') || {}).rouletteExcluded || [];
 }
 
+// In einem Sportmodus zieht das Roulette ausschließlich Übungen dieser
+// Sportart; im Allgemeinsport bleibt es unverändert das Spiel-Roulette.
+function _rouletteIsExercise() {
+  return !sportmode.isGeneral();
+}
+
+function _rouletteLabels() {
+  return _rouletteIsExercise()
+    ? exerciseroulette.labels(sportmode.getSelectedSport()?.name)
+    : exerciseroulette.GENERAL_LABELS;
+}
+
+function _rouletteCandidates() {
+  if (!_rouletteIsExercise()) {
+    return presets.getRouletteCandidates(_rouletteCategory, _getRouletteExcluded());
+  }
+  const { sportId, modeId } = sportmode.getSelection();
+  return exerciseroulette.filterCandidates(sports.getExercises(sportId, modeId), _exerciseRouletteCategory);
+}
+
 function enterRoulette() {
   _rouletteSpinning = false;
+  const l = _rouletteLabels();
+  const title = document.getElementById('roulette-title');
+  if (title) title.textContent = l.title;
+  const intro = document.getElementById('roulette-intro');
+  if (intro) intro.textContent = l.intro;
+  const empty = document.getElementById('roulette-empty');
+  if (empty) empty.textContent = l.empty;
+  // Die Ausschlussliste gehört zur Spieledatenbank und hat im Übungs-Roulette
+  // keine Wirkung – sie wird dort nicht angeboten (und ist nicht fokussierbar).
+  document.getElementById('btn-roulette-exclude-open')
+    ?.classList.toggle('hidden', _rouletteIsExercise());
+  // „Match starten" braucht Teams – eine Übung bringt keine mit.
+  document.getElementById('btn-roulette-start')
+    ?.classList.toggle('hidden', _rouletteIsExercise());
+  const reset = document.getElementById('btn-roulette-reset');
+  if (reset && l.reset) reset.textContent = l.reset;
   buildRouletteCats();
   resetRouletteDisplay();
-  loadCommunityGames();
+  if (!_rouletteIsExercise()) loadCommunityGames();
 }
 
 function buildRouletteCats() {
   const row = document.getElementById('roulette-cats');
   if (!row) return;
   row.replaceChildren();
-  presets.ROULETTE_CATEGORIES.forEach(cat => {
+  const exercise = _rouletteIsExercise();
+  const options = exercise
+    ? exerciseroulette.categoryOptions(sports.getCategories(sportmode.getSelection().sportId))
+    : presets.ROULETTE_CATEGORIES.map(cat => ({ key: cat.key, label: `${cat.icon} ${cat.label}` }));
+  const activeKey = exercise ? _exerciseRouletteCategory : _rouletteCategory;
+
+  options.forEach(cat => {
     const btn = document.createElement('button');
     btn.type = 'button';
-    btn.className = 'roulette-cat-chip' + (cat.key === _rouletteCategory ? ' roulette-cat-chip--active' : '');
-    btn.textContent = `${cat.icon} ${cat.label}`;
+    btn.className = 'roulette-cat-chip' + (cat.key === activeKey ? ' roulette-cat-chip--active' : '');
+    btn.textContent = cat.label;
     btn.setAttribute('role', 'tab');
-    btn.setAttribute('aria-selected', String(cat.key === _rouletteCategory));
+    btn.setAttribute('aria-selected', String(cat.key === activeKey));
     btn.addEventListener('click', () => {
       if (_rouletteSpinning) return;
-      _rouletteCategory = cat.key;
+      if (exercise) _exerciseRouletteCategory = cat.key;
+      else _rouletteCategory = cat.key;
       buildRouletteCats();
       resetRouletteDisplay();
     });
@@ -1513,7 +1628,8 @@ function _clearRouletteImage() {
 
 function _showRouletteImage(preset) {
   const media = document.getElementById('roulette-media');
-  const rule = preset.rulesKey ? rules.getRule(preset.rulesKey) : null;
+  // Übungen haben keinen rulesKey und damit kein Spielbild.
+  const rule = preset?.rulesKey ? rules.getRule(preset.rulesKey) : null;
   if (!media || !rule) return;
   const iconEl = document.getElementById('roulette-icon');
   const img = createGameVisual({ ...rule, icon: preset.icon }, {
@@ -1530,27 +1646,46 @@ function _showRouletteImage(preset) {
 
 function resetRouletteDisplay() {
   _rouletteResult = null;
-  const candidates = presets.getRouletteCandidates(_rouletteCategory, _getRouletteExcluded());
+  const exercise = _rouletteIsExercise();
+  const l = _rouletteLabels();
+  const candidates = _rouletteCandidates();
   const display = document.getElementById('roulette-display');
   display.classList.remove('roulette-display--win', 'roulette-display--spin');
   document.getElementById('roulette-result-actions').classList.add('hidden');
   _hideRouletteRules();
   const spinBtn = document.getElementById('btn-roulette-spin');
   const empty = document.getElementById('roulette-empty');
+  // Der Filter-Reset gehört zum Übungs-Roulette: Im Spiel-Roulette regelt die
+  // Ausschlussliste den Topf, dort gibt es nichts zurückzusetzen.
+  const reset = document.getElementById('btn-roulette-reset');
   if (candidates.length === 0) {
     empty.classList.remove('hidden');
+    reset?.classList.toggle('hidden',
+      !exercise || !l.reset || _exerciseRouletteCategory === exerciseroulette.ALL_CATEGORY);
     spinBtn.disabled = true;
-    _setRouletteFace('🎲', 'Keine Spiele', '—');
+    _setRouletteFace('🎲', exercise ? 'Keine Übungen' : 'Keine Spiele', '—');
   } else {
     empty.classList.add('hidden');
+    reset?.classList.add('hidden');
     spinBtn.disabled = false;
-    _setRouletteFace('🎲', 'Bereit?', `${candidates.length} Spiele im Topf`);
+    _setRouletteFace('🎲', l.readyName, exercise
+      ? exerciseroulette.countLabel(candidates.length)
+      : `${candidates.length} Spiele im Topf`);
   }
+}
+
+// Setzt die Kategorie-Auswahl des Übungs-Roulettes zurück – der einzige Filter,
+// den dieser Screen kennt. Das Spiel-Roulette bleibt unberührt.
+function resetRouletteFilters() {
+  if (_rouletteSpinning || !_rouletteIsExercise()) return;
+  _exerciseRouletteCategory = exerciseroulette.ALL_CATEGORY;
+  buildRouletteCats();
+  resetRouletteDisplay();
 }
 
 function spinRoulette() {
   if (_rouletteSpinning) return;
-  const candidates = presets.getRouletteCandidates(_rouletteCategory, _getRouletteExcluded());
+  const candidates = _rouletteCandidates();
   if (candidates.length === 0) return;
 
   _rouletteSpinning = true;
@@ -1586,10 +1721,17 @@ function _finishSpin(preset) {
   const display = document.getElementById('roulette-display');
   display.classList.remove('roulette-display--spin');
   display.classList.add('roulette-display--win');
+  // Eine Übung hat weder Teams noch Spieldauer – deren Meta-Zeile kommt aus
+  // der Übung selbst, nicht aus den Preset-Feldern.
+  const isExercise = exerciseroulette.isExerciseResult(preset);
   const meta = [];
-  if (preset.durationMs) meta.push(`${Math.floor(preset.durationMs / 60000)} Min.`);
-  meta.push(`${preset.teamA.name} vs. ${preset.teamB.name}`);
-  if (preset.fromCommunity) meta.push('Community');
+  if (isExercise) {
+    meta.push(...exerciseroulette.resultMeta(preset));
+  } else {
+    if (preset.durationMs) meta.push(`${Math.floor(preset.durationMs / 60000)} Min.`);
+    meta.push(`${preset.teamA.name} vs. ${preset.teamB.name}`);
+    if (preset.fromCommunity) meta.push('Community');
+  }
   _setRouletteFace(preset.icon, preset.name, meta.join(' · '));
   _showRouletteImage(preset);
   renderRouletteRules(preset);
@@ -1609,8 +1751,10 @@ function _hideRouletteRules() {
 function renderRouletteRules(preset) {
   const el = document.getElementById('roulette-rules');
   if (!el) return;
-  const rule = preset.rulesKey ? rules.getRule(preset.rulesKey) : null;
-  if (!rule) { _hideRouletteRules(); return; } // z. B. selbst angelegtes Preset ohne Regeln
+  // Ohne rulesKey gibt es keine Spielregeln – z. B. bei einem selbst angelegten
+  // Preset oder bei einer Übung aus dem Übungs-Roulette.
+  const rule = preset?.rulesKey ? rules.getRule(preset.rulesKey) : null;
+  if (!rule) { _hideRouletteRules(); return; }
   el.replaceChildren();
 
   const title = document.createElement('div');
@@ -1682,6 +1826,7 @@ document.getElementById('btn-roulette-back').addEventListener('click', () =>
   router.navigateTo('screen-home'));
 document.getElementById('btn-roulette-spin').addEventListener('click', spinRoulette);
 document.getElementById('btn-roulette-again').addEventListener('click', spinRoulette);
+document.getElementById('btn-roulette-reset')?.addEventListener('click', resetRouletteFilters);
 document.getElementById('btn-roulette-start').addEventListener('click', () => {
   if (_rouletteResult) startMatchFromPreset(_rouletteResult);
 });
@@ -2206,6 +2351,12 @@ document.querySelectorAll('.setup-team-slot').forEach(slotEl => {
 let _setupDurationSetActive = null;
 let _setupColorSetActive = null;
 let _setupSelectedPresetId = null;
+// Sportkontext dieses Setups. Wird beim Betreten festgelegt und beim Anpfiff
+// unverändert an match.startMatch übergeben.
+let _setupContext = null;
+let _setupAgeGroups = [];
+let _setupAgeKey = null;      // null = keine Altersklasse gewählt
+let _setupPhaseIndex = null;  // null = Spielzeit kommt aus der freien Auswahl
 
 function enterSetup() {
   match.initSetup();
@@ -2220,10 +2371,142 @@ function enterSetup() {
     document.getElementById('setup-duration-chips'),
     DURATION_OPTIONS,
     null,
-    ms => match.setDuration(ms)
+    ms => {
+      match.setDuration(ms);
+      // Freie Spieldauer schlägt den Regelkarten-Vorschlag: Auswahl lösen,
+      // damit keine Phase angezeigt wird, die nicht mehr gilt.
+      _setupPhaseIndex = null;
+      renderSetupPhases();
+    }
   );
+  _setupContext = resolveSetupContext();
+  _setupAgeKey = null;
+  _setupPhaseIndex = null;
+  renderSetupContext();
   buildPresetChips(_setupColorSetActive, _setupSelectedPresetId);
   loadCommunityGames();
+}
+
+// Der CTA trägt den Sportkontext explizit ins Setup. Für Fußball wird er über
+// footballsetup aufgelöst: Der Kontext bleibt Fußball, auch wenn der Modus
+// fehlt – dann erscheint ein sichtbarer Hinweis statt eines stillen Wechsels.
+function resolveSetupContext() {
+  const selection = sportmode.getSelection();
+  if (selection.sportId !== footballsetup.FOOTBALL_SPORT_ID) return sportmode.getMatchContext();
+  const defaultMode = sports.getDefaultMode(footballsetup.FOOTBALL_SPORT_ID)?.modeId ?? null;
+  return footballsetup.resolveFootballContext(selection, defaultMode);
+}
+
+function renderSetupContext() {
+  const isFootball = _setupContext?.sportId === footballsetup.FOOTBALL_SPORT_ID;
+  const sport = sports.getSport(_setupContext?.sportId);
+  const title = document.getElementById('setup-title');
+  if (title) title.textContent = sport && !sports.isGeneralSport(sport.sportId)
+    ? `${sport.name}-Match einrichten`
+    : 'Match einrichten';
+
+  const hint = document.getElementById('setup-context-hint');
+  if (hint) hint.textContent = _setupContext?.notice ?? '';
+
+  const section = document.getElementById('setup-agegroups');
+  if (section) section.classList.toggle('hidden', !isFootball);
+  if (!isFootball) {
+    _setupAgeGroups = [];
+    return;
+  }
+  _setupAgeGroups = footballsetup.buildAgeGroups(sports.getRuleSets(footballsetup.FOOTBALL_SPORT_ID));
+  const note = document.getElementById('setup-agegroups-hint');
+  if (note) note.textContent = footballsetup.REGIONAL_VARIATION_NOTE;
+  renderSetupAgeChips();
+  renderSetupPhases();
+}
+
+function _setupSelectedAgeGroup() {
+  return _setupAgeGroups.find(group => group.key === _setupAgeKey) ?? null;
+}
+
+function renderSetupAgeChips() {
+  const row = document.getElementById('setup-age-chips');
+  if (!row) return;
+  row.replaceChildren();
+  _setupAgeGroups.forEach(group => {
+    const chip = document.createElement('button');
+    chip.type = 'button';
+    const active = group.key === _setupAgeKey;
+    chip.className = 'roulette-cat-chip' + (active ? ' roulette-cat-chip--active' : '');
+    chip.textContent = footballsetup.ageChipLabel(group);
+    chip.dataset.ageKey = group.key;
+    chip.setAttribute('aria-pressed', String(active));
+    chip.addEventListener('click', () => {
+      // Erneutes Tippen hebt die Altersklasse wieder auf.
+      _setupAgeKey = active ? null : group.key;
+      _setupPhaseIndex = null;
+      renderSetupAgeChips();
+      renderSetupPhases();
+    });
+    row.appendChild(chip);
+  });
+}
+
+function renderSetupPhases() {
+  const row = document.getElementById('setup-phase-chips');
+  const empty = document.getElementById('setup-phase-empty');
+  const sourceList = document.getElementById('setup-age-sources');
+  const note = document.getElementById('setup-age-note');
+  if (!row) return;
+  row.replaceChildren();
+  sourceList?.replaceChildren();
+
+  const group = _setupSelectedAgeGroup();
+  if (!group) {
+    if (empty) empty.textContent = 'Altersklasse wählen – die Spielzeit-Vorschläge stammen dann aus der Regelkarte.';
+    if (note) note.textContent = '';
+    return;
+  }
+
+  group.phases.forEach((phase, index) => {
+    const chip = document.createElement('button');
+    chip.type = 'button';
+    const active = index === _setupPhaseIndex;
+    chip.className = 'duration-chip' + (active ? ' duration-chip--active' : '');
+    chip.textContent = footballsetup.phaseChipLabel(phase);
+    chip.dataset.phaseIndex = String(index);
+    chip.setAttribute('aria-pressed', String(active));
+    chip.addEventListener('click', () => {
+      _setupPhaseIndex = index;
+      applySetupPhase(phase);
+      renderSetupPhases();
+    });
+    row.appendChild(chip);
+  });
+
+  if (empty) {
+    empty.textContent = group.hasPhases
+      ? ''
+      : 'Für diese Altersklasse liegt keine belegte Spielzeit vor – bitte unten frei wählen.';
+  }
+  for (const line of group.sourceLines) {
+    const li = document.createElement('li');
+    li.textContent = line;
+    sourceList?.appendChild(li);
+  }
+  if (note) {
+    note.textContent = group.status
+      ? `${sportRules.SEASON_HINT} · Saison ${group.season} · ${sportRules.statusLabel(group.status)}`
+      : sportRules.SEASON_HINT;
+  }
+}
+
+// Phase → Spieldauer/Pause/Perioden. durationMs ist die Zeit je Periode; die
+// freie Spieldauer-Reihe darunter zeigt die Auswahl mit an, wenn es dort einen
+// passenden Chip gibt.
+function applySetupPhase(phase) {
+  const setup = footballsetup.matchSetupFromPhase(phase);
+  if (!setup) return;
+  match.setDuration(setup.durationMs);
+  match.setBreak(setup.breakMs);
+  match.setPeriods(setup.periods);
+  _setupDurationSetActive?.(setup.durationMs);
 }
 
 function buildColorPickers() {
@@ -2287,6 +2570,10 @@ function buildPresetChips(selectColorIdx, selectedPresetId = null) {
     match.setBreak(preset.breakMs ?? null);
     match.setPeriods(preset.periods ?? 2);
     _setupDurationSetActive?.(preset.durationMs ?? null);
+    // Ein Preset bringt seine eigene Spielzeit mit – der Regelkarten-Vorschlag
+    // gilt dann nicht mehr.
+    _setupPhaseIndex = null;
+    renderSetupPhases();
   }, selectedPresetId);
 }
 
@@ -2295,6 +2582,7 @@ document.getElementById('btn-setup-back').addEventListener('click', () =>
 
 document.getElementById('btn-start-match').addEventListener('click', () => {
   const s = match.getSetup();
+  const context = _setupContext ?? sportmode.getMatchContext();
   match.startMatch(
     s.teamAName,
     s.teamBName,
@@ -2303,7 +2591,7 @@ document.getElementById('btn-start-match').addEventListener('click', () => {
     undefined,
     undefined,
     null,
-    sportmode.getMatchContext(),
+    { sportId: context.sportId, modeId: context.modeId },
   );
   router.navigateTo('screen-match-live');
 });
@@ -2369,6 +2657,19 @@ function _setLiveCrest(slot, name, fallbackId) {
   image.alt = crest?.name || '';
 }
 
+// Sportkontext des laufenden Matches. Quelle ist immer das Match selbst –
+// eine wiederhergestellte Session behält ihren Kontext, auch wenn inzwischen
+// eine andere Sportart ausgewählt wurde. Alte Matches ohne Kontext bleiben
+// beim bisherigen „Live-Match".
+function renderLiveSportContext(live) {
+  const sport = live?.sportId ? sports.getSport(live.sportId) : null;
+  const name = sport && !sports.isGeneralSport(sport.sportId) ? sport.name : null;
+  const label = document.getElementById('live-sport-label');
+  if (label) label.textContent = name ? `${name}-Match` : 'Live-Match';
+  const context = document.getElementById('live-sport-context');
+  if (context) context.textContent = name ? `Live-Match · ${name}` : 'Live-Match';
+}
+
 function enterLive() {
   const s = match.getLive();
   if (!s) return;
@@ -2384,6 +2685,7 @@ function enterLive() {
   document.getElementById('live-team-b-name').textContent = s.teamB.name;
   _setLiveCrest('a', s.teamA.name, _setupTeamSelection.a);
   _setLiveCrest('b', s.teamB.name, _setupTeamSelection.b);
+  renderLiveSportContext(s);
   pill.classList.remove('running', 'ending', 'finished', 'break');
   if (_breakActive) pill.classList.add('break');
   else if (_matchEnded) pill.classList.add('finished');
@@ -3425,6 +3727,7 @@ initSettings();
 // Sportmodus vor dem ersten Rendern wiederherstellen, damit Header, Label und
 // Übungsansicht direkt zum gespeicherten Modus passen.
 sportsUI.init({ navigate: id => router.navigateTo(id) });
+sportmode.onChange(syncSportContext);
 sportmode.restore();
 checkSession();
 router.navigateTo('screen-home');
