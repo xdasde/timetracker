@@ -5,6 +5,7 @@ modeId: football-uebungen
 name: Überzahl auf zwei Tore
 icon: ⚽
 category: Angriff
+ageBands: [E_U10_U11,D_U12_U13,C_U14_U15]
 goal: Schnelle Seitenverlagerung
 setup: Hütchen, Bälle und zwei Minitore; Feld 20 × 25 m; 6–12 Personen.
 ---

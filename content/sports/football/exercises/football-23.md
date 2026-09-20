@@ -5,6 +5,7 @@ modeId: football-uebungen
 name: Reaktionsfarben mit Ball
 icon: ⚽
 category: Koordination
+ageBands: [G_U6_U7,F_U8_U9,E_U10_U11,D_U12_U13]
 goal: Reaktion und enge Ballführung
 setup: Hütchen, Bälle und zwei Minitore; Feld 20 × 25 m; 6–12 Personen.
 ---

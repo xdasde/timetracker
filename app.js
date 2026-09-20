@@ -44,6 +44,7 @@ router.register('screen-teambuilder-lineup', enterLineup, leaveLineup);
 router.register('screen-tb-match', enterTbMatch, leaveTbMatch);
 router.register('screen-rules', enterRules);
 router.register('screen-sport-exercises', sportsUI.enterExercises);
+router.register('screen-sport-rules', sportsUI.enterRules);
 router.register('screen-roulette', enterRoulette);
 router.register('screen-fanger', enterFanger);
 router.register('screen-countoff', enterCountoff, leaveCountoff);
@@ -93,6 +94,23 @@ function refreshCommunityViews() {
 
 function loadCommunityGames(force = true) {
   communitygames.load({ force }).then(refreshCommunityViews);
+}
+
+// Deep-Link von der Landingpage: ?sport=<id>&view=exercises
+// Beide Parameter sind optional. Ohne sie startet die App unverändert auf dem
+// Home-Screen mit der zuletzt gespeicherten Sportauswahl.
+function applyLandingDeepLink() {
+  const params = new URL(window.location.href).searchParams;
+
+  const sport = params.get('sport');
+  // Unbekannte Werte fallen in sportmode/resolveSportId still auf
+  // Allgemeinsport zurück – ein kaputter Link blockiert die App also nie.
+  if (sport) sportmode.select(sport);
+
+  if (params.get('view') !== 'exercises') return;
+  // Im Allgemeinsport gibt es keine sportartspezifische Übungsliste; dort ist
+  // die Datenbank (Spiele & Übungen) der richtige Einstieg.
+  router.navigateTo(sportmode.isGeneral() ? 'screen-rules' : 'screen-sport-exercises');
 }
 
 function openCommunityGameFromUrl() {
@@ -3410,4 +3428,5 @@ sportsUI.init({ navigate: id => router.navigateTo(id) });
 sportmode.restore();
 checkSession();
 router.navigateTo('screen-home');
+applyLandingDeepLink();
 openCommunityGameFromUrl();

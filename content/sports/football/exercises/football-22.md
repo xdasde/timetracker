@@ -5,6 +5,7 @@ modeId: football-uebungen
 name: Sprint ohne Ball
 icon: ⚽
 category: Athletik
+ageBands: [E_U10_U11,D_U12_U13,C_U14_U15,B_U16_U17,A_U18_U19]
 goal: Explosiver Antritt auf Kommando
 setup: Hütchen, Bälle und zwei Minitore; Feld 20 × 25 m; 6–12 Personen.
 ---

@@ -125,9 +125,14 @@
             <span class="home-row-text"><strong>Datenbank</strong><small>Spiele, Regeln &amp; Tipps</small></span>
             <svg class="home-row-chevron" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 6 15 12 9 18"/></svg>
           </button>
-          <button class="home-row home-row--sport hidden" id="btn-open-sport-rules" aria-label="Sportübungen und Regeln öffnen">
+          <button class="home-row home-row--sport hidden" id="btn-open-sport-rules" aria-label="Übungen öffnen">
             <span class="home-row-sport-icon" id="sport-rules-icon" aria-hidden="true">⚽</span>
-            <span class="home-row-text"><strong id="sport-rules-title">Regeln</strong><small id="sport-rules-sub">Übungen &amp; Regeln</small></span>
+            <span class="home-row-text"><strong id="sport-rules-title">Übungen</strong><small id="sport-rules-sub">Übungsdatenbank</small></span>
+            <svg class="home-row-chevron" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 6 15 12 9 18"/></svg>
+          </button>
+          <button class="home-row home-row--sport hidden" id="btn-open-sport-rulebook" aria-label="Regeln und Spielbetrieb öffnen">
+            <span class="home-row-sport-icon" id="sport-rulebook-icon" aria-hidden="true">📋</span>
+            <span class="home-row-text"><strong id="sport-rulebook-title">Regeln</strong><small id="sport-rulebook-sub">Altersklassen · Quellen · Stand</small></span>
             <svg class="home-row-chevron" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 6 15 12 9 18"/></svg>
           </button>
           <button class="home-row" id="btn-open-fanger" aria-label="Auslosen: Auswahl &amp; Reihenfolge">
@@ -541,6 +546,7 @@
           <svg class="rules-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
           <input type="search" id="sport-exercises-search" class="rules-search-input" placeholder="Übung suchen…" autocomplete="off" aria-label="Übungen durchsuchen">
         </div>
+        <div id="sport-exercises-age" class="roulette-cat-row rules-filter-row hidden" role="group" aria-label="Nach Altersklasse filtern"></div>
         <div id="sport-exercises-filter" class="roulette-cat-row rules-filter-row" role="group" aria-label="Nach Kategorie filtern"></div>
         <p id="sport-exercises-count" class="rules-count" aria-live="polite"></p>
         <div id="sport-exercises-list" class="rules-list" role="list"></div>
@@ -548,8 +554,59 @@
           <p id="sport-exercises-empty-text">Keine Übungen gefunden.</p>
           <button class="btn-secondary" id="btn-sport-exercises-reset">Filter zurücksetzen</button>
         </div>
+        <div class="sport-crosslinks">
+          <button class="btn-secondary" id="btn-sport-exercises-to-rules">📋 Regeln &amp; Spielbetrieb</button>
+          <button class="btn-secondary" id="btn-sport-exercises-to-db">📚 Allgemeine Spiele-Datenbank</button>
+        </div>
+        <button class="rules-add-btn" id="btn-sport-exercise-feedback">
+          <span aria-hidden="true">＋</span> Übung fehlt oder verbessern? Melden
+        </button>
       </div>
     </section>
+
+    <!-- ═══ Screen: Regeln & Spielbetrieb (eigene Domäne, keine Übungen) ═══ -->
+    <section id="screen-sport-rules" class="screen screen-deco">
+      <div class="screen-header">
+        <button class="btn-back" id="btn-sport-rules-back" aria-label="Zurück">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <h1 class="screen-title" id="sport-rules-screen-title">Regeln</h1>
+      </div>
+      <div class="screen-body">
+        <p class="rules-intro" id="sport-rules-intro"></p>
+        <p class="rule-season-hint" id="sport-rules-hint">Stand/Saison – Verband prüfen</p>
+        <div id="sport-rules-age" class="roulette-cat-row rules-filter-row" role="group" aria-label="Nach Altersklasse filtern"></div>
+        <p id="sport-rules-count" class="rules-count" aria-live="polite"></p>
+        <div id="sport-rules-list" class="rules-list" role="list"></div>
+        <p id="sport-rules-empty" class="rules-empty hidden">Für diese Altersklasse liegt keine Regelkarte vor.</p>
+        <button class="rules-add-btn" id="btn-sport-rule-feedback">
+          <span aria-hidden="true">＋</span> Regel unklar oder veraltet? Melden
+        </button>
+        <p class="rules-intro rule-community-note" id="sport-rules-community"></p>
+      </div>
+    </section>
+
+    <!-- ═══ Overlay: Datensparsames Feedback (Regeln/Übungen) ═══ -->
+    <div class="modal-backdrop hidden" id="sport-feedback-modal" role="dialog" aria-modal="true" aria-labelledby="sport-feedback-title">
+      <div class="modal-sheet">
+        <h2 class="modal-title" id="sport-feedback-title">Feedback melden</h2>
+        <p class="modal-text" id="sport-feedback-privacy"></p>
+        <div class="roulette-cat-row" id="sport-feedback-topics" role="group" aria-label="Kategorie der Meldung"></div>
+        <div class="roulette-cat-row" id="sport-feedback-age" role="group" aria-label="Altersklasse"></div>
+        <label class="field-label" for="sport-feedback-association">Verband/Kreis (optional)</label>
+        <input type="text" id="sport-feedback-association" class="rules-search-input" maxlength="80" autocomplete="off" placeholder="z. B. FLVW-Kreis …">
+        <label class="field-label" for="sport-feedback-source">Quellenhinweis (optional)</label>
+        <input type="text" id="sport-feedback-source" class="rules-search-input" maxlength="300" autocomplete="off" placeholder="Link oder Ordnung/Abschnitt">
+        <label class="field-label" for="sport-feedback-text">Worum geht es?</label>
+        <textarea id="sport-feedback-text" class="rules-search-input" rows="4" maxlength="1200"></textarea>
+        <p class="modal-text" id="sport-feedback-moderation"></p>
+        <p class="modal-text" id="sport-feedback-status" aria-live="polite"></p>
+        <div class="modal-actions">
+          <button class="btn-secondary" id="btn-sport-feedback-cancel">Abbrechen</button>
+          <button class="btn-primary" id="btn-sport-feedback-copy">Meldung kopieren</button>
+        </div>
+      </div>
+    </div>
 
     <!-- ═══ Screen: Spiel-Roulette ═══ -->
     <section id="screen-roulette" class="screen screen-deco">

@@ -5,6 +5,7 @@ modeId: football-uebungen
 name: Pressing-Auslöser
 icon: ⚽
 category: Abwehr
+ageBands: [C_U14_U15,B_U16_U17,A_U18_U19]
 goal: Gemeinsames Anlaufen im richtigen Moment
 setup: Hütchen, Bälle und zwei Minitore; Feld 20 × 25 m; 6–12 Personen.
 ---

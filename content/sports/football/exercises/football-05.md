@@ -5,6 +5,7 @@ modeId: football-uebungen
 name: Rondo 4 gegen 1
 icon: ⚽
 category: Ballbesitz
+ageBands: [E_U10_U11,D_U12_U13,C_U14_U15,B_U16_U17]
 goal: Schnelle Entscheidungen unter Gegnerdruck
 setup: Hütchen, Bälle und zwei Minitore; Feld 20 × 25 m; 6–12 Personen.
 ---

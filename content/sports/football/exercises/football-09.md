@@ -5,6 +5,7 @@ modeId: football-uebungen
 name: Finte und Torabschluss
 icon: ⚽
 category: Torschuss
+ageBands: [E_U10_U11,D_U12_U13,C_U14_U15]
 goal: Täuschung vor dem Abschluss
 setup: Hütchen, Bälle und zwei Minitore; Feld 20 × 25 m; 6–12 Personen.
 ---

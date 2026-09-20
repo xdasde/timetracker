@@ -5,6 +5,7 @@ modeId: football-uebungen
 name: Steilpass und Lauf
 icon: ⚽
 category: Passen
+ageBands: [D_U12_U13,C_U14_U15,B_U16_U17]
 goal: Timing von Pass und Tiefenlauf
 setup: Hütchen, Bälle und zwei Minitore; Feld 20 × 25 m; 6–12 Personen.
 ---

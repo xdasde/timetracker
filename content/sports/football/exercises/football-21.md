@@ -5,6 +5,7 @@ modeId: football-uebungen
 name: Schnelligkeit mit Ball
 icon: ⚽
 category: Athletik
+ageBands: [F_U8_U9,E_U10_U11,D_U12_U13,C_U14_U15]
 goal: Antritt und Ballkontrolle verbinden
 setup: Hütchen, Bälle und zwei Minitore; Feld 20 × 25 m; 6–12 Personen.
 ---

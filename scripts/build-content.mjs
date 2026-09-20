@@ -22,7 +22,7 @@ import { dirname, join, basename } from 'node:path';
 import { resolveBuiltinImageFields, sniffImageType, extensionMatchesType } from '../js/gameimages.js';
 import { validateImageManifest, MANIFEST_FILE } from './image-manifest.mjs';
 import {
-  parseSport, parseMode, parseExercise, validateCollection, buildAliasMap,
+  parseSport, parseMode, parseExercise, parseRuleSet, validateCollection, buildAliasMap,
 } from './sportcontent.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -206,6 +206,7 @@ function buildSports() {
   const sports = [];
   const modes = [];
   const exercises = [];
+  const ruleSets = [];
   if (!existsSync(SPORTS_DIR)) throw new Error(`Verzeichnis ${SPORTS_DIR} fehlt`);
 
   const sportDirs = readdirSync(SPORTS_DIR)
@@ -240,10 +241,24 @@ function buildSports() {
         exercises.push(ex);
       }
     }
+
+    // Regel-/Spielbetriebscontent liegt bewusst in einem eigenen Ordner und
+    // wird nie mit den Übungen zusammengeführt.
+    const rulesDir = join(SPORTS_DIR, dir, 'rules');
+    if (existsSync(rulesDir)) {
+      for (const f of readdirSync(rulesDir).filter(f => f.endsWith('.md')).sort()) {
+        const rel = `content/sports/${dir}/rules/${f}`;
+        const rs = parseRuleSet(readFileSync(join(rulesDir, f), 'utf8'), rel);
+        if (rs.sportId !== dir) throw new Error(`${rel}: sportId passt nicht zum Ordner`);
+        if (basename(f, '.md') !== rs.id) throw new Error(`${rel}: Dateiname muss "${rs.id}.md" lauten`);
+        ruleSets.push(rs);
+      }
+    }
   }
 
+  ruleSets.sort((a, b) => a.sportId.localeCompare(b.sportId) || a.order - b.order || a.id.localeCompare(b.id));
   sports.sort((a, b) => a.order - b.order || a.sportId.localeCompare(b.sportId));
-  const errors = validateCollection({ sports, modes, exercises });
+  const errors = validateCollection({ sports, modes, exercises, ruleSets });
   if (errors.length) throw new Error(errors.slice(0, 5).join('; '));
 
   const header =
@@ -258,9 +273,11 @@ export const SPORT_MODES = ${JSON.stringify(modes, null, 2)};
 
 export const SPORT_EXERCISES = ${JSON.stringify(exercises, null, 2)};
 
+export const SPORT_RULE_SETS = ${JSON.stringify(ruleSets, null, 2)};
+
 export const SPORT_ALIASES = ${JSON.stringify(buildAliasMap(sports), null, 2)};
 `;
-  return { sports, modes, exercises, out };
+  return { sports, modes, exercises, ruleSets, out };
 }
 
 function validate(e, file) {
@@ -309,7 +326,7 @@ function build() {
 
   if (VALIDATE_ONLY) {
     console.log(`✓ ${entries.length} Einträge erfolgreich validiert.`);
-    console.log(`✓ ${sportsBuild.sports.length} Sportarten, ${sportsBuild.modes.length} Modi, ${sportsBuild.exercises.length} Übungen validiert.`);
+    console.log(`✓ ${sportsBuild.sports.length} Sportarten, ${sportsBuild.modes.length} Modi, ${sportsBuild.exercises.length} Übungen, ${sportsBuild.ruleSets.length} Regelkarten validiert.`);
     return;
   }
 
@@ -327,14 +344,14 @@ function build() {
       process.exit(1);
     }
     console.log(`✓ ${entries.length} Einträge validiert – Bundle ist aktuell.`);
-    console.log(`✓ ${sportsBuild.sports.length} Sportarten, ${sportsBuild.modes.length} Modi, ${sportsBuild.exercises.length} Übungen – Sport-Bundle ist aktuell.`);
+    console.log(`✓ ${sportsBuild.sports.length} Sportarten, ${sportsBuild.modes.length} Modi, ${sportsBuild.exercises.length} Übungen, ${sportsBuild.ruleSets.length} Regelkarten – Sport-Bundle ist aktuell.`);
     return;
   }
 
   writeFileSync(OUT_FILE, out);
   console.log(`✓ ${entries.length} Einträge → js/content.generated.js`);
   writeFileSync(SPORTS_OUT_FILE, sportsBuild.out);
-  console.log(`✓ ${sportsBuild.sports.length} Sportarten / ${sportsBuild.modes.length} Modi / ${sportsBuild.exercises.length} Übungen → js/sports.generated.js`);
+  console.log(`✓ ${sportsBuild.sports.length} Sportarten / ${sportsBuild.modes.length} Modi / ${sportsBuild.exercises.length} Übungen / ${sportsBuild.ruleSets.length} Regelkarten → js/sports.generated.js`);
 }
 
 try {

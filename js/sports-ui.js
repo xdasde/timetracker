@@ -2,6 +2,7 @@
 // sportartspezifische Übungsansicht. Kein Contentwissen in app.js.
 import * as sports from './sports.js';
 import * as sportmode from './sportmode.js';
+import * as sportRules from './sportrules.js';
 
 const GENERAL = {
   sportId: sports.GENERAL_SPORT_ID,
@@ -15,7 +16,10 @@ const $ = id => document.getElementById(id);
 
 // Filterzustand der Übungsliste. Bleibt beim Öffnen des Detailbereichs und
 // bei Back erhalten – nur ein Sportwechsel setzt ihn zurück.
-const _filter = { search: '', category: 'all' };
+const _filter = { search: '', category: 'all', ageBand: 'all' };
+// Altersklassenfilter der Regelansicht. Bewusst getrennt von _filter: Regeln
+// und Übungen sind eigene Domänen und dürfen sich nie gegenseitig filtern.
+const _ruleFilter = { ageBand: 'all' };
 let _wired = false;
 let _navigate = null;
 let _popoverOpen = false;
@@ -26,15 +30,20 @@ export function init({ navigate }) {
   sportmode.onChange(() => {
     _filter.search = '';
     _filter.category = 'all';
+    _filter.ageBand = 'all';
+    _ruleFilter.ageBand = 'all';
     const input = $('sport-exercises-search');
     if (input) input.value = '';
     renderSwitcher();
     announceMode();
-    // Beim Verlassen eines Sportmodus die Sportansicht nicht offen lassen.
-    if (sportmode.isGeneral() && document.getElementById('screen-sport-exercises')?.classList.contains('screen--active')) {
+    // Beim Verlassen eines Sportmodus die Sportansichten nicht offen lassen.
+    const isActive = id => document.getElementById(id)?.classList.contains('screen--active');
+    if (sportmode.isGeneral() && (isActive('screen-sport-exercises') || isActive('screen-sport-rules'))) {
       _navigate?.('screen-home');
-    } else if (document.getElementById('screen-sport-exercises')?.classList.contains('screen--active')) {
+    } else if (isActive('screen-sport-exercises')) {
       renderExercises();
+    } else if (isActive('screen-sport-rules')) {
+      renderRules();
     }
   });
   renderSwitcher();
@@ -66,16 +75,25 @@ export function renderSwitcher() {
     pill.classList.toggle('sport-pill--active', !isGeneral);
   }
 
-  // Regeln-Einstieg ausschließlich in echten Sportmodi.
+  // Übungs-Einstieg ausschließlich in echten Sportmodi. Diese Kachel führt in
+  // die Übungsdatenbank – Regeln haben ihren eigenen Einstieg darunter.
   const rulesBtn = $('btn-open-sport-rules');
   if (rulesBtn) {
     rulesBtn.classList.toggle('hidden', isGeneral);
-    const rulesLabel = sportmode.getRulesLabel();
     if (!isGeneral) {
       $('sport-rules-icon').textContent = sport.icon;
-      $('sport-rules-title').textContent = rulesLabel;
+      $('sport-rules-title').textContent = 'Übungen';
       $('sport-rules-sub').textContent = `${sport.name} · ${sports.countExercises(sport.sportId)} Übungen`;
-      rulesBtn.setAttribute('aria-label', `${rulesLabel} und Übungen für ${sport.name} öffnen`);
+      rulesBtn.setAttribute('aria-label', `Übungsdatenbank für ${sport.name} öffnen`);
+    }
+  }
+  const rulebookBtn = $('btn-open-sport-rulebook');
+  if (rulebookBtn) {
+    rulebookBtn.classList.toggle('hidden', isGeneral || !sports.hasRuleSets(sport.sportId));
+    if (!isGeneral) {
+      $('sport-rulebook-icon').textContent = sport.icon;
+      $('sport-rulebook-title').textContent = sportmode.getRulesLabel() ?? 'Regeln';
+      $('sport-rulebook-sub').textContent = `${sport.name} · Quellen und Stand`;
     }
   }
 
@@ -171,7 +189,17 @@ function wire() {
   });
 
   $('btn-open-sport-rules')?.addEventListener('click', () => _navigate?.('screen-sport-exercises'));
+  $('btn-open-sport-rulebook')?.addEventListener('click', () => _navigate?.('screen-sport-rules'));
   $('btn-sport-exercises-back')?.addEventListener('click', () => _navigate?.('screen-home'));
+  // Querverweise aus der Übungsliste: Regeldomäne bzw. allgemeine Spiele-Datenbank.
+  $('btn-sport-exercises-to-rules')?.addEventListener('click', () => _navigate?.('screen-sport-rules'));
+  $('btn-sport-exercises-to-db')?.addEventListener('click', () => _navigate?.('screen-rules'));
+  $('btn-sport-rules-back')?.addEventListener('click', () => _navigate?.('screen-home'));
+  $('btn-sport-exercise-feedback')?.addEventListener('click', () => openFeedback('exercise_missing'));
+  $('btn-sport-rule-feedback')?.addEventListener('click', () => openFeedback('rule_unclear'));
+  $('btn-sport-feedback-cancel')?.addEventListener('click', closeFeedback);
+  $('sport-feedback-modal')?.addEventListener('click', event => { if (event.target.id === 'sport-feedback-modal') closeFeedback(); });
+  $('btn-sport-feedback-copy')?.addEventListener('click', submitFeedback);
   $('sport-exercises-search')?.addEventListener('input', e => {
     _filter.search = e.target.value;
     renderExercises();
@@ -179,6 +207,7 @@ function wire() {
   $('btn-sport-exercises-reset')?.addEventListener('click', () => {
     _filter.search = '';
     _filter.category = 'all';
+    _filter.ageBand = 'all';
     const input = $('sport-exercises-search');
     if (input) input.value = '';
     renderExercises();
@@ -200,6 +229,23 @@ export function enterExercises() {
     input.value = _filter.search;
   }
   renderExercises();
+}
+
+function buildAgeChips() {
+  const row = $('sport-exercises-age');
+  if (!row) return;
+  row.replaceChildren();
+  const options = [{ key: 'all', label: 'Alle Altersklassen' }, ...sports.getExerciseAgeBands(activeSport().sportId)];
+  row.classList.toggle('hidden', options.length === 1);
+  for (const option of options) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'roulette-cat-chip' + (_filter.ageBand === option.key ? ' roulette-cat-chip--active' : '');
+    btn.textContent = option.label;
+    btn.setAttribute('aria-pressed', String(_filter.ageBand === option.key));
+    btn.addEventListener('click', () => { _filter.ageBand = option.key; renderExercises(); });
+    row.appendChild(btn);
+  }
 }
 
 function buildCategoryChips() {
@@ -228,12 +274,14 @@ export function renderExercises() {
   const list = $('sport-exercises-list');
   if (!list) return;
   const sport = activeSport();
+  buildAgeChips();
   buildCategoryChips();
   list.replaceChildren();
 
   const matches = sports.filterExercises(sport.sportId, {
     search: _filter.search,
     category: _filter.category,
+    ageBand: _filter.ageBand,
   });
 
   const countEl = $('sport-exercises-count');
@@ -360,4 +408,110 @@ function buildExerciseItem(ex, sport) {
     item.classList.toggle('rules-item--open', isOpen);
   });
   return item;
+}
+
+export function enterRules() {
+  if (sportmode.isGeneral()) { _navigate?.('screen-home'); return; }
+  const sport = activeSport();
+  $('sport-rules-screen-title').textContent = `${sportmode.getRulesLabel() ?? 'Regeln'} · ${sport.name}`;
+  $('sport-rules-intro').textContent = 'Regel- und Spielbetriebsinformationen getrennt von der Übungsdatenbank.';
+  $('sport-rules-community').textContent = sportRules.COMMUNITY_NOTICE;
+  renderRules();
+}
+
+// Altersklassen-Chips der Regelansicht. Nutzt ausschließlich die Altersklassen,
+// zu denen die Sportart tatsächlich Regelkarten mitbringt.
+function buildRuleAgeChips() {
+  const row = $('sport-rules-age');
+  if (!row) return;
+  row.replaceChildren();
+  const options = [{ key: 'all', label: 'Alle Altersklassen' }, ...sports.getRuleAgeBands(activeSport().sportId)];
+  row.classList.toggle('hidden', options.length === 1);
+  for (const option of options) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    const active = _ruleFilter.ageBand === option.key;
+    btn.className = 'roulette-cat-chip' + (active ? ' roulette-cat-chip--active' : '');
+    btn.textContent = option.label;
+    btn.setAttribute('aria-pressed', String(active));
+    btn.addEventListener('click', () => { _ruleFilter.ageBand = option.key; renderRules(); });
+    row.appendChild(btn);
+  }
+}
+
+export function renderRules() {
+  const list = $('sport-rules-list');
+  if (!list) return;
+  buildRuleAgeChips();
+  const cards = sports.getRuleSets(activeSport().sportId, { ageBand: _ruleFilter.ageBand });
+  list.replaceChildren();
+  const countEl = $('sport-rules-count');
+  if (countEl) countEl.textContent = `${cards.length} ${cards.length === 1 ? 'Regelkarte' : 'Regelkarten'}`;
+  const empty = $('sport-rules-empty');
+  if (empty) {
+    empty.classList.toggle('hidden', cards.length > 0);
+    empty.textContent = _ruleFilter.ageBand === 'all'
+      ? 'Für diese Sportart liegt noch keine Regelkarte vor.'
+      : 'Für diese Altersklasse liegt keine Regelkarte vor.';
+  }
+  cards.forEach(rule => list.appendChild(buildRuleItem(rule)));
+}
+
+function buildRuleItem(rule) {
+  const card = sportRules.buildRuleCard(rule);
+  const item = document.createElement('article');
+  item.className = 'rules-item sport-rule-card'; item.dataset.ruleId = card.id;
+  const header = document.createElement('button');
+  header.type = 'button'; header.className = 'rules-item-header'; header.setAttribute('aria-expanded', 'false');
+  const icon = document.createElement('span'); icon.className = 'rules-item-icon'; icon.textContent = card.icon;
+  const name = document.createElement('span'); name.className = 'rules-item-name'; name.textContent = card.title;
+  const sub = document.createElement('span'); sub.className = 'rules-item-sub'; sub.textContent = card.ageLabel;
+  header.append(icon, name, sub);
+  const body = document.createElement('div'); body.className = 'rules-item-body';
+  const badges = document.createElement('div'); badges.className = 'rules-badges';
+  card.badges.forEach(badge => { const el = document.createElement('span'); el.className = 'rules-badge'; el.textContent = badge.label; badges.appendChild(el); });
+  const hint = document.createElement('p'); hint.className = 'rule-season-hint'; hint.textContent = `${card.seasonHint} · ${card.seasonNote}`;
+  body.append(badges, hint);
+  card.sections.forEach(section => {
+    const title = document.createElement('h3'); title.className = 'rules-scoring'; title.textContent = section.label; body.appendChild(title);
+    const ul = document.createElement('ul'); ul.className = 'rules-basics';
+    section.items.forEach(text => { const li = document.createElement('li'); li.textContent = text; ul.appendChild(li); });
+    body.appendChild(ul);
+  });
+  if (card.sources.length) {
+    const source = document.createElement('p'); source.className = 'rules-material';
+    source.textContent = 'Quellen: ' + card.sources.map(s => `[${s.ref}] ${s.title}`).join(' · '); body.appendChild(source);
+  }
+  item.append(header, body);
+  header.addEventListener('click', () => { const open = body.classList.toggle('rules-item-body--open'); header.setAttribute('aria-expanded', String(open)); item.classList.toggle('rules-item--open', open); });
+  return item;
+}
+
+function openFeedback(topic) {
+  const modal = $('sport-feedback-modal');
+  if (!modal) return;
+  modal.dataset.topic = topic;
+  modal.classList.remove('hidden');
+  $('sport-feedback-privacy').textContent = sportRules.PRIVACY_NOTICE;
+  $('sport-feedback-moderation').textContent = sportRules.MODERATION_NOTICE;
+  $('sport-feedback-status').textContent = `Kategorie: ${sportRules.FEEDBACK_TOPICS.find(item => item.key === topic)?.label ?? 'Feedback'}`;
+  $('sport-feedback-text')?.focus();
+}
+
+function closeFeedback() { $('sport-feedback-modal')?.classList.add('hidden'); }
+
+function submitFeedback() {
+  const modal = $('sport-feedback-modal');
+  const result = sportRules.buildFeedbackReport({
+    topic: modal?.dataset.topic,
+    sportId: activeSport().sportId,
+    ageBand: 'all',
+    association: $('sport-feedback-association')?.value,
+    sourceHint: $('sport-feedback-source')?.value,
+    message: $('sport-feedback-text')?.value,
+  });
+  const status = $('sport-feedback-status');
+  if (!result.valid) { if (status) status.textContent = result.errors.join(' '); return; }
+  navigator.clipboard?.writeText(sportRules.formatFeedbackReport(result.report)).catch(() => {});
+  if (status) status.textContent = 'Meldung kopiert; vor Veröffentlichung erfolgt redaktionelle Prüfung.';
 }

@@ -5,6 +5,7 @@ modeId: football-uebungen
 name: Innen-/Außenrist-Pass
 icon: ⚽
 category: Passen
+ageBands: [F_U8_U9,E_U10_U11,D_U12_U13]
 goal: Passgenauigkeit und beidfüßige Technik
 setup: Hütchen, Bälle und zwei Minitore; Feld 20 × 25 m; 6–12 Personen.
 ---

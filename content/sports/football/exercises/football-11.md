@@ -5,6 +5,7 @@ modeId: football-uebungen
 name: 1 gegen 1 defensiv
 icon: ⚽
 category: Zweikampf
+ageBands: [F_U8_U9,E_U10_U11,D_U12_U13,C_U14_U15]
 goal: Gegner nach außen lenken und Ball erobern
 setup: Hütchen, Bälle und zwei Minitore; Feld 20 × 25 m; 6–12 Personen.
 ---

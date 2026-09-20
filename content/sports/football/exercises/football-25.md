@@ -5,6 +5,7 @@ modeId: football-uebungen
 name: Kleinfeld 3 gegen 3
 icon: ⚽
 category: Spielform
+ageBands: [G_U6_U7,F_U8_U9,E_U10_U11]
 goal: Viele Ballaktionen und mutiges Spiel
 setup: Hütchen, Bälle und zwei Minitore; Feld 20 × 25 m; 6–12 Personen.
 ---

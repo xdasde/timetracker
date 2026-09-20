@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Browser-Smoke für die Sportmodi über das Chrome DevTools Protocol.
-// Startet headless Chrome, prüft Umschalter, Persistenz, Filter, Regeln-Label
+// Startet headless Chrome, prüft Umschalter, Persistenz, Filter, Übungs-Label,
+// die Crosslinks der Übungsliste sowie den Altersklassenfilter der Regelansicht
 // und schreibt Screenshots nach assets/generated/.
 //
 //   node scripts/smoke-sportmodes.mjs <baseUrl>
@@ -114,6 +115,17 @@ async function shot(name) {
   return path;
 }
 
+// Aktiver Screen laut Router-Klasse – Grundlage aller Navigationsprüfungen.
+const activeScreen = () => cdp.eval(`document.querySelector('.screen--active')?.id ?? null`);
+
+// Aus einer beliebigen Ansicht zurück in die Fußball-Übungsliste.
+async function openExerciseList() {
+  await cdp.eval(`document.querySelector('.screen--active .btn-back')?.click()`);
+  await sleep(300);
+  await cdp.eval(`document.getElementById('btn-open-sport-rules').click()`);
+  await sleep(400);
+}
+
 // ── Desktop ──────────────────────────────────────────────────────────────────
 await setViewport(1280, 900);
 await goto(BASE);
@@ -145,8 +157,10 @@ check('Fußball aktiviert',
   await cdp.eval(`document.getElementById('btn-sport-switch').getAttribute('aria-label')`) === 'Sportart wählen, aktuell Fußball');
 check('Regeln-Einstieg nur im Sportmodus sichtbar',
   await cdp.eval(`!document.getElementById('btn-open-sport-rules').classList.contains('hidden')`));
-check('Regeln-Label lautet "Regeln"',
-  await cdp.eval(`document.getElementById('sport-rules-title').textContent`) === 'Regeln');
+check('Übungs-Einstieg heißt "Übungen"',
+  await cdp.eval(`document.getElementById('sport-rules-title').textContent`) === 'Übungen');
+check('aria-label verweist auf die Übungsdatenbank',
+  await cdp.eval(`document.getElementById('btn-open-sport-rules').getAttribute('aria-label')`) === 'Übungsdatenbank für Fußball öffnen');
 check('Statusmeldung für Screenreader',
   await cdp.eval(`document.getElementById('sport-live-status').textContent`) === 'Sportmodus Fußball aktiviert');
 await shot('sportmodi-desktop-home-football.png');
@@ -158,6 +172,33 @@ check('Fußball zeigt mindestens 30 Übungen', fbCount >= 30, `${fbCount}`);
 check('Nur Fußball-Übungen in der Liste',
   await cdp.eval(`[...document.querySelectorAll('#sport-exercises-list .sport-exercise')].every(e => e.dataset.sportId === 'football')`));
 await shot('sportmodi-desktop-football-exercises.png');
+
+// Crosslinks der Übungsliste: Regelwerk und Allgemeinsport-Datenbank
+await cdp.eval(`document.getElementById('btn-sport-exercises-to-rules').click()`);
+await sleep(400);
+check('Crosslink öffnet das Sport-Regelwerk', (await activeScreen()) === 'screen-sport-rules');
+await cdp.eval(`document.getElementById('btn-sport-rules-back').click()`);
+await sleep(400);
+
+await cdp.eval(`document.getElementById('btn-sport-exercises-to-db').click()`);
+await sleep(400);
+check('Crosslink öffnet die Allgemeinsport-Datenbank', (await activeScreen()) === 'screen-rules');
+
+// Zurück auf den Startscreen – je nach Markup über den Home-Button oder Reload.
+const hasHomeBtn = await cdp.eval(`!!document.getElementById('btn-home')`);
+if (hasHomeBtn) {
+  await cdp.eval(`document.getElementById('btn-home').click()`);
+  await sleep(400);
+} else {
+  await goto(BASE);
+}
+// Fußballmodus wiederherstellen und zurück in die Übungsliste.
+await cdp.eval(`document.getElementById('btn-sport-switch').click()`);
+await sleep(200);
+await cdp.eval(`document.querySelector('#sport-popover .sport-option[data-sport-id="football"]').click()`);
+await sleep(300);
+await cdp.eval(`document.getElementById('btn-open-sport-rules').click()`);
+await sleep(400);
 
 // Filter + Suche (AND)
 const firstCat = await cdp.eval(`document.querySelectorAll('#sport-exercises-filter .roulette-cat-chip')[1].textContent`);
@@ -176,6 +217,36 @@ await cdp.eval(`document.getElementById('btn-sport-exercises-reset').click()`);
 await sleep(250);
 check('Reset stellt vollen Umfang wieder her',
   await cdp.eval(`document.querySelectorAll('#sport-exercises-list .sport-exercise').length`) === fbCount);
+
+// Regelwerk: Altersklassenfilter
+await cdp.eval(`document.getElementById('btn-open-sport-rulebook').click()`);
+await sleep(400);
+const allRuleCount = await cdp.eval(`document.querySelectorAll('#sport-rules-list .sport-rule-card').length`);
+const ageChips = await cdp.eval(`document.querySelectorAll('#sport-rules-age .roulette-cat-chip').length`);
+check('Regelwerk bietet Altersklassen-Chips', ageChips >= 2, `${ageChips}`);
+
+const ageLabel = (await cdp.eval(`document.querySelectorAll('#sport-rules-age .roulette-cat-chip')[1].textContent`)).trim();
+await cdp.eval(`document.querySelectorAll('#sport-rules-age .roulette-cat-chip')[1].click()`);
+await sleep(300);
+const ruleFiltered = await cdp.eval(`document.querySelectorAll('#sport-rules-list .sport-rule-card').length`);
+check(`Altersklasse "${ageLabel}" grenzt Regeln ein`, ruleFiltered <= allRuleCount, `${ruleFiltered}/${allRuleCount}`);
+const visibleRuleAgeLabels = await cdp.eval(`[...document.querySelectorAll('#sport-rules-list .sport-rule-card')]
+  .filter(c => c.offsetParent !== null)
+  .map(c => (c.querySelector('.rules-item-header .rules-item-sub')?.textContent || '').trim())`);
+const ageRange = ageLabel.match(/\([^)]*\)/)?.[0] ?? ageLabel;
+check(`Nur Regeln der Altersklasse "${ageLabel}"`,
+  visibleRuleAgeLabels.length === 1 && visibleRuleAgeLabels[0].includes(ageRange),
+  JSON.stringify(visibleRuleAgeLabels));
+
+await cdp.eval(`document.querySelectorAll('#sport-rules-age .roulette-cat-chip')[0].click()`);
+await sleep(300);
+check('Alle Altersklassen stellen den vollen Umfang wieder her',
+  await cdp.eval(`document.querySelectorAll('#sport-rules-list .sport-rule-card').length`) === allRuleCount,
+  `${allRuleCount}`);
+await shot('football-rules-database-desktop.png');
+
+// Zurück in die Übungsliste für die Detailansicht.
+await openExerciseList();
 
 // Detailansicht
 await cdp.eval(`document.querySelector('#sport-exercises-list .rules-item-header').click()`);
@@ -253,6 +324,15 @@ await shot('sportmodi-mobile-390-football-exercises.png');
 await cdp.eval(`document.querySelector('#sport-exercises-list .rules-item-header').click()`);
 await sleep(300);
 await shot('sportmodi-mobile-390-football-detail.png');
+
+// Mobil: Regelwerk über den Startscreen öffnen (auf der Übungsliste nicht erreichbar).
+await goto(BASE);
+await cdp.eval(`document.getElementById('btn-open-sport-rulebook').click()`);
+await sleep(400);
+check('Mobil: Regelwerk ohne horizontalen Überlauf',
+  await cdp.eval(`document.documentElement.scrollWidth <= 390`),
+  `scrollWidth=${await cdp.eval('document.documentElement.scrollWidth')}`);
+await shot('football-rules-mobile.png');
 
 check('Keine Skriptfehler am Ende', (await cdp.eval('window.__errs.length')) === 0,
   JSON.stringify(await cdp.eval('window.__errs')));

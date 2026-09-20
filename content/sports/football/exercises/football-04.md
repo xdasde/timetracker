@@ -5,6 +5,7 @@ modeId: football-uebungen
 name: Annahme in Bewegung
 icon: ⚽
 category: Ballannahme
+ageBands: [E_U10_U11,D_U12_U13,C_U14_U15]
 goal: Erste Ballberührung in den freien Raum
 setup: Hütchen, Bälle und zwei Minitore; Feld 20 × 25 m; 6–12 Personen.
 ---

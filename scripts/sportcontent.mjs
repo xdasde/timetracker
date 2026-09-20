@@ -9,10 +9,45 @@
 //   content/sports/<sportId>/sport.md
 //   content/sports/<sportId>/modes/<modeId>.md
 //   content/sports/<sportId>/exercises/<exerciseId>.md
+//   content/sports/<sportId>/rules/<ruleSetId>.md
+//
+// Übungen (content_type "exercise") und Regel-/Spielbetriebscontent
+// (content_type "rule_set") sind zwei getrennte Domänen: Sie liegen in
+// getrennten Ordnern, werden getrennt validiert und dürfen in der App nie in
+// einem gemeinsamen Pool landen (weder Liste noch Roulette).
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const ID_RE = /^[a-z0-9-]+$/;
 export const GENERAL_SPORT_ID = 'allgemeinsport';
+
+// Altersklassen laut Recherche-Handoff. Reihenfolge = Anzeigereihenfolge.
+export const AGE_BANDS = [
+  { key: 'G_U6_U7', label: 'G/Bambini (U6/U7)', short: 'G' },
+  { key: 'F_U8_U9', label: 'F (U8/U9)', short: 'F' },
+  { key: 'E_U10_U11', label: 'E (U10/U11)', short: 'E' },
+  { key: 'D_U12_U13', label: 'D (U12/U13)', short: 'D' },
+  { key: 'C_U14_U15', label: 'C (U14/U15)', short: 'C' },
+  { key: 'B_U16_U17', label: 'B (U16/U17)', short: 'B' },
+  { key: 'A_U18_U19', label: 'A (U18/U19)', short: 'A' },
+];
+export const AGE_BAND_KEYS = AGE_BANDS.map(b => b.key);
+
+// Geltungsstatus einer Regelkarte – bewusst explizit, damit ungeprüfter
+// Content nie wie eine verbindliche Verbandsangabe aussieht.
+export const RULE_STATUS = [
+  'binding_national', 'binding_regional', 'recommendation', 'local_practice', 'needs_review',
+];
+export const JURISDICTIONS = ['DFB', 'WDFV', 'FLVW', 'LOCAL_ASSOCIATION'];
+
+// Pflichtabschnitte einer Regelkarte (Reihenfolge = Anzeigereihenfolge).
+export const RULE_SECTIONS = [
+  { key: 'formats', heading: 'spielformen', label: 'Spielformen' },
+  { key: 'field', heading: 'feld und tore', label: 'Feld und Tore' },
+  { key: 'playingTime', heading: 'spielzeit', label: 'Spielzeit' },
+  { key: 'specifics', heading: 'regelbesonderheiten', label: 'Regelbesonderheiten' },
+  { key: 'variants', heading: 'varianten und widersprüche', label: 'Varianten und Widersprüche' },
+  { key: 'openPoints', heading: 'offene punkte', label: 'Offene Punkte' },
+];
 
 // ── Mini-YAML (Teilmenge: Skalare, Inline-/Block-Listen) ─────────────────────
 export function parseFrontmatter(yaml, file = 'frontmatter') {
@@ -140,13 +175,23 @@ export function parseExercise(text, file) {
   if (!safety.length) err('Abschnitt "## Sicherheit" mit mindestens einem "- " Punkt fehlt');
   if (!tip) err('Abschnitt "## Tipp" fehlt oder ist leer');
 
+  // Altersklassen sind optional: Sportarten ohne Angabe (Handball, Volleyball,
+  // Basketball, künftige Sportarten) bleiben unverändert gültig und gelten im
+  // Filter als "für alle Altersklassen".
+  const ageBands = Array.isArray(meta.ageBands) ? meta.ageBands.map(String) : [];
+  for (const b of ageBands) {
+    if (!AGE_BAND_KEYS.includes(b)) err(`"ageBands" enthält unbekannte Altersklasse: "${b}"`);
+  }
+
   return {
     id: meta.id,
     sportId: meta.sportId,
     modeId: meta.modeId,
+    contentType: 'exercise',
     name: meta.name,
     icon: meta.icon,
     category: meta.category,
+    ageBands,
     goal: meta.goal,
     setup: meta.setup,
     steps,
@@ -156,10 +201,92 @@ export function parseExercise(text, file) {
   };
 }
 
+// ── Regelkarte (content_type: rule_set) ──────────────────────────────────────
+// Getrennt von den Übungen: eigenes Schema, eigene Pflichtfelder, eigene
+// Quellenliste. Eine Regelkarte hat bewusst kein goal/setup/steps – damit kann
+// die Regelansicht rein strukturell keine Übungsbeschreibung rendern.
+export function parseRuleSet(text, file) {
+  const { meta, body } = splitDocument(text, file);
+  const err = msg => { throw new Error(`${file}: ${msg}`); };
+  const sections = parseSections(body);
+
+  if (!ID_RE.test(String(meta.id ?? ''))) err(`"id" fehlt oder ungültig: "${meta.id}"`);
+  if (!ID_RE.test(String(meta.sportId ?? ''))) err(`"sportId" fehlt oder ungültig: "${meta.sportId}"`);
+  if (meta.contentType !== 'rule_set') err(`"contentType" muss "rule_set" sein: "${meta.contentType}"`);
+  if (!AGE_BAND_KEYS.includes(String(meta.ageBand ?? ''))) err(`"ageBand" fehlt oder unbekannt: "${meta.ageBand}"`);
+  if (!meta.ageLabel) err('"ageLabel" fehlt');
+  if (!meta.name) err('"name" fehlt');
+  if (!meta.icon) err('"icon" fehlt');
+  if (!JURISDICTIONS.includes(String(meta.jurisdiction ?? ''))) err(`"jurisdiction" fehlt oder unbekannt: "${meta.jurisdiction}"`);
+  if (!RULE_STATUS.includes(String(meta.status ?? ''))) err(`"status" fehlt oder unbekannt: "${meta.status}"`);
+  if (!meta.season) err('"season" fehlt (Saison oder "unbestätigt")');
+  if (!meta.seasonNote) err('"seasonNote" fehlt');
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(String(meta.reviewedAt ?? ''))) err(`"reviewedAt" muss JJJJ-MM-TT sein: "${meta.reviewedAt}"`);
+
+  const sourceIds = (Array.isArray(meta.sourceIds) ? meta.sourceIds : []).map(Number);
+  if (!sourceIds.length) err('"sourceIds" fehlt – jede Regelkarte braucht mindestens eine Quelle');
+  if (sourceIds.some(n => !Number.isInteger(n) || n < 1)) err('"sourceIds" darf nur positive Ganzzahlen enthalten');
+
+  const order = meta.order ?? 0;
+  if (typeof order !== 'number' || order < 0) err('"order" muss eine Zahl ≥ 0 sein');
+
+  const parsed = {};
+  for (const s of RULE_SECTIONS) {
+    const items = bullets(sections[s.heading]);
+    if (!items.length) err(`Abschnitt "## ${s.label}" mit mindestens einem "- " Punkt fehlt`);
+    parsed[s.key] = items;
+  }
+
+  const sources = parseSources(sections['quellen'], file, err);
+  for (const n of sourceIds) {
+    if (!sources.some(s => s.ref === n)) err(`sourceIds verweist auf [${n}], das im Abschnitt "## Quellen" fehlt`);
+  }
+
+  // Regelkarten ohne belastbare Quelle dürfen keine Zahlen behaupten.
+  if (meta.status === 'needs_review') {
+    const numeric = RULE_SECTIONS
+      .flatMap(s => parsed[s.key])
+      .find(line => /\d/.test(line));
+    if (numeric) err(`Status "needs_review" erlaubt keine Zahlenangabe im Regeltext: "${numeric}"`);
+  }
+
+  return {
+    id: meta.id,
+    sportId: meta.sportId,
+    contentType: 'rule_set',
+    ageBand: meta.ageBand,
+    ageLabel: meta.ageLabel,
+    name: meta.name,
+    icon: meta.icon,
+    jurisdiction: meta.jurisdiction,
+    status: meta.status,
+    season: String(meta.season),
+    seasonNote: meta.seasonNote,
+    reviewedAt: meta.reviewedAt,
+    sourceIds,
+    // "formats" listet nur Spielformen, die in den Quellen belegt sind.
+    formatNames: Array.isArray(meta.formats) ? meta.formats.map(String) : [],
+    order,
+    ...parsed,
+    sources,
+  };
+}
+
+// "## Quellen"-Bullets der Form: "[3] Titel <https://…>"
+function parseSources(lines, file, err) {
+  const items = bullets(lines);
+  if (!items.length) err('Abschnitt "## Quellen" mit mindestens einem "- " Punkt fehlt');
+  return items.map(line => {
+    const m = line.match(/^\[(\d+)\]\s+(.+?)\s*<(https?:\/\/[^>\s]+)>$/);
+    if (!m) err(`Quellenzeile muss "[n] Titel <https://…>" lauten: "${line}"`);
+    return { ref: Number(m[1]), title: m[2].trim(), url: m[3] };
+  });
+}
+
 // ── Gesamtprüfung über alle geparsten Datensätze ─────────────────────────────
 // Nimmt fertige Objekte entgegen (keine Datei-IO), damit Tests sie direkt
 // füttern können. Liefert eine Liste von Fehlermeldungen (leer = alles ok).
-export function validateCollection({ sports = [], modes = [], exercises = [] }) {
+export function validateCollection({ sports = [], modes = [], exercises = [], ruleSets = [] }) {
   const errors = [];
   const sportIds = new Set();
   const aliasMap = new Map();
@@ -193,6 +320,24 @@ export function validateCollection({ sports = [], modes = [], exercises = [] }) 
     }
   }
 
+  // Regelkarten: eigener Namensraum, keine Vermischung mit Übungs-IDs.
+  const ruleIds = new Set();
+  for (const r of ruleSets) {
+    if (ruleIds.has(r.id)) errors.push(`Doppelte Regelkarten-id: "${r.id}"`);
+    ruleIds.add(r.id);
+    if (exerciseIds.has(r.id)) errors.push(`Regelkarte "${r.id}" kollidiert mit einer Übungs-id`);
+    if (!sportIds.has(r.sportId)) errors.push(`Regelkarte "${r.id}" verweist auf unbekannte sportId "${r.sportId}"`);
+    const sameBand = ruleSets.filter(o => o.sportId === r.sportId && o.ageBand === r.ageBand);
+    if (sameBand.length > 1) errors.push(`Mehrere Regelkarten für "${r.sportId}/${r.ageBand}"`);
+  }
+  for (const [sportId, bands] of Object.entries(REQUIRED_RULE_BANDS)) {
+    for (const band of bands) {
+      if (!ruleSets.some(r => r.sportId === sportId && r.ageBand === band)) {
+        errors.push(`Sportart "${sportId}" hat keine Regelkarte für Altersklasse "${band}"`);
+      }
+    }
+  }
+
   // Redaktioneller Mindestumfang laut Karte/Architektur-Handoff.
   for (const [sportId, min] of Object.entries(MIN_EXERCISES)) {
     const count = exercises.filter(e => e.sportId === sportId).length;
@@ -202,6 +347,12 @@ export function validateCollection({ sports = [], modes = [], exercises = [] }) 
   }
   return errors;
 }
+
+// Fußball ist die erste Sportart mit eigener Regel-/Spielbetriebsdomäne.
+// Weitere Sportarten kommen hier dazu, sobald belegte Quellen vorliegen.
+export const REQUIRED_RULE_BANDS = {
+  football: AGE_BAND_KEYS,
+};
 
 export const MIN_EXERCISES = {
   football: 30,
