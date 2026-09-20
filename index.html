@@ -52,10 +52,19 @@
         <span class="brand-tagline">Für starke Sport-Momente</span>
       </div>
     </div>
-    <button class="nav-settings-btn" id="btn-open-settings" aria-label="Einstellungen">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06-.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-    </button>
+    <div class="nav-actions">
+      <button class="sport-pill" id="btn-sport-switch" aria-haspopup="listbox" aria-expanded="false" aria-controls="sport-popover" aria-label="Sportart wählen, aktuell Allgemeinsport">
+        <span class="sport-pill-icon" id="sport-pill-icon" aria-hidden="true">🏅</span>
+        <span class="sport-pill-label" id="sport-pill-label">Allgemeinsport</span>
+        <svg class="sport-pill-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <button class="nav-settings-btn" id="btn-open-settings" aria-label="Einstellungen">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06-.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+    </div>
+    <div class="sport-popover hidden" id="sport-popover" role="listbox" aria-label="Sportart"></div>
   </header>
+  <p class="sr-only" id="sport-live-status" role="status" aria-live="polite"></p>
 
   <!-- Untere Navigation -->
   <nav class="bottom-nav" aria-label="Hauptnavigation">
@@ -114,6 +123,11 @@
           <button class="home-row" id="btn-open-rules" aria-label="Spiele-Datenbank öffnen">
             <img src="assets/generated/brand-assets/derived/basketball.png" alt="" aria-hidden="true">
             <span class="home-row-text"><strong>Datenbank</strong><small>Spiele, Regeln &amp; Tipps</small></span>
+            <svg class="home-row-chevron" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 6 15 12 9 18"/></svg>
+          </button>
+          <button class="home-row home-row--sport hidden" id="btn-open-sport-rules" aria-label="Sportübungen und Regeln öffnen">
+            <span class="home-row-sport-icon" id="sport-rules-icon" aria-hidden="true">⚽</span>
+            <span class="home-row-text"><strong id="sport-rules-title">Regeln</strong><small id="sport-rules-sub">Übungen &amp; Regeln</small></span>
             <svg class="home-row-chevron" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 6 15 12 9 18"/></svg>
           </button>
           <button class="home-row" id="btn-open-fanger" aria-label="Auslosen: Auswahl &amp; Reihenfolge">
@@ -510,6 +524,30 @@
         <p id="rules-count" class="rules-count" aria-live="polite"></p>
         <div id="rules-list" class="rules-list" role="list"></div>
         <p id="rules-empty" class="rules-empty hidden">Keine Treffer. Suche oder Filter anpassen.</p>
+      </div>
+    </section>
+
+    <!-- ═══ Screen: Sportmodus-Übungen (nur in Sportmodi erreichbar) ═══ -->
+    <section id="screen-sport-exercises" class="screen screen-deco">
+      <div class="screen-header">
+        <button class="btn-back" id="btn-sport-exercises-back" aria-label="Zurück">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <h1 class="screen-title" id="sport-exercises-title">Übungen</h1>
+      </div>
+      <div class="screen-body">
+        <p class="rules-intro" id="sport-exercises-intro"></p>
+        <div class="rules-search">
+          <svg class="rules-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input type="search" id="sport-exercises-search" class="rules-search-input" placeholder="Übung suchen…" autocomplete="off" aria-label="Übungen durchsuchen">
+        </div>
+        <div id="sport-exercises-filter" class="roulette-cat-row rules-filter-row" role="group" aria-label="Nach Kategorie filtern"></div>
+        <p id="sport-exercises-count" class="rules-count" aria-live="polite"></p>
+        <div id="sport-exercises-list" class="rules-list" role="list"></div>
+        <div id="sport-exercises-empty" class="rules-empty hidden">
+          <p id="sport-exercises-empty-text">Keine Übungen gefunden.</p>
+          <button class="btn-secondary" id="btn-sport-exercises-reset">Filter zurücksetzen</button>
+        </div>
       </div>
     </section>
 

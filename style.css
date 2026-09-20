@@ -21,6 +21,8 @@
   --color-mint:       #2fd08a;
   --color-on-accent:  #1a0f02;
   --bottom-nav-height: 68px;
+  /* Akzent des aktiven Sportmodus; Default = Markenamber (Allgemeinsport). */
+  --mode-accent:      #ff9a2e;
 }
 
 /* ═══════════════════════════════════════════
@@ -62,9 +64,9 @@ ol, ul { list-style: none; }
   background: var(--color-bg);
   z-index: 100;
 }
-.brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.brand { display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1 1 auto; overflow: hidden; }
 .brand-mark { width: 40px; height: 46px; object-fit: contain; flex-shrink: 0; }
-.brand-text { display: flex; flex-direction: column; min-width: 0; }
+.brand-text { display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
 .nav-logo {
   display: flex;
   align-items: center;
@@ -75,6 +77,8 @@ ol, ul { list-style: none; }
   letter-spacing: -0.03em;
   color: var(--color-text);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .brand-tagline {
   margin-top: 3px;
@@ -84,6 +88,8 @@ ol, ul { list-style: none; }
   text-transform: uppercase;
   color: var(--color-muted);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .nav-settings-btn {
   width: 44px; height: 44px;
@@ -93,6 +99,153 @@ ol, ul { list-style: none; }
   flex-shrink: 0;
 }
 .nav-settings-btn:active { background: var(--color-surface); }
+
+/* ═══════════════════════════════════════════
+   SPORTARTENUMSCHALTER (oben rechts)
+═══════════════════════════════════════════ */
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+.top-nav { position: fixed; }
+/* Nur solange die Sportauswahl offen ist – sonst bleibt die bisherige
+   Schichtung (Modals 200/300 liegen weiterhin darüber). */
+.top-nav--popover-open { z-index: 160; }
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.sport-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  min-width: 92px;
+  max-width: 132px;
+  padding: 0 10px;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+.sport-pill--active {
+  border-color: var(--mode-accent);
+  box-shadow: inset 0 -3px 0 -1px var(--mode-accent);
+}
+.sport-pill--active .sport-pill-label { color: var(--mode-accent); }
+.sport-pill-icon { font-size: 1.2rem; line-height: 1; flex-shrink: 0; }
+.sport-pill-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sport-pill-chevron { width: 14px; height: 14px; flex-shrink: 0; opacity: 0.7; }
+.sport-pill:focus-visible,
+.sport-option:focus-visible {
+  outline: 2px solid var(--mode-accent);
+  outline-offset: 2px;
+}
+.sport-popover {
+  position: absolute;
+  top: calc(var(--nav-height) - 6px);
+  right: 16px;
+  left: auto;
+  width: min(280px, calc(100vw - 32px));
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 6px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow);
+  /* Das Popover liegt im Stacking-Kontext von .top-nav (z-index 100); ein
+     hoher eigener z-index reicht deshalb nicht gegen das Install-/Session-
+     Banner (150). Der Header wird beim Öffnen angehoben, siehe
+     .top-nav--popover-open. */
+  z-index: 160;
+}
+.sport-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 48px;
+  padding: 0 12px;
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  text-align: left;
+}
+.sport-option:active { background: rgba(255, 255, 255, 0.06); }
+.sport-option--active { background: rgba(255, 255, 255, 0.08); }
+.sport-option--active .sport-option-label { color: var(--option-accent, var(--color-amber)); }
+.sport-option-icon { font-size: 1.25rem; line-height: 1; }
+.sport-option-label { flex: 1; font-size: 1rem; font-weight: 700; }
+.sport-option-check { color: var(--option-accent, var(--color-amber)); font-weight: 800; }
+
+.home-row--sport .home-row-sport-icon {
+  width: 34px;
+  font-size: 1.5rem;
+  text-align: center;
+  flex-shrink: 0;
+}
+.home-row--sport strong { color: var(--mode-accent); }
+
+.sport-exercise-icon { font-size: 1.4rem; line-height: 1; text-align: center; }
+.rules-badge--sport {
+  color: var(--mode-accent);
+  border-color: var(--mode-accent);
+}
+.sport-exercise-safety { color: var(--color-muted); }
+#sport-exercises-empty { display: block; }
+#sport-exercises-empty.hidden { display: none !important; }
+#sport-exercises-empty .btn-secondary { margin-top: 10px; }
+/* Chips scrollen in EINER Zeile – mit flex-wrap kollabiert die Zeilenhöhe,
+   sobald overflow-x aktiv ist. Zusätzlich darf der Flex-Elternteil die Zeile
+   nicht zusammenschrumpfen (sonst bleibt eine leere Lücke). */
+#sport-exercises-filter {
+  flex-wrap: nowrap;
+  flex-shrink: 0;
+  align-items: center;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+#sport-exercises-filter::-webkit-scrollbar { display: none; }
+#sport-exercises-filter .roulette-cat-chip {
+  flex: 0 0 auto;
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+}
+
+@media (max-width: 430px) {
+  /* Wortmarke soll neben der Sport-Pill vollständig lesbar bleiben. */
+  .nav-logo { font-size: 1.32rem; }
+  .brand-mark { width: 32px; height: 37px; }
+  .brand { gap: 8px; }
+  .sport-pill { min-width: 84px; max-width: 118px; padding: 0 8px; }
+  .sport-pill-label { font-size: 0.78rem; }
+}
+
+@media (max-width: 380px) {
+  .sport-pill { min-width: 44px; max-width: 52px; padding: 0 8px; }
+  .sport-pill-label, .sport-pill-chevron { display: none; }
+  .brand-tagline { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sport-popover, .sport-pill { transition: none !important; }
+}
 
 /* ═══════════════════════════════════════════
    UNTERE NAVIGATION

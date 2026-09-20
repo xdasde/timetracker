@@ -12,6 +12,8 @@ import { acquireWakeLock, releaseWakeLock } from './js/wakelock.js';
 import * as teambuilder from './js/teambuilder.js';
 import * as fanger from './js/fanger.js';
 import * as rules from './js/rules.js';
+import * as sportmode from './js/sportmode.js';
+import * as sportsUI from './js/sports-ui.js';
 import * as customgames from './js/customgames.js';
 import * as communitygames from './js/communitygames.js';
 import { loadCommunityGameForDeepLink } from './js/community-deeplink.js';
@@ -41,6 +43,7 @@ router.register('screen-teambuilder-reveal', enterTeamBuilderReveal);
 router.register('screen-teambuilder-lineup', enterLineup, leaveLineup);
 router.register('screen-tb-match', enterTbMatch, leaveTbMatch);
 router.register('screen-rules', enterRules);
+router.register('screen-sport-exercises', sportsUI.enterExercises);
 router.register('screen-roulette', enterRoulette);
 router.register('screen-fanger', enterFanger);
 router.register('screen-countoff', enterCountoff, leaveCountoff);
@@ -156,28 +159,39 @@ function tickHomeQuickStopwatch() {
   else homeQuickRaf = null;
 }
 
-document.getElementById('home-stopwatch-start').addEventListener('click', () => {
-  const state = homeQuickStopwatch.toggle();
+// Anzeige-Loop und Wake-Lock folgen immer dem Zustand der Stoppuhr –
+// egal ob nach Klick, Reset oder Wiederherstellung nach einem Reload.
+function syncHomeQuickStopwatch() {
   cancelAnimationFrame(homeQuickRaf);
   homeQuickRaf = null;
-  if (state === 'running') {
-    acquireWakeLock();
+  if (homeQuickStopwatch.isRunning()) {
+    acquireWakeLock('home-stopwatch');
     homeQuickRaf = requestAnimationFrame(tickHomeQuickStopwatch);
   } else {
-    releaseWakeLock();
+    releaseWakeLock('home-stopwatch');
   }
   renderHomeQuickStopwatch();
+}
+
+function saveHomeQuickStopwatch() {
+  if (homeQuickStopwatch.hasContent()) storage.setItem('quickStopwatch', homeQuickStopwatch.toJSON());
+  else storage.removeItem('quickStopwatch');
+}
+
+document.getElementById('home-stopwatch-start').addEventListener('click', () => {
+  homeQuickStopwatch.toggle();
+  saveHomeQuickStopwatch();
+  syncHomeQuickStopwatch();
 });
 
 document.getElementById('home-stopwatch-reset').addEventListener('click', () => {
   homeQuickStopwatch.reset();
-  cancelAnimationFrame(homeQuickRaf);
-  homeQuickRaf = null;
-  releaseWakeLock();
-  renderHomeQuickStopwatch();
+  saveHomeQuickStopwatch();
+  syncHomeQuickStopwatch();
 });
 
-renderHomeQuickStopwatch();
+homeQuickStopwatch.restore(storage.getItem('quickStopwatch'));
+syncHomeQuickStopwatch();
 
 document.getElementById('btn-open-rules').addEventListener('click', () =>
   router.navigateTo('screen-rules'));
@@ -553,7 +567,7 @@ function enterTbMatch() {
   _tbmTick0   = Date.now();
   _tbmRenderTeams(teams);
   _tbmRafLoop();
-  acquireWakeLock();
+  acquireWakeLock('tb-match');
   document.getElementById('tbm-timer-pill').classList.add('running');
 }
 
@@ -561,7 +575,7 @@ function leaveTbMatch() {
   _tbmRunning = false;
   cancelAnimationFrame(_tbmRaf);
   _tbmRaf = null;
-  releaseWakeLock();
+  releaseWakeLock('tb-match');
   document.getElementById('tbm-winner-photos').replaceChildren();
   document.getElementById('tbm-teams').replaceChildren();
   teambuilder.clearPhotos();
@@ -678,7 +692,7 @@ document.getElementById('btn-tbm-end').addEventListener('click', () => {
   _tbmRunning = false;
   cancelAnimationFrame(_tbmRaf);
   _tbmRaf = null;
-  releaseWakeLock();
+  releaseWakeLock('tb-match');
   _tbmShowWinner();
 });
 
@@ -1640,6 +1654,8 @@ function startMatchFromPreset(preset) {
     preset.durationMs ?? null,
     preset.breakMs ?? null,
     preset.periods ?? 2,
+    null,
+    sportmode.getMatchContext(),
   );
   router.navigateTo('screen-match-live');
 }
@@ -2264,7 +2280,12 @@ document.getElementById('btn-start-match').addEventListener('click', () => {
   match.startMatch(
     s.teamAName,
     s.teamBName,
-    s.colorIndex
+    s.colorIndex,
+    undefined,
+    undefined,
+    undefined,
+    null,
+    sportmode.getMatchContext(),
   );
   router.navigateTo('screen-match-live');
 });
@@ -2274,8 +2295,7 @@ document.getElementById('btn-start-match').addEventListener('click', () => {
 // ═══════════════════════════════════════════════════════════
 let _matchRaf   = null;
 let _matchEnded = false;     // Restzeit auf 0 erreicht (Abpfiff-Signal nur einmal)
-let _breakActive = false;    // Halbzeit-Pause läuft
-let _breakEndsAt = 0;
+let _breakActive = false;    // Halbzeit-Pause läuft (Endzeitpunkt steckt in der Match-Session)
 
 // ms → "MM:SS" (negative Werte werden mit Minus dargestellt)
 function fmtClock(ms) {
@@ -2334,20 +2354,27 @@ function _setLiveCrest(slot, name, fallbackId) {
 function enterLive() {
   const s = match.getLive();
   if (!s) return;
-  _matchEnded  = false;
-  _breakActive = false;
+  // Zustand aus der (ggf. wiederhergestellten) Session übernehmen: Eine
+  // laufende Pause bleibt erhalten, eine bereits am Limit gestoppte Uhr gilt
+  // als abgepfiffen. Läuft die Uhr noch über dem Limit (Ende im Hintergrund
+  // oder während des Reloads), gibt der erste Tick das Abpfiff-Signal.
+  _breakActive = match.isBreakActive();
+  _matchEnded  = !_breakActive && match.isTimeUp() && !s.running;
   document.getElementById('card-team-a').style.background = s.teamA.colorHex;
   document.getElementById('card-team-b').style.background = s.teamB.colorHex;
   document.getElementById('live-team-a-name').textContent = s.teamA.name;
   document.getElementById('live-team-b-name').textContent = s.teamB.name;
   _setLiveCrest('a', s.teamA.name, _setupTeamSelection.a);
   _setLiveCrest('b', s.teamB.name, _setupTeamSelection.b);
-  pill.classList.toggle('running', s.running);
+  pill.classList.remove('running', 'ending', 'finished', 'break');
+  if (_breakActive) pill.classList.add('break');
+  else if (_matchEnded) pill.classList.add('finished');
+  else pill.classList.toggle('running', s.running);
   _updatePeriodLabel();
   updateScores();
   updateTimeoutUI();
   startMatchRaf();
-  acquireWakeLock();
+  acquireWakeLock('match');
   const cfg = storage.getItem('settings') || {};
   if (cfg.sound !== false) playWhistle();
 }
@@ -2357,7 +2384,7 @@ function leaveLive() {
   _matchRaf = null;
   _breakActive = false;
   pill.classList.remove('running', 'ending', 'finished', 'break');
-  releaseWakeLock();
+  releaseWakeLock('match');
 }
 
 function startMatchRaf() {
@@ -2366,7 +2393,7 @@ function startMatchRaf() {
   const tick = () => {
     if (_breakActive) {
       // Halbzeit-Pause: Countdown bis Pausenende
-      const rem = _breakEndsAt - Date.now();
+      const rem = match.getBreakRemainingMs() ?? 0;
       timeEl.textContent = fmtClock(Math.max(0, rem));
       if (rem <= 0) endBreak(true);
     } else {
@@ -2382,7 +2409,7 @@ function startMatchRaf() {
         pill.classList.toggle('ending', shown > 0 && shown <= 10000);
         if (remaining <= 0 && !_matchEnded) {
           _matchEnded = true;
-          if (match.getLive()?.running) { match.toggleTimer(); }
+          match.stopAtLimit();   // genau am Limit anhalten, keine Überzeit mitzählen
           pill.classList.remove('running', 'ending');
           pill.classList.add('finished');
           const cfg = storage.getItem('settings') || {};
@@ -2417,7 +2444,7 @@ function updateTimeoutUI() {
 // Halbzeit-Pause starten (Countdown auf der Pill)
 function startBreak(ms) {
   _breakActive = true;
-  _breakEndsAt = Date.now() + ms;
+  match.startBreak(ms);
   pill.classList.remove('running', 'ending', 'finished');
   pill.classList.add('break');
 }
@@ -2427,7 +2454,7 @@ function endBreak(auto) {
   if (!_breakActive) return;
   _breakActive = false;
   pill.classList.remove('break');
-  match.resetTimer();
+  match.endBreak();
   _matchEnded = false;
   _updatePeriodLabel();
   if (auto) {
@@ -2670,6 +2697,7 @@ function mountSW(id, cardEl) {
   const removeBtn = cardEl.querySelector('.btn-sw-remove');
   const lapList  = cardEl.querySelector('.lap-list');
   const labelEl  = cardEl.querySelector('.sw-label');
+  const wakeOwner = `sw-${id}`;
   let raf = null;
 
   const tick = () => {
@@ -2695,12 +2723,13 @@ function mountSW(id, cardEl) {
   ssBtn.addEventListener('click', () => {
     sw.toggle();
     sync();
+    cancelAnimationFrame(raf);
     if (sw.isRunning()) {
-      acquireWakeLock();
+      acquireWakeLock(wakeOwner);
       raf = requestAnimationFrame(tick);
     } else {
-      releaseWakeLock();
-      cancelAnimationFrame(raf);
+      releaseWakeLock(wakeOwner);
+      timeEl.textContent = fmtMs(sw.getMs());
     }
   });
 
@@ -2721,7 +2750,7 @@ function mountSW(id, cardEl) {
           laps: [...sw.laps],
         });
         cancelAnimationFrame(raf);
-        releaseWakeLock();
+        releaseWakeLock(wakeOwner);
         sw.reset();
         labelEl.value = '';
         timeEl.textContent = fmtMs(0);
@@ -2739,21 +2768,22 @@ function mountSW(id, cardEl) {
       if (!ok) return;
     }
     cancelAnimationFrame(raf);
-    releaseWakeLock();
+    releaseWakeLock(wakeOwner);
     sw.reset();
     timeEl.textContent = fmtMs(0);
     sync();
   });
 
   removeBtn.addEventListener('click', () => {
-    if (sw.isRunning()) { cancelAnimationFrame(raf); releaseWakeLock(); }
+    cancelAnimationFrame(raf);
+    releaseWakeLock(wakeOwner);
     const idx = swInstances.findIndex(inst => inst.id === id);
     if (idx !== -1) swInstances.splice(idx, 1);
     cardEl.remove();
     updateAddBtn();
   });
 
-  swInstances.push({ id, sw, cardEl });
+  swInstances.push({ id, sw, cardEl, render: () => { timeEl.textContent = fmtMs(sw.getMs()); } });
   sync();
 }
 
@@ -2858,6 +2888,7 @@ function mountCD(id, cardEl) {
   const resetBtn  = cardEl.querySelector('.btn-cd-reset');
   const saveBtn   = cardEl.querySelector('.btn-cd-save');
   const removeBtn = cardEl.querySelector('.btn-cd-remove');
+  const wakeOwner = `cd-${id}`;
 
   buildWheel(wMin, 60);
   buildWheel(wSec, 60);
@@ -2895,7 +2926,7 @@ function mountCD(id, cardEl) {
     const cfg = storage.getItem('settings') || {};
     if (cfg.sound !== false) playBeep();
     if (cfg.vibration !== false && navigator.vibrate) navigator.vibrate([200, 100, 200]);
-    releaseWakeLock();
+    releaseWakeLock(wakeOwner);
     ui.showToast('Timer abgelaufen!', 3000);
     if (cfg.notifications === true && notificationsSupported() && Notification.permission === 'granted') {
       showNotification('Timer abgelaufen!', {
@@ -2907,7 +2938,8 @@ function mountCD(id, cardEl) {
       });
     }
     sync();
-    setTimeout(() => { cd.reset(); sync(); }, 3000);
+    // Nur zurücksetzen, wenn inzwischen kein neuer Countdown gestartet wurde.
+    setTimeout(() => { if (cd.getState() === 'done') { cd.reset(); sync(); } }, 3000);
   };
 
   startBtn.addEventListener('click', () => {
@@ -2915,25 +2947,25 @@ function mountCD(id, cardEl) {
     if (ms === 0) return;
     cd.setDuration(ms);
     cd.start(onTick, onDone);
-    acquireWakeLock();
+    if (cd.getState() === 'running') acquireWakeLock(wakeOwner);
     sync();
   });
 
   pauseBtn.addEventListener('click', () => {
     cd.pause();
-    releaseWakeLock();
+    releaseWakeLock(wakeOwner);
     sync();
   });
 
   resumeBtn.addEventListener('click', () => {
     cd.resume(onTick, onDone);
-    acquireWakeLock();
+    if (cd.getState() === 'running') acquireWakeLock(wakeOwner);
     sync();
   });
 
   resetBtn.addEventListener('click', () => {
     cd.reset();
-    releaseWakeLock();
+    releaseWakeLock(wakeOwner);
     sync();
   });
 
@@ -2961,7 +2993,7 @@ function mountCD(id, cardEl) {
   });
 
   removeBtn.addEventListener('click', () => {
-    if (cd.getState() === 'running') releaseWakeLock();
+    releaseWakeLock(wakeOwner);
     cd.reset();
     const idx = cdInstances.findIndex(inst => inst.id === id);
     if (idx !== -1) cdInstances.splice(idx, 1);
@@ -3350,12 +3382,32 @@ if ('serviceWorker' in navigator) {
 window.addEventListener('pagehide', () => {
   _tbStopCamera();
   teambuilder.clearPhotos();
+  saveHomeQuickStopwatch();
+});
+
+// Rückkehr aus dem Hintergrund (Tab-/App-Wechsel, Display-Sperre, bfcache):
+// Im Hintergrund liefen keine Frames – Anzeigen sofort aus den Date.now-Ankern
+// neu berechnen und abgelaufene Countdowns beenden.
+function refreshTimersAfterBackground() {
+  syncHomeQuickStopwatch();
+  swInstances.forEach(inst => inst.render());
+  cdInstances.forEach(inst => inst.cd.refresh());
+}
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') refreshTimersAfterBackground();
+});
+window.addEventListener('pageshow', e => {
+  if (e.persisted) refreshTimersAfterBackground();
 });
 
 // ═══════════════════════════════════════════════════════════
 // BOOT
 // ═══════════════════════════════════════════════════════════
 initSettings();
+// Sportmodus vor dem ersten Rendern wiederherstellen, damit Header, Label und
+// Übungsansicht direkt zum gespeicherten Modus passen.
+sportsUI.init({ navigate: id => router.navigateTo(id) });
+sportmode.restore();
 checkSession();
 router.navigateTo('screen-home');
 openCommunityGameFromUrl();

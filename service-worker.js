@@ -1,4 +1,4 @@
-const CACHE = 'sportzaehler-v34';
+const CACHE = 'sportzaehler-v35';
 const ASSETS = [
   './',
   './index.html',
@@ -17,6 +17,10 @@ const ASSETS = [
   './js/webpush.js',
   './js/presets.js',
   './js/rules.js',
+  './js/sports.generated.js',
+  './js/sports.js',
+  './js/sportmode.js',
+  './js/sports-ui.js',
   './js/stopwatch.js',
   './js/timer.js',
   './js/history.js',

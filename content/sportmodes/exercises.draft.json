@@ -1,0 +1,1487 @@
+{
+  "schemaVersion": 1,
+  "status": "draft",
+  "description": "Fachlicher Content-Entwurf für sportartspezifische Übungsmodi. Allgemeinsport-Content bleibt in content/games unverändert.",
+  "sports": [
+    {
+      "sportId": "football",
+      "name": "Fußball",
+      "icon": "⚽",
+      "modeId": "football-uebungen",
+      "modeName": "Übungen",
+      "exercises": [
+        {
+          "id": "football-01",
+          "sportId": "football",
+          "modeId": "football-uebungen",
+          "title": "Dribbling-Parcours",
+          "category": "Dribbling",
+          "goal": "Ballführung unter Richtungswechseln",
+          "setup": "Hütchen, Bälle und zwei Minitore; Feld 20 × 25 m; 6–12 Personen.",
+          "steps": [
+            "In zwei bis drei gleich große Gruppen einteilen und Ablauf ohne Gegner vormachen.",
+            "Übung zunächst mit kontrolliertem Tempo durchführen; danach Tempo und Entscheidungsdruck erhöhen.",
+            "Nach jeder Serie Rollen und Startpositionen wechseln."
+          ],
+          "variations": [
+            "Leichter: größere Abstände und passiver Gegner.",
+            "Schwerer: kleineres Feld, schwächerer Fuß oder Zeitlimit."
+          ],
+          "safety": "Abstände zwischen Gruppen sichern, keine Grätschen in der Übung; bei Schmerz oder Schwindel sofort pausieren."
+        },
+        {
+          "id": "football-02",
+          "sportId": "football",
+          "modeId": "football-uebungen",
+          "title": "Innen-/Außenrist-Pass",
+          "category": "Passen",
+          "goal": "Passgenauigkeit und beidfüßige Technik",
+          "setup": "Hütchen, Bälle und zwei Minitore; Feld 20 × 25 m; 6–12 Personen.",
+          "steps": [
+            "In zwei bis drei gleich große Gruppen einteilen und Ablauf ohne Gegner vormachen.",
+            "Übung zunächst mit kontrolliertem Tempo durchführen; danach Tempo und Entscheidungsdruck erhöhen.",
+            "Nach jeder Serie Rollen und Startpositionen wechseln."
+          ],
+          "variations": [
+            "Leichter: größere Abstände und passiver Gegner.",
+            "Schwerer: kleineres Feld, schwächerer Fuß oder Zeitlimit."
+          ],
+          "safety": "Abstände zwischen Gruppen sichern, keine Grätschen in der Übung; bei Schmerz oder Schwindel sofort pausieren."
+        },
+        {
+          "id": "football-03",
+          "sportId": "football",
+          "modeId": "football-uebungen",
+          "title": "Dreiecks-Passen",
+          "category": "Passen",
+          "goal": "Freilaufbewegung und Passwinkel",
+          "setup": "Hütchen, Bälle und zwei Minitore; Feld 20 × 25 m; 6–12 Personen.",
+          "steps": [
+            "In zwei bis drei gleich große Gruppen einteilen und Ablauf ohne Gegner vormachen.",
+            "Übung zunächst mit kontrolliertem Tempo durchführen; danach Tempo und Entscheidungsdruck erhöhen.",
+            "Nach jeder Serie Rollen und Startpositionen wechseln."
+          ],
+          "variations": [
+            "Leichter: größere Abstände und passiver Gegner.",
+            "Schwerer: kleineres Feld, schwächerer Fuß oder Zeitlimit."
+          ],
+          "safety": "Abstände zwischen Gruppen sichern, keine Grätschen in der Übung; bei Schmerz oder Schwindel sofort pausieren."
+        },
+        {
+          "id": "football-04",
+          "sportId": "football",
+          "modeId": "football-uebungen",
+          "title": "Annahme in Bewegung",
+          "category": "Ballannahme",
+          "goal": "Erste Ballberührung in den freien Raum",
+          "setup": "Hütchen, Bälle und zwei Minitore; Feld 20 × 25 m; 6–12 Personen.",
+          "steps": [
+            "In zwei bis drei gleich große Gruppen einteilen und Ablauf ohne Gegner vormachen.",
+            "Übung zunächst mit kontrolliertem Tempo durchführen; danach Tempo und Entscheidungsdruck erhöhen.",
+            "Nach jeder Serie Rollen und Startpositionen wechseln."
+          ],
+          "variations": [
+            "Leichter: größere Abstände und passiver Gegner.",
+            "Schwerer: kleineres Feld, schwächerer Fuß oder Zeitlimit."
+          ],
+          "safety": "Abstände zwischen Gruppen sichern, keine Grätschen in der Übung; bei Schmerz oder Schwindel sofort pausieren."
+        },
+        {
+          "id": "football-05",
+          "sportId": "football",
+          "modeId": "football-uebungen",
+          "title": "Rondo 4 gegen 1",
+          "category": "Ballbesitz",
+          "goal": "Schnelle Entscheidungen unter Gegnerdruck",
+          "setup": "Hütchen, Bälle und zwei Minitore; Feld 20 × 25 m; 6–12 Personen.",
+          "steps": [
+            "In zwei bis drei gleich große Gruppen einteilen und Ablauf ohne Gegner vormachen.",
+            "Übung zunächst mit kontrolliertem Tempo durchführen; danach Tempo und Entscheidungsdruck erhöhen.",
+            "Nach jeder Serie Rollen und Startpositionen wechseln."
+          ],
+          "variations": [
+            "Leichter: größere Abstände und passiver Gegner.",
+            "Schwerer: kleineres Feld, schwächerer Fuß oder Zeitlimit."
+          ],
+          "safety": "Abstände zwischen Gruppen sichern, keine Grätschen in der Übung; bei Schmerz oder Schwindel sofort pausieren."
+        },
+        {
+          "id": "football-06",
+          "sportId": "football",
+          "modeId": "football-uebungen",
+          "title": "Rondo 5 gegen 2",
+          "category": "Ballbesitz",
+          "goal": "Ballzirkulation und Kommunikation",
+          "setup": "Hütchen, Bälle und zwei Minitore; Feld 20 × 25 m; 6–12 Personen.",
+          "steps": [
+            "In zwei bis drei gleich große Gruppen einteilen und Ablauf ohne Gegner vormachen.",
+            "Übung zunächst mit kontrolliertem Tempo durchführen; danach Tempo und Entscheidungsdruck erhöhen.",
+            "Nach jeder Serie Rollen und Startpositionen wechseln."
+          ],
+          "variations": [
+            "Leichter: größere Abstände und passiver Gegner.",
+            "Schwerer: kleineres Feld, schwächerer Fuß oder Zeitlimit."
+          ],
+          "safety": "Abstände zwischen Gruppen sichern, keine Grätschen in der Übung; bei Schmerz oder Schwindel sofort pausieren."
+        },
+        {
+          "id": "football-07",
+          "sportId": "football",
+          "modeId": "football-uebungen",
+          "title": "Torschuss nach Querpass",
+          "category": "Torschuss",
+          "goal": "Abschluss nach Laufweg zum ersten Pfosten",
+          "setup": "Hütchen, Bälle und zwei Minitore; Feld 20 × 25 m; 6–12 Personen.",
+          "steps": [
+            "In zwei bis drei gleich große Gruppen einteilen und Ablauf ohne Gegner vormachen.",
+            "Übung zunächst mit kontrolliertem Tempo durchführen; danach Tempo und Entscheidungsdruck erhöhen.",
+            "Nach jeder Serie Rollen und Startpositionen wechseln."
+          ],
+          "variations": [
+            "Leichter: größere Abstände und passiver Gegner.",
+            "Schwerer: kleineres Feld, schwächerer Fuß oder Zeitlimit."
+          ],
+          "safety": "Abstände zwischen Gruppen sichern, keine Grätschen in der Übung; bei Schmerz oder Schwindel sofort pausieren."
+        },
+        {
+          "id": "football-08",
+          "sportId": "football",
+          "modeId": "football-uebungen",
+          "title": "Torschuss nach Dribbling",
+          "category": "Torschuss",
+          "goal": "Mutiger Abschluss aus dem Dribbling",
+          "setup": "Hütchen, Bälle und zwei Minitore; Feld 20 × 25 m; 6–12 Personen.",
+          "steps": [
+            "In zwei bis drei gleich große Gruppen einteilen und Ablauf ohne Gegner vormachen.",
+            "Übung zunächst mit kontrolliertem Tempo durchführen; danach Tempo und Entscheidungsdruck erhöhen.",
+            "Nach jeder Serie Rollen und Startpositionen wechseln."
+          ],
+          "variations": [
+            "Leichter: größere Abstände und passiver Gegner.",
+            "Schwerer: kleineres Feld, schwächerer Fuß oder Zeitlimit."
+          ],
+          "safety": "Abstände zwischen Gruppen sichern, keine Grätschen in der Übung; bei Schmerz oder Schwindel sofort pausieren."
+        },
+        {
+          "id": "football-09",
+          "sportId": "football",
+          "modeId": "football-uebungen",
+          "title": "Finte und Torabschluss",
+          "category": "Torschuss",
+          "goal": "Täuschung vor dem Abschluss",
+          "setup": "Hütchen, Bälle und zwei Minitore; Feld 20 × 25 m; 6–12 Personen.",
+          "steps": [
+            "In zwei bis drei gleich große Gruppen einteilen und Ablauf ohne Gegner vormachen.",
+            "Übung zunächst mit kontrolliertem Tempo durchführen; danach Tempo und Entscheidungsdruck erhöhen.",
+            "Nach jeder Serie Rollen und Startpositionen wechseln."
+          ],
+          "variations": [
+            "Leichter: größere Abstände und passiver Gegner.",
+            "Schwerer: kleineres Feld, schwächerer Fuß oder Zeitlimit."
+          ],
+          "safety": "Abstände zwischen Gruppen sichern, keine Grätschen in der Übung; bei Schmerz oder Schwindel sofort pausieren."
+        },
+        {
+          "id": "football-10",
+          "sportId": "football",
+          "modeId": "football-uebungen",
+          "title": "1 gegen 1 offensiv",
+          "category": "Zweikampf",
+          "goal": "Gegner ausspielen und Raum gewinnen",
+          "setup": "Hütchen, Bälle und zwei Minitore; Feld 20 × 25 m; 6–12 Personen.",
+          "steps": [
+            "In zwei bis drei gleich große Gruppen einteilen und Ablauf ohne Gegner vormachen.",
+            "Übung zunächst mit kontrolliertem Tempo durchführen; danach Tempo und Entscheidungsdruck erhöhen.",
+            "Nach jeder Serie Rollen und Startpositionen wechseln."
+          ],
+          "variations": [
+            "Leichter: größere Abstände und passiver Gegner.",
+            "Schwerer: kleineres Feld, schwächerer Fuß oder Zeitlimit."
+          ],
+          "safety": "Abstände zwischen Gruppen sichern, keine Grätschen in der Übung; bei Schmerz oder Schwindel sofort pausieren."
+        },
+        {
+          "id": "football-11",
+          "sportId": "football",
+          "modeId": "football-uebungen",
+          "title": "1 gegen 1 defensiv",
+          "category": "Zweikampf",
+          "goal": "Gegner nach außen lenken und Ball erobern",
+          "setup": "Hütchen, Bälle und zwei Minitore; Feld 20 × 25 m; 6–12 Personen.",
+          "steps": [
+            "In zwei bis drei gleich große Gruppen einteilen und Ablauf ohne Gegner vormachen.",
+            "Übung zunächst mit kontrolliertem Tempo durchführen; danach Tempo und Entscheidungsdruck erhöhen.",
+            "Nach jeder Serie Rollen und Startpositionen wechseln."
+          ],
+          "variations": [
+            "Leichter: größere Abstände und passiver Gegner.",
+            "Schwerer: kleineres Feld, schwächerer Fuß oder Zeitlimit."
+          ],
+          "safety": "Abstände zwischen Gruppen sichern, keine Grätschen in der Übung; bei Schmerz oder Schwindel sofort pausieren."
+        },
+        {
+          "id": "football-12",
+          "sportId": "football",
+          "modeId": "football-uebungen",
+          "title": "2 gegen 1 Überzahl",
+          "category": "Angriff",
+          "goal": "Überzahl erkennen und gemeinsam nutzen",
+          "setup": "Hütchen, Bälle und zwei Minitore; Feld 20 × 25 m; 6–12 Personen.",
+          "steps": [
+            "In zwei bis drei gleich große Gruppen einteilen und Ablauf ohne Gegner vormachen.",
+            "Übung zunächst mit kontrolliertem Tempo durchführen; danach Tempo und Entscheidungsdruck erhöhen.",
+            "Nach jeder Serie Rollen und Startpositionen wechseln."
+          ],
+          "variations": [
+            "Leichter: größere Abstände und passiver Gegner.",
+            "Schwerer: kleineres Feld, schwächerer Fuß oder Zeitlimit."
+          ],
+          "safety": "Abstände zwischen Gruppen sichern, keine Grätschen in der Übung; bei Schmerz oder Schwindel sofort pausieren."
+        },
+        {
+          "id": "football-13",
+          "sportId": "football",
+          "modeId": "football-uebungen",
+          "title": "2 gegen 2 mit Umschalten",
+          "category": "Umschalten",
+          "goal": "Schneller Wechsel zwischen Angriff und Abwehr",
+          "setup": "Hütchen, Bälle und zwei Minitore; Feld 20 × 25 m; 6–12 Personen.",
+          "steps": [
+            "In zwei bis drei gleich große Gruppen einteilen und Ablauf ohne Gegner vormachen.",
+            "Übung zunächst mit kontrolliertem Tempo durchführen; danach Tempo und Entscheidungsdruck erhöhen.",
+            "Nach jeder Serie Rollen und Startpositionen wechseln."
+          ],
+          "variations": [
+            "Leichter: größere Abstände und passiver Gegner.",
+            "Schwerer: kleineres Feld, schwächerer Fuß oder Zeitlimit."
+          ],
+          "safety": "Abstände zwischen Gruppen sichern, keine Grätschen in der Übung; bei Schmerz oder Schwindel sofort pausieren."
+        },
+        {
+          "id": "football-14",
+          "sportId": "football",
+          "modeId": "football-uebungen",
+          "title": "Passfolge mit Klatschen",
+          "category": "Passen",
+          "goal": "Passschärfe und Anschlussbewegung",
+          "setup": "Hütchen, Bälle und zwei Minitore; Feld 20 × 25 m; 6–12 Personen.",
+          "steps": [
+            "In zwei bis drei gleich große Gruppen einteilen und Ablauf ohne Gegner vormachen.",
+            "Übung zunächst mit kontrolliertem Tempo durchführen; danach Tempo und Entscheidungsdruck erhöhen.",
+            "Nach jeder Serie Rollen und Startpositionen wechseln."
+          ],
+          "variations": [
+            "Leichter: größere Abstände und passiver Gegner.",
+            "Schwerer: kleineres Feld, schwächerer Fuß oder Zeitlimit."
+          ],
+          "safety": "Abstände zwischen Gruppen sichern, keine Grätschen in der Übung; bei Schmerz oder Schwindel sofort pausieren."
+        },
+        {
+          "id": "football-15",
+          "sportId": "football",
+          "modeId": "football-uebungen",
+          "title": "Steilpass und Lauf",
+          "category": "Passen",
+          "goal": "Timing von Pass und Tiefenlauf",
+          "setup": "Hütchen, Bälle und zwei Minitore; Feld 20 × 25 m; 6–12 Personen.",
+          "steps": [
+            "In zwei bis drei gleich große Gruppen einteilen und Ablauf ohne Gegner vormachen.",
+            "Übung zunächst mit kontrolliertem Tempo durchführen; danach Tempo und Entscheidungsdruck erhöhen.",
+            "Nach jeder Serie Rollen und Startpositionen wechseln."
+          ],
+          "variations": [
+            "Leichter: größere Abstände und passiver Gegner.",
+            "Schwerer: kleineres Feld, schwächerer Fuß oder Zeitlimit."
+          ],
+          "safety": "Abstände zwischen Gruppen sichern, keine Grätschen in der Übung; bei Schmerz oder Schwindel sofort pausieren."
+        },
+        {
+          "id": "football-16",
+          "sportId": "football",
+          "modeId": "football-uebungen",
+          "title": "Ballmitnahme unter Druck",
+          "category": "Ballannahme",
+          "goal": "Ball sichern und offene Seite finden",
+          "setup": "Hütchen, Bälle und zwei Minitore; Feld 20 × 25 m; 6–12 Personen.",
+          "steps": [
+            "In zwei bis drei gleich große Gruppen einteilen und Ablauf ohne Gegner vormachen.",
+            "Übung zunächst mit kontrolliertem Tempo durchführen; danach Tempo und Entscheidungsdruck erhöhen.",
+            "Nach jeder Serie Rollen und Startpositionen wechseln."
+          ],
+          "variations": [
+            "Leichter: größere Abstände und passiver Gegner.",
+            "Schwerer: kleineres Feld, schwächerer Fuß oder Zeitlimit."
+          ],
+          "safety": "Abstände zwischen Gruppen sichern, keine Grätschen in der Übung; bei Schmerz oder Schwindel sofort pausieren."
+        },
+        {
+          "id": "football-17",
+          "sportId": "football",
+          "modeId": "football-uebungen",
+          "title": "Flanken und Abschluss",
+          "category": "Torschuss",
+          "goal": "Flanken aus dem Lauf verwerten",
+          "setup": "Hütchen, Bälle und zwei Minitore; Feld 20 × 25 m; 6–12 Personen.",
+          "steps": [
+            "In zwei bis drei gleich große Gruppen einteilen und Ablauf ohne Gegner vormachen.",
+            "Übung zunächst mit kontrolliertem Tempo durchführen; danach Tempo und Entscheidungsdruck erhöhen.",
+            "Nach jeder Serie Rollen und Startpositionen wechseln."
+          ],
+          "variations": [
+            "Leichter: größere Abstände und passiver Gegner.",
+            "Schwerer: kleineres Feld, schwächerer Fuß oder Zeitlimit."
+          ],
+          "safety": "Abstände zwischen Gruppen sichern, keine Grätschen in der Übung; bei Schmerz oder Schwindel sofort pausieren."
+        },
+        {
+          "id": "football-18",
+          "sportId": "football",
+          "modeId": "football-uebungen",
+          "title": "Kopfballtechnik mit Zuspiel",
+          "category": "Kopfball",
+          "goal": "Sicheres Timing bei hohen Bällen",
+          "setup": "Hütchen, Bälle und zwei Minitore; Feld 20 × 25 m; 6–12 Personen.",
+          "steps": [
+            "In zwei bis drei gleich große Gruppen einteilen und Ablauf ohne Gegner vormachen.",
+            "Übung zunächst mit kontrolliertem Tempo durchführen; danach Tempo und Entscheidungsdruck erhöhen.",
+            "Nach jeder Serie Rollen und Startpositionen wechseln."
+          ],
+          "variations": [
+            "Leichter: größere Abstände und passiver Gegner.",
+            "Schwerer: kleineres Feld, schwächerer Fuß oder Zeitlimit."
+          ],
+          "safety": "Abstände zwischen Gruppen sichern, keine Grätschen in der Übung; bei Schmerz oder Schwindel sofort pausieren."
+        },
+        {
+          "id": "football-19",
+          "sportId": "football",
+          "modeId": "football-uebungen",
+          "title": "Torwart-Grundstellung",
+          "category": "Torwart",
+          "goal": "Grundposition und sicheres Fangen",
+          "setup": "Hütchen, Bälle und zwei Minitore; Feld 20 × 25 m; 6–12 Personen.",
+          "steps": [
+            "In zwei bis drei gleich große Gruppen einteilen und Ablauf ohne Gegner vormachen.",
+            "Übung zunächst mit kontrolliertem Tempo durchführen; danach Tempo und Entscheidungsdruck erhöhen.",
+            "Nach jeder Serie Rollen und Startpositionen wechseln."
+          ],
+          "variations": [
+            "Leichter: größere Abstände und passiver Gegner.",
+            "Schwerer: kleineres Feld, schwächerer Fuß oder Zeitlimit."
+          ],
+          "safety": "Abstände zwischen Gruppen sichern, keine Grätschen in der Übung; bei Schmerz oder Schwindel sofort pausieren."
+        },
+        {
+          "id": "football-20",
+          "sportId": "football",
+          "modeId": "football-uebungen",
+          "title": "Torwart-Fußarbeit",
+          "category": "Torwart",
+          "goal": "Seitliche Bewegung vor dem Torabschluss",
+          "setup": "Hütchen, Bälle und zwei Minitore; Feld 20 × 25 m; 6–12 Personen.",
+          "steps": [
+            "In zwei bis drei gleich große Gruppen einteilen und Ablauf ohne Gegner vormachen.",
+            "Übung zunächst mit kontrolliertem Tempo durchführen; danach Tempo und Entscheidungsdruck erhöhen.",
+            "Nach jeder Serie Rollen und Startpositionen wechseln."
+          ],
+          "variations": [
+            "Leichter: größere Abstände und passiver Gegner.",
+            "Schwerer: kleineres Feld, schwächerer Fuß oder Zeitlimit."
+          ],
+          "safety": "Abstände zwischen Gruppen sichern, keine Grätschen in der Übung; bei Schmerz oder Schwindel sofort pausieren."
+        },
+        {
+          "id": "football-21",
+          "sportId": "football",
+          "modeId": "football-uebungen",
+          "title": "Schnelligkeit mit Ball",
+          "category": "Athletik",
+          "goal": "Antritt und Ballkontrolle verbinden",
+          "setup": "Hütchen, Bälle und zwei Minitore; Feld 20 × 25 m; 6–12 Personen.",
+          "steps": [
+            "In zwei bis drei gleich große Gruppen einteilen und Ablauf ohne Gegner vormachen.",
+            "Übung zunächst mit kontrolliertem Tempo durchführen; danach Tempo und Entscheidungsdruck erhöhen.",
+            "Nach jeder Serie Rollen und Startpositionen wechseln."
+          ],
+          "variations": [
+            "Leichter: größere Abstände und passiver Gegner.",
+            "Schwerer: kleineres Feld, schwächerer Fuß oder Zeitlimit."
+          ],
+          "safety": "Abstände zwischen Gruppen sichern, keine Grätschen in der Übung; bei Schmerz oder Schwindel sofort pausieren."
+        },
+        {
+          "id": "football-22",
+          "sportId": "football",
+          "modeId": "football-uebungen",
+          "title": "Sprint ohne Ball",
+          "category": "Athletik",
+          "goal": "Explosiver Antritt auf Kommando",
+          "setup": "Hütchen, Bälle und zwei Minitore; Feld 20 × 25 m; 6–12 Personen.",
+          "steps": [
+            "In zwei bis drei gleich große Gruppen einteilen und Ablauf ohne Gegner vormachen.",
+            "Übung zunächst mit kontrolliertem Tempo durchführen; danach Tempo und Entscheidungsdruck erhöhen.",
+            "Nach jeder Serie Rollen und Startpositionen wechseln."
+          ],
+          "variations": [
+            "Leichter: größere Abstände und passiver Gegner.",
+            "Schwerer: kleineres Feld, schwächerer Fuß oder Zeitlimit."
+          ],
+          "safety": "Abstände zwischen Gruppen sichern, keine Grätschen in der Übung; bei Schmerz oder Schwindel sofort pausieren."
+        },
+        {
+          "id": "football-23",
+          "sportId": "football",
+          "modeId": "football-uebungen",
+          "title": "Reaktionsfarben mit Ball",
+          "category": "Koordination",
+          "goal": "Reaktion und enge Ballführung",
+          "setup": "Hütchen, Bälle und zwei Minitore; Feld 20 × 25 m; 6–12 Personen.",
+          "steps": [
+            "In zwei bis drei gleich große Gruppen einteilen und Ablauf ohne Gegner vormachen.",
+            "Übung zunächst mit kontrolliertem Tempo durchführen; danach Tempo und Entscheidungsdruck erhöhen.",
+            "Nach jeder Serie Rollen und Startpositionen wechseln."
+          ],
+          "variations": [
+            "Leichter: größere Abstände und passiver Gegner.",
+            "Schwerer: kleineres Feld, schwächerer Fuß oder Zeitlimit."
+          ],
+          "safety": "Abstände zwischen Gruppen sichern, keine Grätschen in der Übung; bei Schmerz oder Schwindel sofort pausieren."
+        },
+        {
+          "id": "football-24",
+          "sportId": "football",
+          "modeId": "football-uebungen",
+          "title": "Passdreieck mit Gegner",
+          "category": "Passen",
+          "goal": "Orientierung vor der Ballannahme",
+          "setup": "Hütchen, Bälle und zwei Minitore; Feld 20 × 25 m; 6–12 Personen.",
+          "steps": [
+            "In zwei bis drei gleich große Gruppen einteilen und Ablauf ohne Gegner vormachen.",
+            "Übung zunächst mit kontrolliertem Tempo durchführen; danach Tempo und Entscheidungsdruck erhöhen.",
+            "Nach jeder Serie Rollen und Startpositionen wechseln."
+          ],
+          "variations": [
+            "Leichter: größere Abstände und passiver Gegner.",
+            "Schwerer: kleineres Feld, schwächerer Fuß oder Zeitlimit."
+          ],
+          "safety": "Abstände zwischen Gruppen sichern, keine Grätschen in der Übung; bei Schmerz oder Schwindel sofort pausieren."
+        },
+        {
+          "id": "football-25",
+          "sportId": "football",
+          "modeId": "football-uebungen",
+          "title": "Kleinfeld 3 gegen 3",
+          "category": "Spielform",
+          "goal": "Viele Ballaktionen und mutiges Spiel",
+          "setup": "Hütchen, Bälle und zwei Minitore; Feld 20 × 25 m; 6–12 Personen.",
+          "steps": [
+            "In zwei bis drei gleich große Gruppen einteilen und Ablauf ohne Gegner vormachen.",
+            "Übung zunächst mit kontrolliertem Tempo durchführen; danach Tempo und Entscheidungsdruck erhöhen.",
+            "Nach jeder Serie Rollen und Startpositionen wechseln."
+          ],
+          "variations": [
+            "Leichter: größere Abstände und passiver Gegner.",
+            "Schwerer: kleineres Feld, schwächerer Fuß oder Zeitlimit."
+          ],
+          "safety": "Abstände zwischen Gruppen sichern, keine Grätschen in der Übung; bei Schmerz oder Schwindel sofort pausieren."
+        },
+        {
+          "id": "football-26",
+          "sportId": "football",
+          "modeId": "football-uebungen",
+          "title": "Kleinfeld 4 gegen 4",
+          "category": "Spielform",
+          "goal": "Breite und Tiefe im Spiel nutzen",
+          "setup": "Hütchen, Bälle und zwei Minitore; Feld 20 × 25 m; 6–12 Personen.",
+          "steps": [
+            "In zwei bis drei gleich große Gruppen einteilen und Ablauf ohne Gegner vormachen.",
+            "Übung zunächst mit kontrolliertem Tempo durchführen; danach Tempo und Entscheidungsdruck erhöhen.",
+            "Nach jeder Serie Rollen und Startpositionen wechseln."
+          ],
+          "variations": [
+            "Leichter: größere Abstände und passiver Gegner.",
+            "Schwerer: kleineres Feld, schwächerer Fuß oder Zeitlimit."
+          ],
+          "safety": "Abstände zwischen Gruppen sichern, keine Grätschen in der Übung; bei Schmerz oder Schwindel sofort pausieren."
+        },
+        {
+          "id": "football-27",
+          "sportId": "football",
+          "modeId": "football-uebungen",
+          "title": "Überzahl auf zwei Tore",
+          "category": "Angriff",
+          "goal": "Schnelle Seitenverlagerung",
+          "setup": "Hütchen, Bälle und zwei Minitore; Feld 20 × 25 m; 6–12 Personen.",
+          "steps": [
+            "In zwei bis drei gleich große Gruppen einteilen und Ablauf ohne Gegner vormachen.",
+            "Übung zunächst mit kontrolliertem Tempo durchführen; danach Tempo und Entscheidungsdruck erhöhen.",
+            "Nach jeder Serie Rollen und Startpositionen wechseln."
+          ],
+          "variations": [
+            "Leichter: größere Abstände und passiver Gegner.",
+            "Schwerer: kleineres Feld, schwächerer Fuß oder Zeitlimit."
+          ],
+          "safety": "Abstände zwischen Gruppen sichern, keine Grätschen in der Übung; bei Schmerz oder Schwindel sofort pausieren."
+        },
+        {
+          "id": "football-28",
+          "sportId": "football",
+          "modeId": "football-uebungen",
+          "title": "Konter nach Ballgewinn",
+          "category": "Umschalten",
+          "goal": "Erster Pass nach Ballgewinn nach vorne",
+          "setup": "Hütchen, Bälle und zwei Minitore; Feld 20 × 25 m; 6–12 Personen.",
+          "steps": [
+            "In zwei bis drei gleich große Gruppen einteilen und Ablauf ohne Gegner vormachen.",
+            "Übung zunächst mit kontrolliertem Tempo durchführen; danach Tempo und Entscheidungsdruck erhöhen.",
+            "Nach jeder Serie Rollen und Startpositionen wechseln."
+          ],
+          "variations": [
+            "Leichter: größere Abstände und passiver Gegner.",
+            "Schwerer: kleineres Feld, schwächerer Fuß oder Zeitlimit."
+          ],
+          "safety": "Abstände zwischen Gruppen sichern, keine Grätschen in der Übung; bei Schmerz oder Schwindel sofort pausieren."
+        },
+        {
+          "id": "football-29",
+          "sportId": "football",
+          "modeId": "football-uebungen",
+          "title": "Pressing-Auslöser",
+          "category": "Abwehr",
+          "goal": "Gemeinsames Anlaufen im richtigen Moment",
+          "setup": "Hütchen, Bälle und zwei Minitore; Feld 20 × 25 m; 6–12 Personen.",
+          "steps": [
+            "In zwei bis drei gleich große Gruppen einteilen und Ablauf ohne Gegner vormachen.",
+            "Übung zunächst mit kontrolliertem Tempo durchführen; danach Tempo und Entscheidungsdruck erhöhen.",
+            "Nach jeder Serie Rollen und Startpositionen wechseln."
+          ],
+          "variations": [
+            "Leichter: größere Abstände und passiver Gegner.",
+            "Schwerer: kleineres Feld, schwächerer Fuß oder Zeitlimit."
+          ],
+          "safety": "Abstände zwischen Gruppen sichern, keine Grätschen in der Übung; bei Schmerz oder Schwindel sofort pausieren."
+        },
+        {
+          "id": "football-30",
+          "sportId": "football",
+          "modeId": "football-uebungen",
+          "title": "Abwehrkette verschieben",
+          "category": "Abwehr",
+          "goal": "Abstände halten und Räume schließen",
+          "setup": "Hütchen, Bälle und zwei Minitore; Feld 20 × 25 m; 6–12 Personen.",
+          "steps": [
+            "In zwei bis drei gleich große Gruppen einteilen und Ablauf ohne Gegner vormachen.",
+            "Übung zunächst mit kontrolliertem Tempo durchführen; danach Tempo und Entscheidungsdruck erhöhen.",
+            "Nach jeder Serie Rollen und Startpositionen wechseln."
+          ],
+          "variations": [
+            "Leichter: größere Abstände und passiver Gegner.",
+            "Schwerer: kleineres Feld, schwächerer Fuß oder Zeitlimit."
+          ],
+          "safety": "Abstände zwischen Gruppen sichern, keine Grätschen in der Übung; bei Schmerz oder Schwindel sofort pausieren."
+        },
+        {
+          "id": "football-31",
+          "sportId": "football",
+          "modeId": "football-uebungen",
+          "title": "Standards: Eckball kurz",
+          "category": "Standards",
+          "goal": "Einfache Laufwege bei Eckbällen",
+          "setup": "Hütchen, Bälle und zwei Minitore; Feld 20 × 25 m; 6–12 Personen.",
+          "steps": [
+            "In zwei bis drei gleich große Gruppen einteilen und Ablauf ohne Gegner vormachen.",
+            "Übung zunächst mit kontrolliertem Tempo durchführen; danach Tempo und Entscheidungsdruck erhöhen.",
+            "Nach jeder Serie Rollen und Startpositionen wechseln."
+          ],
+          "variations": [
+            "Leichter: größere Abstände und passiver Gegner.",
+            "Schwerer: kleineres Feld, schwächerer Fuß oder Zeitlimit."
+          ],
+          "safety": "Abstände zwischen Gruppen sichern, keine Grätschen in der Übung; bei Schmerz oder Schwindel sofort pausieren."
+        }
+      ]
+    },
+    {
+      "sportId": "handball",
+      "name": "Handball",
+      "icon": "🤾",
+      "modeId": "handball-uebungen",
+      "modeName": "Übungen",
+      "exercises": [
+        {
+          "id": "handball-01",
+          "sportId": "handball",
+          "modeId": "handball-uebungen",
+          "title": "Passen und Fangen in Bewegung",
+          "category": "Passen",
+          "goal": "Sicheres Zuspiel bei hohem Tempo",
+          "setup": "Handbälle, Hütchen und Tor; Feld 20 × 25 m; 6–12 Personen.",
+          "steps": [
+            "Paare oder Kleingruppen bilden und Pass-/Laufweg zunächst ohne Gegner zeigen.",
+            "Mit sicherem Grundtempo starten und anschließend Abwehrdruck oder Zeitvorgabe ergänzen.",
+            "Nach jeder Serie Positionen und Wurfseite wechseln."
+          ],
+          "variations": [
+            "Leichter: größere Abstände und passiver Abwehrspieler.",
+            "Schwerer: kleineres Feld, schwächere Hand oder Zeitlimit."
+          ],
+          "safety": "Wurf- und Laufwege trennen, Körperkontakt kontrollieren, Torraum freihalten; bei Schmerz oder Schwindel pausieren."
+        },
+        {
+          "id": "handball-02",
+          "sportId": "handball",
+          "modeId": "handball-uebungen",
+          "title": "Dreierpass mit Kreuzung",
+          "category": "Passen",
+          "goal": "Kreuzbewegung und Blickkontakt",
+          "setup": "Handbälle, Hütchen und Tor; Feld 20 × 25 m; 6–12 Personen.",
+          "steps": [
+            "Paare oder Kleingruppen bilden und Pass-/Laufweg zunächst ohne Gegner zeigen.",
+            "Mit sicherem Grundtempo starten und anschließend Abwehrdruck oder Zeitvorgabe ergänzen.",
+            "Nach jeder Serie Positionen und Wurfseite wechseln."
+          ],
+          "variations": [
+            "Leichter: größere Abstände und passiver Abwehrspieler.",
+            "Schwerer: kleineres Feld, schwächere Hand oder Zeitlimit."
+          ],
+          "safety": "Wurf- und Laufwege trennen, Körperkontakt kontrollieren, Torraum freihalten; bei Schmerz oder Schwindel pausieren."
+        },
+        {
+          "id": "handball-03",
+          "sportId": "handball",
+          "modeId": "handball-uebungen",
+          "title": "Prellparcours",
+          "category": "Ballführung",
+          "goal": "Kontrolliertes Prellen mit Richtungswechsel",
+          "setup": "Handbälle, Hütchen und Tor; Feld 20 × 25 m; 6–12 Personen.",
+          "steps": [
+            "Paare oder Kleingruppen bilden und Pass-/Laufweg zunächst ohne Gegner zeigen.",
+            "Mit sicherem Grundtempo starten und anschließend Abwehrdruck oder Zeitvorgabe ergänzen.",
+            "Nach jeder Serie Positionen und Wurfseite wechseln."
+          ],
+          "variations": [
+            "Leichter: größere Abstände und passiver Abwehrspieler.",
+            "Schwerer: kleineres Feld, schwächere Hand oder Zeitlimit."
+          ],
+          "safety": "Wurf- und Laufwege trennen, Körperkontakt kontrollieren, Torraum freihalten; bei Schmerz oder Schwindel pausieren."
+        },
+        {
+          "id": "handball-04",
+          "sportId": "handball",
+          "modeId": "handball-uebungen",
+          "title": "Sprungwurf aus dem Anlauf",
+          "category": "Wurf",
+          "goal": "Absprung und zielgenauer Wurf",
+          "setup": "Handbälle, Hütchen und Tor; Feld 20 × 25 m; 6–12 Personen.",
+          "steps": [
+            "Paare oder Kleingruppen bilden und Pass-/Laufweg zunächst ohne Gegner zeigen.",
+            "Mit sicherem Grundtempo starten und anschließend Abwehrdruck oder Zeitvorgabe ergänzen.",
+            "Nach jeder Serie Positionen und Wurfseite wechseln."
+          ],
+          "variations": [
+            "Leichter: größere Abstände und passiver Abwehrspieler.",
+            "Schwerer: kleineres Feld, schwächere Hand oder Zeitlimit."
+          ],
+          "safety": "Wurf- und Laufwege trennen, Körperkontakt kontrollieren, Torraum freihalten; bei Schmerz oder Schwindel pausieren."
+        },
+        {
+          "id": "handball-05",
+          "sportId": "handball",
+          "modeId": "handball-uebungen",
+          "title": "Wurfvarianten auf Ziele",
+          "category": "Wurf",
+          "goal": "Wurfgenauigkeit in verschiedene Ecken",
+          "setup": "Handbälle, Hütchen und Tor; Feld 20 × 25 m; 6–12 Personen.",
+          "steps": [
+            "Paare oder Kleingruppen bilden und Pass-/Laufweg zunächst ohne Gegner zeigen.",
+            "Mit sicherem Grundtempo starten und anschließend Abwehrdruck oder Zeitvorgabe ergänzen.",
+            "Nach jeder Serie Positionen und Wurfseite wechseln."
+          ],
+          "variations": [
+            "Leichter: größere Abstände und passiver Abwehrspieler.",
+            "Schwerer: kleineres Feld, schwächere Hand oder Zeitlimit."
+          ],
+          "safety": "Wurf- und Laufwege trennen, Körperkontakt kontrollieren, Torraum freihalten; bei Schmerz oder Schwindel pausieren."
+        },
+        {
+          "id": "handball-06",
+          "sportId": "handball",
+          "modeId": "handball-uebungen",
+          "title": "Täuschung und Durchbruch",
+          "category": "Angriff",
+          "goal": "Körperfinte und dynamischer Durchbruch",
+          "setup": "Handbälle, Hütchen und Tor; Feld 20 × 25 m; 6–12 Personen.",
+          "steps": [
+            "Paare oder Kleingruppen bilden und Pass-/Laufweg zunächst ohne Gegner zeigen.",
+            "Mit sicherem Grundtempo starten und anschließend Abwehrdruck oder Zeitvorgabe ergänzen.",
+            "Nach jeder Serie Positionen und Wurfseite wechseln."
+          ],
+          "variations": [
+            "Leichter: größere Abstände und passiver Abwehrspieler.",
+            "Schwerer: kleineres Feld, schwächere Hand oder Zeitlimit."
+          ],
+          "safety": "Wurf- und Laufwege trennen, Körperkontakt kontrollieren, Torraum freihalten; bei Schmerz oder Schwindel pausieren."
+        },
+        {
+          "id": "handball-07",
+          "sportId": "handball",
+          "modeId": "handball-uebungen",
+          "title": "1 gegen 1 im Korridor",
+          "category": "Zweikampf",
+          "goal": "Richtiges Timing im Angriff",
+          "setup": "Handbälle, Hütchen und Tor; Feld 20 × 25 m; 6–12 Personen.",
+          "steps": [
+            "Paare oder Kleingruppen bilden und Pass-/Laufweg zunächst ohne Gegner zeigen.",
+            "Mit sicherem Grundtempo starten und anschließend Abwehrdruck oder Zeitvorgabe ergänzen.",
+            "Nach jeder Serie Positionen und Wurfseite wechseln."
+          ],
+          "variations": [
+            "Leichter: größere Abstände und passiver Abwehrspieler.",
+            "Schwerer: kleineres Feld, schwächere Hand oder Zeitlimit."
+          ],
+          "safety": "Wurf- und Laufwege trennen, Körperkontakt kontrollieren, Torraum freihalten; bei Schmerz oder Schwindel pausieren."
+        },
+        {
+          "id": "handball-08",
+          "sportId": "handball",
+          "modeId": "handball-uebungen",
+          "title": "Abwehrgrundstellung",
+          "category": "Abwehr",
+          "goal": "Seitliches Verschieben und Abstand",
+          "setup": "Handbälle, Hütchen und Tor; Feld 20 × 25 m; 6–12 Personen.",
+          "steps": [
+            "Paare oder Kleingruppen bilden und Pass-/Laufweg zunächst ohne Gegner zeigen.",
+            "Mit sicherem Grundtempo starten und anschließend Abwehrdruck oder Zeitvorgabe ergänzen.",
+            "Nach jeder Serie Positionen und Wurfseite wechseln."
+          ],
+          "variations": [
+            "Leichter: größere Abstände und passiver Abwehrspieler.",
+            "Schwerer: kleineres Feld, schwächere Hand oder Zeitlimit."
+          ],
+          "safety": "Wurf- und Laufwege trennen, Körperkontakt kontrollieren, Torraum freihalten; bei Schmerz oder Schwindel pausieren."
+        },
+        {
+          "id": "handball-09",
+          "sportId": "handball",
+          "modeId": "handball-uebungen",
+          "title": "Abwehr 2 gegen 2",
+          "category": "Abwehr",
+          "goal": "Übergabe und Übernahme",
+          "setup": "Handbälle, Hütchen und Tor; Feld 20 × 25 m; 6–12 Personen.",
+          "steps": [
+            "Paare oder Kleingruppen bilden und Pass-/Laufweg zunächst ohne Gegner zeigen.",
+            "Mit sicherem Grundtempo starten und anschließend Abwehrdruck oder Zeitvorgabe ergänzen.",
+            "Nach jeder Serie Positionen und Wurfseite wechseln."
+          ],
+          "variations": [
+            "Leichter: größere Abstände und passiver Abwehrspieler.",
+            "Schwerer: kleineres Feld, schwächere Hand oder Zeitlimit."
+          ],
+          "safety": "Wurf- und Laufwege trennen, Körperkontakt kontrollieren, Torraum freihalten; bei Schmerz oder Schwindel pausieren."
+        },
+        {
+          "id": "handball-10",
+          "sportId": "handball",
+          "modeId": "handball-uebungen",
+          "title": "Kreisläufer anspielen",
+          "category": "Angriff",
+          "goal": "Passfenster zum Kreis erkennen",
+          "setup": "Handbälle, Hütchen und Tor; Feld 20 × 25 m; 6–12 Personen.",
+          "steps": [
+            "Paare oder Kleingruppen bilden und Pass-/Laufweg zunächst ohne Gegner zeigen.",
+            "Mit sicherem Grundtempo starten und anschließend Abwehrdruck oder Zeitvorgabe ergänzen.",
+            "Nach jeder Serie Positionen und Wurfseite wechseln."
+          ],
+          "variations": [
+            "Leichter: größere Abstände und passiver Abwehrspieler.",
+            "Schwerer: kleineres Feld, schwächere Hand oder Zeitlimit."
+          ],
+          "safety": "Wurf- und Laufwege trennen, Körperkontakt kontrollieren, Torraum freihalten; bei Schmerz oder Schwindel pausieren."
+        },
+        {
+          "id": "handball-11",
+          "sportId": "handball",
+          "modeId": "handball-uebungen",
+          "title": "Gegenstoß in Wellen",
+          "category": "Umschalten",
+          "goal": "Schnelles Umschalten nach Ballgewinn",
+          "setup": "Handbälle, Hütchen und Tor; Feld 20 × 25 m; 6–12 Personen.",
+          "steps": [
+            "Paare oder Kleingruppen bilden und Pass-/Laufweg zunächst ohne Gegner zeigen.",
+            "Mit sicherem Grundtempo starten und anschließend Abwehrdruck oder Zeitvorgabe ergänzen.",
+            "Nach jeder Serie Positionen und Wurfseite wechseln."
+          ],
+          "variations": [
+            "Leichter: größere Abstände und passiver Abwehrspieler.",
+            "Schwerer: kleineres Feld, schwächere Hand oder Zeitlimit."
+          ],
+          "safety": "Wurf- und Laufwege trennen, Körperkontakt kontrollieren, Torraum freihalten; bei Schmerz oder Schwindel pausieren."
+        },
+        {
+          "id": "handball-12",
+          "sportId": "handball",
+          "modeId": "handball-uebungen",
+          "title": "Torwart: Winkel verkürzen",
+          "category": "Torwart",
+          "goal": "Positionierung zur Wurfarmseite",
+          "setup": "Handbälle, Hütchen und Tor; Feld 20 × 25 m; 6–12 Personen.",
+          "steps": [
+            "Paare oder Kleingruppen bilden und Pass-/Laufweg zunächst ohne Gegner zeigen.",
+            "Mit sicherem Grundtempo starten und anschließend Abwehrdruck oder Zeitvorgabe ergänzen.",
+            "Nach jeder Serie Positionen und Wurfseite wechseln."
+          ],
+          "variations": [
+            "Leichter: größere Abstände und passiver Abwehrspieler.",
+            "Schwerer: kleineres Feld, schwächere Hand oder Zeitlimit."
+          ],
+          "safety": "Wurf- und Laufwege trennen, Körperkontakt kontrollieren, Torraum freihalten; bei Schmerz oder Schwindel pausieren."
+        },
+        {
+          "id": "handball-13",
+          "sportId": "handball",
+          "modeId": "handball-uebungen",
+          "title": "Torwart: Reaktion",
+          "category": "Torwart",
+          "goal": "Reaktion auf kurze Würfe",
+          "setup": "Handbälle, Hütchen und Tor; Feld 20 × 25 m; 6–12 Personen.",
+          "steps": [
+            "Paare oder Kleingruppen bilden und Pass-/Laufweg zunächst ohne Gegner zeigen.",
+            "Mit sicherem Grundtempo starten und anschließend Abwehrdruck oder Zeitvorgabe ergänzen.",
+            "Nach jeder Serie Positionen und Wurfseite wechseln."
+          ],
+          "variations": [
+            "Leichter: größere Abstände und passiver Abwehrspieler.",
+            "Schwerer: kleineres Feld, schwächere Hand oder Zeitlimit."
+          ],
+          "safety": "Wurf- und Laufwege trennen, Körperkontakt kontrollieren, Torraum freihalten; bei Schmerz oder Schwindel pausieren."
+        },
+        {
+          "id": "handball-14",
+          "sportId": "handball",
+          "modeId": "handball-uebungen",
+          "title": "Überzahl 3 gegen 2",
+          "category": "Angriff",
+          "goal": "Zusatzpass und freie Wurfchance",
+          "setup": "Handbälle, Hütchen und Tor; Feld 20 × 25 m; 6–12 Personen.",
+          "steps": [
+            "Paare oder Kleingruppen bilden und Pass-/Laufweg zunächst ohne Gegner zeigen.",
+            "Mit sicherem Grundtempo starten und anschließend Abwehrdruck oder Zeitvorgabe ergänzen.",
+            "Nach jeder Serie Positionen und Wurfseite wechseln."
+          ],
+          "variations": [
+            "Leichter: größere Abstände und passiver Abwehrspieler.",
+            "Schwerer: kleineres Feld, schwächere Hand oder Zeitlimit."
+          ],
+          "safety": "Wurf- und Laufwege trennen, Körperkontakt kontrollieren, Torraum freihalten; bei Schmerz oder Schwindel pausieren."
+        },
+        {
+          "id": "handball-15",
+          "sportId": "handball",
+          "modeId": "handball-uebungen",
+          "title": "Kleinfeld-Handball 4 gegen 4",
+          "category": "Spielform",
+          "goal": "Entscheidungen und Bewegung ohne Ball",
+          "setup": "Handbälle, Hütchen und Tor; Feld 20 × 25 m; 6–12 Personen.",
+          "steps": [
+            "Paare oder Kleingruppen bilden und Pass-/Laufweg zunächst ohne Gegner zeigen.",
+            "Mit sicherem Grundtempo starten und anschließend Abwehrdruck oder Zeitvorgabe ergänzen.",
+            "Nach jeder Serie Positionen und Wurfseite wechseln."
+          ],
+          "variations": [
+            "Leichter: größere Abstände und passiver Abwehrspieler.",
+            "Schwerer: kleineres Feld, schwächere Hand oder Zeitlimit."
+          ],
+          "safety": "Wurf- und Laufwege trennen, Körperkontakt kontrollieren, Torraum freihalten; bei Schmerz oder Schwindel pausieren."
+        }
+      ]
+    },
+    {
+      "sportId": "volleyball",
+      "name": "Volleyball",
+      "icon": "🏐",
+      "modeId": "volleyball-uebungen",
+      "modeName": "Übungen",
+      "exercises": [
+        {
+          "id": "volleyball-01",
+          "sportId": "volleyball",
+          "modeId": "volleyball-uebungen",
+          "title": "Pritschen am Partner",
+          "category": "Technik",
+          "goal": "Saubere Fingerhaltung und kontrolliertes Zuspiel",
+          "setup": "Volleyball, Netz und Markierungsteller; halbes Feld; 4–12 Personen.",
+          "steps": [
+            "Gruppen bilden und Kommunikationsruf festlegen.",
+            "Mit kontrollierter Zuspielhöhe beginnen und danach Bewegung oder Zielzonen ergänzen.",
+            "Nach jeder Serie rotieren, damit alle Rollen erprobt werden."
+          ],
+          "variations": [
+            "Leichter: Ball fangen und kontrolliert weiterwerfen.",
+            "Schwerer: kleinere Zielzone, Bewegung vor Kontakt oder Pflichtfolge."
+          ],
+          "safety": "Unter dem Netz nicht kreuzen, sichere Landung mit gebeugten Knien; bei Schulter- oder Fingerschmerz pausieren."
+        },
+        {
+          "id": "volleyball-02",
+          "sportId": "volleyball",
+          "modeId": "volleyball-uebungen",
+          "title": "Baggern am Partner",
+          "category": "Technik",
+          "goal": "Plattform stabil ausrichten",
+          "setup": "Volleyball, Netz und Markierungsteller; halbes Feld; 4–12 Personen.",
+          "steps": [
+            "Gruppen bilden und Kommunikationsruf festlegen.",
+            "Mit kontrollierter Zuspielhöhe beginnen und danach Bewegung oder Zielzonen ergänzen.",
+            "Nach jeder Serie rotieren, damit alle Rollen erprobt werden."
+          ],
+          "variations": [
+            "Leichter: Ball fangen und kontrolliert weiterwerfen.",
+            "Schwerer: kleinere Zielzone, Bewegung vor Kontakt oder Pflichtfolge."
+          ],
+          "safety": "Unter dem Netz nicht kreuzen, sichere Landung mit gebeugten Knien; bei Schulter- oder Fingerschmerz pausieren."
+        },
+        {
+          "id": "volleyball-03",
+          "sportId": "volleyball",
+          "modeId": "volleyball-uebungen",
+          "title": "Pritschen in Bewegung",
+          "category": "Technik",
+          "goal": "Zuspiel nach seitlicher Bewegung",
+          "setup": "Volleyball, Netz und Markierungsteller; halbes Feld; 4–12 Personen.",
+          "steps": [
+            "Gruppen bilden und Kommunikationsruf festlegen.",
+            "Mit kontrollierter Zuspielhöhe beginnen und danach Bewegung oder Zielzonen ergänzen.",
+            "Nach jeder Serie rotieren, damit alle Rollen erprobt werden."
+          ],
+          "variations": [
+            "Leichter: Ball fangen und kontrolliert weiterwerfen.",
+            "Schwerer: kleinere Zielzone, Bewegung vor Kontakt oder Pflichtfolge."
+          ],
+          "safety": "Unter dem Netz nicht kreuzen, sichere Landung mit gebeugten Knien; bei Schulter- oder Fingerschmerz pausieren."
+        },
+        {
+          "id": "volleyball-04",
+          "sportId": "volleyball",
+          "modeId": "volleyball-uebungen",
+          "title": "Baggern nach Laufweg",
+          "category": "Technik",
+          "goal": "Ball unter Zeitdruck kontrollieren",
+          "setup": "Volleyball, Netz und Markierungsteller; halbes Feld; 4–12 Personen.",
+          "steps": [
+            "Gruppen bilden und Kommunikationsruf festlegen.",
+            "Mit kontrollierter Zuspielhöhe beginnen und danach Bewegung oder Zielzonen ergänzen.",
+            "Nach jeder Serie rotieren, damit alle Rollen erprobt werden."
+          ],
+          "variations": [
+            "Leichter: Ball fangen und kontrolliert weiterwerfen.",
+            "Schwerer: kleinere Zielzone, Bewegung vor Kontakt oder Pflichtfolge."
+          ],
+          "safety": "Unter dem Netz nicht kreuzen, sichere Landung mit gebeugten Knien; bei Schulter- oder Fingerschmerz pausieren."
+        },
+        {
+          "id": "volleyball-05",
+          "sportId": "volleyball",
+          "modeId": "volleyball-uebungen",
+          "title": "Aufschlag von unten",
+          "category": "Aufschlag",
+          "goal": "Sicherer Einsteigeraufschlag",
+          "setup": "Volleyball, Netz und Markierungsteller; halbes Feld; 4–12 Personen.",
+          "steps": [
+            "Gruppen bilden und Kommunikationsruf festlegen.",
+            "Mit kontrollierter Zuspielhöhe beginnen und danach Bewegung oder Zielzonen ergänzen.",
+            "Nach jeder Serie rotieren, damit alle Rollen erprobt werden."
+          ],
+          "variations": [
+            "Leichter: Ball fangen und kontrolliert weiterwerfen.",
+            "Schwerer: kleinere Zielzone, Bewegung vor Kontakt oder Pflichtfolge."
+          ],
+          "safety": "Unter dem Netz nicht kreuzen, sichere Landung mit gebeugten Knien; bei Schulter- oder Fingerschmerz pausieren."
+        },
+        {
+          "id": "volleyball-06",
+          "sportId": "volleyball",
+          "modeId": "volleyball-uebungen",
+          "title": "Aufschlag von oben",
+          "category": "Aufschlag",
+          "goal": "Treffpunkt und Ganzkörpereinsatz",
+          "setup": "Volleyball, Netz und Markierungsteller; halbes Feld; 4–12 Personen.",
+          "steps": [
+            "Gruppen bilden und Kommunikationsruf festlegen.",
+            "Mit kontrollierter Zuspielhöhe beginnen und danach Bewegung oder Zielzonen ergänzen.",
+            "Nach jeder Serie rotieren, damit alle Rollen erprobt werden."
+          ],
+          "variations": [
+            "Leichter: Ball fangen und kontrolliert weiterwerfen.",
+            "Schwerer: kleinere Zielzone, Bewegung vor Kontakt oder Pflichtfolge."
+          ],
+          "safety": "Unter dem Netz nicht kreuzen, sichere Landung mit gebeugten Knien; bei Schulter- oder Fingerschmerz pausieren."
+        },
+        {
+          "id": "volleyball-07",
+          "sportId": "volleyball",
+          "modeId": "volleyball-uebungen",
+          "title": "Aufschlagzielzonen",
+          "category": "Aufschlag",
+          "goal": "Platzierte Aufschläge in freie Zonen",
+          "setup": "Volleyball, Netz und Markierungsteller; halbes Feld; 4–12 Personen.",
+          "steps": [
+            "Gruppen bilden und Kommunikationsruf festlegen.",
+            "Mit kontrollierter Zuspielhöhe beginnen und danach Bewegung oder Zielzonen ergänzen.",
+            "Nach jeder Serie rotieren, damit alle Rollen erprobt werden."
+          ],
+          "variations": [
+            "Leichter: Ball fangen und kontrolliert weiterwerfen.",
+            "Schwerer: kleinere Zielzone, Bewegung vor Kontakt oder Pflichtfolge."
+          ],
+          "safety": "Unter dem Netz nicht kreuzen, sichere Landung mit gebeugten Knien; bei Schulter- oder Fingerschmerz pausieren."
+        },
+        {
+          "id": "volleyball-08",
+          "sportId": "volleyball",
+          "modeId": "volleyball-uebungen",
+          "title": "Dreierkette Annahme",
+          "category": "Annahme",
+          "goal": "Kommunikation und Annahmedreieck",
+          "setup": "Volleyball, Netz und Markierungsteller; halbes Feld; 4–12 Personen.",
+          "steps": [
+            "Gruppen bilden und Kommunikationsruf festlegen.",
+            "Mit kontrollierter Zuspielhöhe beginnen und danach Bewegung oder Zielzonen ergänzen.",
+            "Nach jeder Serie rotieren, damit alle Rollen erprobt werden."
+          ],
+          "variations": [
+            "Leichter: Ball fangen und kontrolliert weiterwerfen.",
+            "Schwerer: kleinere Zielzone, Bewegung vor Kontakt oder Pflichtfolge."
+          ],
+          "safety": "Unter dem Netz nicht kreuzen, sichere Landung mit gebeugten Knien; bei Schulter- oder Fingerschmerz pausieren."
+        },
+        {
+          "id": "volleyball-09",
+          "sportId": "volleyball",
+          "modeId": "volleyball-uebungen",
+          "title": "Annahme-Zuspiel-Angriff",
+          "category": "Spielaufbau",
+          "goal": "Drei Kontakte als feste Folge",
+          "setup": "Volleyball, Netz und Markierungsteller; halbes Feld; 4–12 Personen.",
+          "steps": [
+            "Gruppen bilden und Kommunikationsruf festlegen.",
+            "Mit kontrollierter Zuspielhöhe beginnen und danach Bewegung oder Zielzonen ergänzen.",
+            "Nach jeder Serie rotieren, damit alle Rollen erprobt werden."
+          ],
+          "variations": [
+            "Leichter: Ball fangen und kontrolliert weiterwerfen.",
+            "Schwerer: kleinere Zielzone, Bewegung vor Kontakt oder Pflichtfolge."
+          ],
+          "safety": "Unter dem Netz nicht kreuzen, sichere Landung mit gebeugten Knien; bei Schulter- oder Fingerschmerz pausieren."
+        },
+        {
+          "id": "volleyball-10",
+          "sportId": "volleyball",
+          "modeId": "volleyball-uebungen",
+          "title": "Angriffsschlag ohne Sprung",
+          "category": "Angriff",
+          "goal": "Anlauf und Schlagarm koordinieren",
+          "setup": "Volleyball, Netz und Markierungsteller; halbes Feld; 4–12 Personen.",
+          "steps": [
+            "Gruppen bilden und Kommunikationsruf festlegen.",
+            "Mit kontrollierter Zuspielhöhe beginnen und danach Bewegung oder Zielzonen ergänzen.",
+            "Nach jeder Serie rotieren, damit alle Rollen erprobt werden."
+          ],
+          "variations": [
+            "Leichter: Ball fangen und kontrolliert weiterwerfen.",
+            "Schwerer: kleinere Zielzone, Bewegung vor Kontakt oder Pflichtfolge."
+          ],
+          "safety": "Unter dem Netz nicht kreuzen, sichere Landung mit gebeugten Knien; bei Schulter- oder Fingerschmerz pausieren."
+        },
+        {
+          "id": "volleyball-11",
+          "sportId": "volleyball",
+          "modeId": "volleyball-uebungen",
+          "title": "Angriffsschlag mit Sprung",
+          "category": "Angriff",
+          "goal": "Absprung und sicherer Treffpunkt",
+          "setup": "Volleyball, Netz und Markierungsteller; halbes Feld; 4–12 Personen.",
+          "steps": [
+            "Gruppen bilden und Kommunikationsruf festlegen.",
+            "Mit kontrollierter Zuspielhöhe beginnen und danach Bewegung oder Zielzonen ergänzen.",
+            "Nach jeder Serie rotieren, damit alle Rollen erprobt werden."
+          ],
+          "variations": [
+            "Leichter: Ball fangen und kontrolliert weiterwerfen.",
+            "Schwerer: kleinere Zielzone, Bewegung vor Kontakt oder Pflichtfolge."
+          ],
+          "safety": "Unter dem Netz nicht kreuzen, sichere Landung mit gebeugten Knien; bei Schulter- oder Fingerschmerz pausieren."
+        },
+        {
+          "id": "volleyball-12",
+          "sportId": "volleyball",
+          "modeId": "volleyball-uebungen",
+          "title": "Block-Grundtechnik",
+          "category": "Block",
+          "goal": "Handposition und Landung am Netz",
+          "setup": "Volleyball, Netz und Markierungsteller; halbes Feld; 4–12 Personen.",
+          "steps": [
+            "Gruppen bilden und Kommunikationsruf festlegen.",
+            "Mit kontrollierter Zuspielhöhe beginnen und danach Bewegung oder Zielzonen ergänzen.",
+            "Nach jeder Serie rotieren, damit alle Rollen erprobt werden."
+          ],
+          "variations": [
+            "Leichter: Ball fangen und kontrolliert weiterwerfen.",
+            "Schwerer: kleinere Zielzone, Bewegung vor Kontakt oder Pflichtfolge."
+          ],
+          "safety": "Unter dem Netz nicht kreuzen, sichere Landung mit gebeugten Knien; bei Schulter- oder Fingerschmerz pausieren."
+        },
+        {
+          "id": "volleyball-13",
+          "sportId": "volleyball",
+          "modeId": "volleyball-uebungen",
+          "title": "Abwehrbagger",
+          "category": "Abwehr",
+          "goal": "Tief stehen und Angriff abwehren",
+          "setup": "Volleyball, Netz und Markierungsteller; halbes Feld; 4–12 Personen.",
+          "steps": [
+            "Gruppen bilden und Kommunikationsruf festlegen.",
+            "Mit kontrollierter Zuspielhöhe beginnen und danach Bewegung oder Zielzonen ergänzen.",
+            "Nach jeder Serie rotieren, damit alle Rollen erprobt werden."
+          ],
+          "variations": [
+            "Leichter: Ball fangen und kontrolliert weiterwerfen.",
+            "Schwerer: kleinere Zielzone, Bewegung vor Kontakt oder Pflichtfolge."
+          ],
+          "safety": "Unter dem Netz nicht kreuzen, sichere Landung mit gebeugten Knien; bei Schulter- oder Fingerschmerz pausieren."
+        },
+        {
+          "id": "volleyball-14",
+          "sportId": "volleyball",
+          "modeId": "volleyball-uebungen",
+          "title": "2 gegen 2 über das Netz",
+          "category": "Spielform",
+          "goal": "Freie Räume erkennen und anspielen",
+          "setup": "Volleyball, Netz und Markierungsteller; halbes Feld; 4–12 Personen.",
+          "steps": [
+            "Gruppen bilden und Kommunikationsruf festlegen.",
+            "Mit kontrollierter Zuspielhöhe beginnen und danach Bewegung oder Zielzonen ergänzen.",
+            "Nach jeder Serie rotieren, damit alle Rollen erprobt werden."
+          ],
+          "variations": [
+            "Leichter: Ball fangen und kontrolliert weiterwerfen.",
+            "Schwerer: kleinere Zielzone, Bewegung vor Kontakt oder Pflichtfolge."
+          ],
+          "safety": "Unter dem Netz nicht kreuzen, sichere Landung mit gebeugten Knien; bei Schulter- oder Fingerschmerz pausieren."
+        },
+        {
+          "id": "volleyball-15",
+          "sportId": "volleyball",
+          "modeId": "volleyball-uebungen",
+          "title": "3 gegen 3 mit Pflichtkontakt",
+          "category": "Spielform",
+          "goal": "Rally verlängern und gemeinsam sichern",
+          "setup": "Volleyball, Netz und Markierungsteller; halbes Feld; 4–12 Personen.",
+          "steps": [
+            "Gruppen bilden und Kommunikationsruf festlegen.",
+            "Mit kontrollierter Zuspielhöhe beginnen und danach Bewegung oder Zielzonen ergänzen.",
+            "Nach jeder Serie rotieren, damit alle Rollen erprobt werden."
+          ],
+          "variations": [
+            "Leichter: Ball fangen und kontrolliert weiterwerfen.",
+            "Schwerer: kleinere Zielzone, Bewegung vor Kontakt oder Pflichtfolge."
+          ],
+          "safety": "Unter dem Netz nicht kreuzen, sichere Landung mit gebeugten Knien; bei Schulter- oder Fingerschmerz pausieren."
+        }
+      ]
+    },
+    {
+      "sportId": "basketball",
+      "name": "Basketball",
+      "icon": "🏀",
+      "modeId": "basketball-uebungen",
+      "modeName": "Übungen",
+      "exercises": [
+        {
+          "id": "basketball-01",
+          "sportId": "basketball",
+          "modeId": "basketball-uebungen",
+          "title": "Ballhandling im Stand",
+          "category": "Ballführung",
+          "goal": "Sichere Kontrolle mit beiden Händen",
+          "setup": "Bälle, Hütchen und ein Korb; halbes Feld; 4–10 Personen.",
+          "steps": [
+            "Paare oder Kleingruppen bilden und Laufwege ohne Verteidigungsdruck einüben.",
+            "Mit kontrolliertem Tempo starten; danach Zeit-, Ziel- oder Gegnerdruck erhöhen.",
+            "Nach jeder Serie Seite, Rolle und Startposition wechseln."
+          ],
+          "variations": [
+            "Leichter: Verteidigung passiv und näher am Korb.",
+            "Schwerer: schwächere Hand, engeres Feld oder Abschluss unter Zeitdruck."
+          ],
+          "safety": "Laufwege und Korbbereich freihalten, nicht unter springende Personen laufen; bei Schmerz oder Schwindel pausieren."
+        },
+        {
+          "id": "basketball-02",
+          "sportId": "basketball",
+          "modeId": "basketball-uebungen",
+          "title": "Dribbling mit Richtungswechsel",
+          "category": "Ballführung",
+          "goal": "Crossover und Tempowechsel",
+          "setup": "Bälle, Hütchen und ein Korb; halbes Feld; 4–10 Personen.",
+          "steps": [
+            "Paare oder Kleingruppen bilden und Laufwege ohne Verteidigungsdruck einüben.",
+            "Mit kontrolliertem Tempo starten; danach Zeit-, Ziel- oder Gegnerdruck erhöhen.",
+            "Nach jeder Serie Seite, Rolle und Startposition wechseln."
+          ],
+          "variations": [
+            "Leichter: Verteidigung passiv und näher am Korb.",
+            "Schwerer: schwächere Hand, engeres Feld oder Abschluss unter Zeitdruck."
+          ],
+          "safety": "Laufwege und Korbbereich freihalten, nicht unter springende Personen laufen; bei Schmerz oder Schwindel pausieren."
+        },
+        {
+          "id": "basketball-03",
+          "sportId": "basketball",
+          "modeId": "basketball-uebungen",
+          "title": "Dribbling-Parcours",
+          "category": "Ballführung",
+          "goal": "Ballkontrolle unter wechselnden Aufgaben",
+          "setup": "Bälle, Hütchen und ein Korb; halbes Feld; 4–10 Personen.",
+          "steps": [
+            "Paare oder Kleingruppen bilden und Laufwege ohne Verteidigungsdruck einüben.",
+            "Mit kontrolliertem Tempo starten; danach Zeit-, Ziel- oder Gegnerdruck erhöhen.",
+            "Nach jeder Serie Seite, Rolle und Startposition wechseln."
+          ],
+          "variations": [
+            "Leichter: Verteidigung passiv und näher am Korb.",
+            "Schwerer: schwächere Hand, engeres Feld oder Abschluss unter Zeitdruck."
+          ],
+          "safety": "Laufwege und Korbbereich freihalten, nicht unter springende Personen laufen; bei Schmerz oder Schwindel pausieren."
+        },
+        {
+          "id": "basketball-04",
+          "sportId": "basketball",
+          "modeId": "basketball-uebungen",
+          "title": "Brustpass und Fangen",
+          "category": "Passen",
+          "goal": "Präzises Zuspiel auf Brusthöhe",
+          "setup": "Bälle, Hütchen und ein Korb; halbes Feld; 4–10 Personen.",
+          "steps": [
+            "Paare oder Kleingruppen bilden und Laufwege ohne Verteidigungsdruck einüben.",
+            "Mit kontrolliertem Tempo starten; danach Zeit-, Ziel- oder Gegnerdruck erhöhen.",
+            "Nach jeder Serie Seite, Rolle und Startposition wechseln."
+          ],
+          "variations": [
+            "Leichter: Verteidigung passiv und näher am Korb.",
+            "Schwerer: schwächere Hand, engeres Feld oder Abschluss unter Zeitdruck."
+          ],
+          "safety": "Laufwege und Korbbereich freihalten, nicht unter springende Personen laufen; bei Schmerz oder Schwindel pausieren."
+        },
+        {
+          "id": "basketball-05",
+          "sportId": "basketball",
+          "modeId": "basketball-uebungen",
+          "title": "Bodenpass",
+          "category": "Passen",
+          "goal": "Pass unter den Armen der Abwehr",
+          "setup": "Bälle, Hütchen und ein Korb; halbes Feld; 4–10 Personen.",
+          "steps": [
+            "Paare oder Kleingruppen bilden und Laufwege ohne Verteidigungsdruck einüben.",
+            "Mit kontrolliertem Tempo starten; danach Zeit-, Ziel- oder Gegnerdruck erhöhen.",
+            "Nach jeder Serie Seite, Rolle und Startposition wechseln."
+          ],
+          "variations": [
+            "Leichter: Verteidigung passiv und näher am Korb.",
+            "Schwerer: schwächere Hand, engeres Feld oder Abschluss unter Zeitdruck."
+          ],
+          "safety": "Laufwege und Korbbereich freihalten, nicht unter springende Personen laufen; bei Schmerz oder Schwindel pausieren."
+        },
+        {
+          "id": "basketball-06",
+          "sportId": "basketball",
+          "modeId": "basketball-uebungen",
+          "title": "Passdreieck mit Nachlaufen",
+          "category": "Passen",
+          "goal": "Pass und Anschlussbewegung",
+          "setup": "Bälle, Hütchen und ein Korb; halbes Feld; 4–10 Personen.",
+          "steps": [
+            "Paare oder Kleingruppen bilden und Laufwege ohne Verteidigungsdruck einüben.",
+            "Mit kontrolliertem Tempo starten; danach Zeit-, Ziel- oder Gegnerdruck erhöhen.",
+            "Nach jeder Serie Seite, Rolle und Startposition wechseln."
+          ],
+          "variations": [
+            "Leichter: Verteidigung passiv und näher am Korb.",
+            "Schwerer: schwächere Hand, engeres Feld oder Abschluss unter Zeitdruck."
+          ],
+          "safety": "Laufwege und Korbbereich freihalten, nicht unter springende Personen laufen; bei Schmerz oder Schwindel pausieren."
+        },
+        {
+          "id": "basketball-07",
+          "sportId": "basketball",
+          "modeId": "basketball-uebungen",
+          "title": "Korbleger rechts",
+          "category": "Wurf",
+          "goal": "Schrittfolge und Abschluss rechts",
+          "setup": "Bälle, Hütchen und ein Korb; halbes Feld; 4–10 Personen.",
+          "steps": [
+            "Paare oder Kleingruppen bilden und Laufwege ohne Verteidigungsdruck einüben.",
+            "Mit kontrolliertem Tempo starten; danach Zeit-, Ziel- oder Gegnerdruck erhöhen.",
+            "Nach jeder Serie Seite, Rolle und Startposition wechseln."
+          ],
+          "variations": [
+            "Leichter: Verteidigung passiv und näher am Korb.",
+            "Schwerer: schwächere Hand, engeres Feld oder Abschluss unter Zeitdruck."
+          ],
+          "safety": "Laufwege und Korbbereich freihalten, nicht unter springende Personen laufen; bei Schmerz oder Schwindel pausieren."
+        },
+        {
+          "id": "basketball-08",
+          "sportId": "basketball",
+          "modeId": "basketball-uebungen",
+          "title": "Korbleger links",
+          "category": "Wurf",
+          "goal": "Schrittfolge und Abschluss links",
+          "setup": "Bälle, Hütchen und ein Korb; halbes Feld; 4–10 Personen.",
+          "steps": [
+            "Paare oder Kleingruppen bilden und Laufwege ohne Verteidigungsdruck einüben.",
+            "Mit kontrolliertem Tempo starten; danach Zeit-, Ziel- oder Gegnerdruck erhöhen.",
+            "Nach jeder Serie Seite, Rolle und Startposition wechseln."
+          ],
+          "variations": [
+            "Leichter: Verteidigung passiv und näher am Korb.",
+            "Schwerer: schwächere Hand, engeres Feld oder Abschluss unter Zeitdruck."
+          ],
+          "safety": "Laufwege und Korbbereich freihalten, nicht unter springende Personen laufen; bei Schmerz oder Schwindel pausieren."
+        },
+        {
+          "id": "basketball-09",
+          "sportId": "basketball",
+          "modeId": "basketball-uebungen",
+          "title": "Standwurf aus fünf Positionen",
+          "category": "Wurf",
+          "goal": "Wurftechnik und Balance",
+          "setup": "Bälle, Hütchen und ein Korb; halbes Feld; 4–10 Personen.",
+          "steps": [
+            "Paare oder Kleingruppen bilden und Laufwege ohne Verteidigungsdruck einüben.",
+            "Mit kontrolliertem Tempo starten; danach Zeit-, Ziel- oder Gegnerdruck erhöhen.",
+            "Nach jeder Serie Seite, Rolle und Startposition wechseln."
+          ],
+          "variations": [
+            "Leichter: Verteidigung passiv und näher am Korb.",
+            "Schwerer: schwächere Hand, engeres Feld oder Abschluss unter Zeitdruck."
+          ],
+          "safety": "Laufwege und Korbbereich freihalten, nicht unter springende Personen laufen; bei Schmerz oder Schwindel pausieren."
+        },
+        {
+          "id": "basketball-10",
+          "sportId": "basketball",
+          "modeId": "basketball-uebungen",
+          "title": "Freiwurf-Routine",
+          "category": "Wurf",
+          "goal": "Konstante Vorbereitung und Konzentration",
+          "setup": "Bälle, Hütchen und ein Korb; halbes Feld; 4–10 Personen.",
+          "steps": [
+            "Paare oder Kleingruppen bilden und Laufwege ohne Verteidigungsdruck einüben.",
+            "Mit kontrolliertem Tempo starten; danach Zeit-, Ziel- oder Gegnerdruck erhöhen.",
+            "Nach jeder Serie Seite, Rolle und Startposition wechseln."
+          ],
+          "variations": [
+            "Leichter: Verteidigung passiv und näher am Korb.",
+            "Schwerer: schwächere Hand, engeres Feld oder Abschluss unter Zeitdruck."
+          ],
+          "safety": "Laufwege und Korbbereich freihalten, nicht unter springende Personen laufen; bei Schmerz oder Schwindel pausieren."
+        },
+        {
+          "id": "basketball-11",
+          "sportId": "basketball",
+          "modeId": "basketball-uebungen",
+          "title": "Sprungwurf nach Pass",
+          "category": "Wurf",
+          "goal": "Schnelles Fangen und Hochgehen",
+          "setup": "Bälle, Hütchen und ein Korb; halbes Feld; 4–10 Personen.",
+          "steps": [
+            "Paare oder Kleingruppen bilden und Laufwege ohne Verteidigungsdruck einüben.",
+            "Mit kontrolliertem Tempo starten; danach Zeit-, Ziel- oder Gegnerdruck erhöhen.",
+            "Nach jeder Serie Seite, Rolle und Startposition wechseln."
+          ],
+          "variations": [
+            "Leichter: Verteidigung passiv und näher am Korb.",
+            "Schwerer: schwächere Hand, engeres Feld oder Abschluss unter Zeitdruck."
+          ],
+          "safety": "Laufwege und Korbbereich freihalten, nicht unter springende Personen laufen; bei Schmerz oder Schwindel pausieren."
+        },
+        {
+          "id": "basketball-12",
+          "sportId": "basketball",
+          "modeId": "basketball-uebungen",
+          "title": "1 gegen 1 vom Flügel",
+          "category": "Zweikampf",
+          "goal": "Erster Schritt und Abschluss",
+          "setup": "Bälle, Hütchen und ein Korb; halbes Feld; 4–10 Personen.",
+          "steps": [
+            "Paare oder Kleingruppen bilden und Laufwege ohne Verteidigungsdruck einüben.",
+            "Mit kontrolliertem Tempo starten; danach Zeit-, Ziel- oder Gegnerdruck erhöhen.",
+            "Nach jeder Serie Seite, Rolle und Startposition wechseln."
+          ],
+          "variations": [
+            "Leichter: Verteidigung passiv und näher am Korb.",
+            "Schwerer: schwächere Hand, engeres Feld oder Abschluss unter Zeitdruck."
+          ],
+          "safety": "Laufwege und Korbbereich freihalten, nicht unter springende Personen laufen; bei Schmerz oder Schwindel pausieren."
+        },
+        {
+          "id": "basketball-13",
+          "sportId": "basketball",
+          "modeId": "basketball-uebungen",
+          "title": "Closeout und Verteidigung",
+          "category": "Abwehr",
+          "goal": "Kontrolliert anlaufen und Weg versperren",
+          "setup": "Bälle, Hütchen und ein Korb; halbes Feld; 4–10 Personen.",
+          "steps": [
+            "Paare oder Kleingruppen bilden und Laufwege ohne Verteidigungsdruck einüben.",
+            "Mit kontrolliertem Tempo starten; danach Zeit-, Ziel- oder Gegnerdruck erhöhen.",
+            "Nach jeder Serie Seite, Rolle und Startposition wechseln."
+          ],
+          "variations": [
+            "Leichter: Verteidigung passiv und näher am Korb.",
+            "Schwerer: schwächere Hand, engeres Feld oder Abschluss unter Zeitdruck."
+          ],
+          "safety": "Laufwege und Korbbereich freihalten, nicht unter springende Personen laufen; bei Schmerz oder Schwindel pausieren."
+        },
+        {
+          "id": "basketball-14",
+          "sportId": "basketball",
+          "modeId": "basketball-uebungen",
+          "title": "Rebound-Boxout",
+          "category": "Abwehr",
+          "goal": "Körper zwischen Gegner und Korb bringen",
+          "setup": "Bälle, Hütchen und ein Korb; halbes Feld; 4–10 Personen.",
+          "steps": [
+            "Paare oder Kleingruppen bilden und Laufwege ohne Verteidigungsdruck einüben.",
+            "Mit kontrolliertem Tempo starten; danach Zeit-, Ziel- oder Gegnerdruck erhöhen.",
+            "Nach jeder Serie Seite, Rolle und Startposition wechseln."
+          ],
+          "variations": [
+            "Leichter: Verteidigung passiv und näher am Korb.",
+            "Schwerer: schwächere Hand, engeres Feld oder Abschluss unter Zeitdruck."
+          ],
+          "safety": "Laufwege und Korbbereich freihalten, nicht unter springende Personen laufen; bei Schmerz oder Schwindel pausieren."
+        },
+        {
+          "id": "basketball-15",
+          "sportId": "basketball",
+          "modeId": "basketball-uebungen",
+          "title": "3 gegen 2 Fastbreak",
+          "category": "Umschalten",
+          "goal": "Überzahl mit guter Breite ausspielen",
+          "setup": "Bälle, Hütchen und ein Korb; halbes Feld; 4–10 Personen.",
+          "steps": [
+            "Paare oder Kleingruppen bilden und Laufwege ohne Verteidigungsdruck einüben.",
+            "Mit kontrolliertem Tempo starten; danach Zeit-, Ziel- oder Gegnerdruck erhöhen.",
+            "Nach jeder Serie Seite, Rolle und Startposition wechseln."
+          ],
+          "variations": [
+            "Leichter: Verteidigung passiv und näher am Korb.",
+            "Schwerer: schwächere Hand, engeres Feld oder Abschluss unter Zeitdruck."
+          ],
+          "safety": "Laufwege und Korbbereich freihalten, nicht unter springende Personen laufen; bei Schmerz oder Schwindel pausieren."
+        }
+      ]
+    }
+  ]
+}

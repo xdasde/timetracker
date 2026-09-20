@@ -55,3 +55,78 @@ Ein App-Tipp, z. B. wie Timer/Pause einzustellen sind.
 - **colorIndex** – `0` Teal/Coral · `1` Blau/Rot · `2` Lila/Amber · `3` Grau/Grün.
 
 Nach dem Bearbeiten lokal `npm run build:content` ausführen (validiert + baut).
+
+## Sportmodi: `content/sports/**`
+
+Sportartspezifische Übungen liegen getrennt von der Allgemeinsport-Datenbank
+oben. Quelle der Wahrheit sind ebenfalls Markdown-Dateien; derselbe Build
+erzeugt daraus `js/sports.generated.js`.
+
+```text
+content/sports/<sportId>/sport.md                 # Sportart-Metadaten
+content/sports/<sportId>/modes/<modeId>.md        # Modus (z. B. Übungen)
+content/sports/<sportId>/exercises/<id>.md        # eine Übung
+```
+
+`sportId` und `modeId` sind stabile Schlüssel (nur `a-z`, `0-9`, `-`); der
+Primärschlüssel eines Modus ist das Tupel `{sportId, modeId}`. Dateiname und
+`id`/`modeId`/`sportId` müssen zusammenpassen, sonst schlägt der Build fehl.
+`allgemeinsport` ist der Default-Modus ohne eigene Übungen – er nutzt weiterhin
+`content/games/*.md`.
+
+### `sport.md`
+
+```markdown
+---
+sportId: football            # Pflicht · == Ordnername
+name: Fußball                # Pflicht
+icon: ⚽                     # Pflicht
+accent: "#39c56f"            # Pflicht · Hex-Akzentfarbe des Modus
+order: 1                     # Pflicht · Sortierung im Umschalter
+aliases: [soccer, fussball]  # optional · Legacy-IDs, die hierauf zeigen
+---
+```
+
+### `modes/<modeId>.md`
+
+```markdown
+---
+sportId: football
+modeId: football-uebungen    # Pflicht · == Dateiname
+name: Übungen                # Pflicht
+icon: ⚽                     # Pflicht
+rulesLabel: Regeln           # optional · Standard: "Regeln"
+description: …               # Pflicht · Introtext der Übungsansicht
+---
+```
+
+### `exercises/<id>.md`
+
+```markdown
+---
+id: football-01              # Pflicht · == Dateiname
+sportId: football
+modeId: football-uebungen
+name: Dribbling-Parcours     # Pflicht
+icon: ⚽                     # Pflicht
+category: Dribbling          # Pflicht · frei, steuert den Kategoriefilter
+goal: Ballführung …          # Pflicht
+setup: Hütchen, Bälle …      # Pflicht
+---
+
+## Ablauf
+- Mindestens ein Schritt
+
+## Variationen
+- Mindestens eine Variation
+
+## Sicherheit
+- Mindestens ein Hinweis
+
+## Tipp
+Ein App-Tipp.
+```
+
+Der Build prüft zusätzlich den redaktionellen Mindestumfang: Fußball ≥ 30
+Übungen, Handball/Volleyball/Basketball jeweils ≥ 15, jeweils über mindestens
+drei Kategorien.

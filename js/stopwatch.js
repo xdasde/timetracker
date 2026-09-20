@@ -1,19 +1,26 @@
+// Stoppuhr mit Wall-Clock-Anker (Date.now statt performance.now):
+// performance.now() beginnt bei jedem Reload neu und steht auf vielen Geräten
+// während des Standby still. Mit Date.now() lässt sich der Zustand speichern
+// und nach Reload, Tab-/App-Wechsel oder Display-Sperre korrekt fortsetzen.
 export class Stopwatch {
-  constructor() { this._reset(); }
+  constructor({ now = Date.now } = {}) {
+    this._now = now;
+    this._reset();
+  }
 
   _reset() {
     this.state = 'idle';
-    this.elapsed = 0;
-    this.startTime = 0;
+    this.elapsed = 0;     // abgeschlossene Laufzeit vor dem aktuellen Lauf
+    this.startTime = 0;   // Date.now()-Anker des aktuellen Laufs
     this.laps = [];
   }
 
   toggle() {
     if (this.state === 'running') {
-      this.elapsed += performance.now() - this.startTime;
+      this.elapsed += Math.max(0, this._now() - this.startTime);
       this.state = 'paused';
     } else {
-      this.startTime = performance.now();
+      this.startTime = this._now();
       this.state = 'running';
     }
     return this.state;
@@ -31,12 +38,32 @@ export class Stopwatch {
 
   getMs() {
     return this.state === 'running'
-      ? this.elapsed + (performance.now() - this.startTime)
+      ? this.elapsed + Math.max(0, this._now() - this.startTime)
       : this.elapsed;
   }
 
   isRunning() { return this.state === 'running'; }
   hasContent() { return this.elapsed > 0 || this.laps.length > 0 || this.state !== 'idle'; }
+
+  toJSON() {
+    return { state: this.state, elapsed: this.elapsed, startTime: this.startTime, laps: [...this.laps] };
+  }
+
+  // Übernimmt einen gespeicherten Zustand unverändert – der Anker bleibt
+  // erhalten, damit die Zeit zwischen Speichern und Laden mitgezählt wird.
+  restore(data) {
+    this._reset();
+    if (!data || !['idle', 'running', 'paused'].includes(data.state)) return false;
+    const elapsed = Number(data.elapsed);
+    const startTime = Number(data.startTime);
+    if (!Number.isFinite(elapsed) || elapsed < 0) return false;
+    if (data.state === 'running' && (!Number.isFinite(startTime) || startTime <= 0)) return false;
+    this.state = data.state;
+    this.elapsed = elapsed;
+    this.startTime = data.state === 'running' ? startTime : 0;
+    this.laps = Array.isArray(data.laps) ? data.laps.filter(ms => Number.isFinite(ms) && ms >= 0) : [];
+    return true;
+  }
 }
 
 export function fmtMs(ms) {

@@ -21,12 +21,17 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join, basename } from 'node:path';
 import { resolveBuiltinImageFields, sniffImageType, extensionMatchesType } from '../js/gameimages.js';
 import { validateImageManifest, MANIFEST_FILE } from './image-manifest.mjs';
+import {
+  parseSport, parseMode, parseExercise, validateCollection, buildAliasMap,
+} from './sportcontent.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..');
 const CONTENT_DIR = join(ROOT, 'content', 'games');
 const OUT_FILE = join(ROOT, 'js', 'content.generated.js');
 const IMAGE_DIR = join(ROOT, 'assets', 'games');
+const SPORTS_DIR = join(ROOT, 'content', 'sports');
+const SPORTS_OUT_FILE = join(ROOT, 'js', 'sports.generated.js');
 
 const CHECK_ONLY = process.argv.includes('--check');
 const VALIDATE_ONLY = process.argv.includes('--validate');
@@ -195,6 +200,69 @@ function validateImages(entries) {
   if (errors.length) throw new Error(`assets/games/${MANIFEST_FILE}: ${errors.slice(0, 5).join('; ')}`);
 }
 
+// ── Sportmodus-Content (content/sports/**) ───────────────────────────────────
+// Eigene Quelle, getrennt von der Allgemeinsport-Datenbank in content/games.
+function buildSports() {
+  const sports = [];
+  const modes = [];
+  const exercises = [];
+  if (!existsSync(SPORTS_DIR)) throw new Error(`Verzeichnis ${SPORTS_DIR} fehlt`);
+
+  const sportDirs = readdirSync(SPORTS_DIR)
+    .filter(d => statSync(join(SPORTS_DIR, d)).isDirectory())
+    .sort();
+
+  for (const dir of sportDirs) {
+    const sportPath = join(SPORTS_DIR, dir, 'sport.md');
+    if (!existsSync(sportPath)) throw new Error(`content/sports/${dir}/sport.md fehlt`);
+    const sport = parseSport(readFileSync(sportPath, 'utf8'), `content/sports/${dir}/sport.md`);
+    if (sport.sportId !== dir) throw new Error(`content/sports/${dir}/sport.md: sportId "${sport.sportId}" passt nicht zum Ordnernamen`);
+    sports.push(sport);
+
+    const modesDir = join(SPORTS_DIR, dir, 'modes');
+    if (existsSync(modesDir)) {
+      for (const f of readdirSync(modesDir).filter(f => f.endsWith('.md')).sort()) {
+        const rel = `content/sports/${dir}/modes/${f}`;
+        const mode = parseMode(readFileSync(join(modesDir, f), 'utf8'), rel);
+        if (mode.sportId !== dir) throw new Error(`${rel}: sportId passt nicht zum Ordner`);
+        if (basename(f, '.md') !== mode.modeId) throw new Error(`${rel}: Dateiname muss "${mode.modeId}.md" lauten`);
+        modes.push(mode);
+      }
+    }
+
+    const exDir = join(SPORTS_DIR, dir, 'exercises');
+    if (existsSync(exDir)) {
+      for (const f of readdirSync(exDir).filter(f => f.endsWith('.md')).sort()) {
+        const rel = `content/sports/${dir}/exercises/${f}`;
+        const ex = parseExercise(readFileSync(join(exDir, f), 'utf8'), rel);
+        if (ex.sportId !== dir) throw new Error(`${rel}: sportId passt nicht zum Ordner`);
+        if (basename(f, '.md') !== ex.id) throw new Error(`${rel}: Dateiname muss "${ex.id}.md" lauten`);
+        exercises.push(ex);
+      }
+    }
+  }
+
+  sports.sort((a, b) => a.order - b.order || a.sportId.localeCompare(b.sportId));
+  const errors = validateCollection({ sports, modes, exercises });
+  if (errors.length) throw new Error(errors.slice(0, 5).join('; '));
+
+  const header =
+`// ╔═══════════════════════════════════════════════════════════════════════════╗
+// ║  AUTOMATISCH GENERIERT – NICHT MANUELL BEARBEITEN.                          ║
+// ║  Quelle: content/sports/**/*.md   ·   Build: scripts/build-content.mjs      ║
+// ╚═══════════════════════════════════════════════════════════════════════════╝
+`;
+  const out = `${header}export const SPORTS = ${JSON.stringify(sports, null, 2)};
+
+export const SPORT_MODES = ${JSON.stringify(modes, null, 2)};
+
+export const SPORT_EXERCISES = ${JSON.stringify(exercises, null, 2)};
+
+export const SPORT_ALIASES = ${JSON.stringify(buildAliasMap(sports), null, 2)};
+`;
+  return { sports, modes, exercises, out };
+}
+
 function validate(e, file) {
   const err = msg => { throw new Error(`${file}: ${msg}`); };
   if (!e.id || !/^[a-z0-9-]+$/.test(e.id)) err(`"id" fehlt oder ungültig (nur a-z, 0-9, -): "${e.id}"`);
@@ -237,9 +305,11 @@ function build() {
 // ╚═══════════════════════════════════════════════════════════════════════════╝
 `;
   const out = `${header}export const CONTENT = ${JSON.stringify(entries, null, 2)};\n`;
+  const sportsBuild = buildSports();
 
   if (VALIDATE_ONLY) {
     console.log(`✓ ${entries.length} Einträge erfolgreich validiert.`);
+    console.log(`✓ ${sportsBuild.sports.length} Sportarten, ${sportsBuild.modes.length} Modi, ${sportsBuild.exercises.length} Übungen validiert.`);
     return;
   }
 
@@ -250,12 +320,21 @@ function build() {
       console.error('✗ js/content.generated.js ist nicht aktuell. Bitte "npm run build:content" ausführen und committen.');
       process.exit(1);
     }
+    let existingSports = '';
+    try { existingSports = readFileSync(SPORTS_OUT_FILE, 'utf8'); } catch { /* fehlt = veraltet */ }
+    if (existingSports !== sportsBuild.out) {
+      console.error('✗ js/sports.generated.js ist nicht aktuell. Bitte "npm run build:content" ausführen und committen.');
+      process.exit(1);
+    }
     console.log(`✓ ${entries.length} Einträge validiert – Bundle ist aktuell.`);
+    console.log(`✓ ${sportsBuild.sports.length} Sportarten, ${sportsBuild.modes.length} Modi, ${sportsBuild.exercises.length} Übungen – Sport-Bundle ist aktuell.`);
     return;
   }
 
   writeFileSync(OUT_FILE, out);
   console.log(`✓ ${entries.length} Einträge → js/content.generated.js`);
+  writeFileSync(SPORTS_OUT_FILE, sportsBuild.out);
+  console.log(`✓ ${sportsBuild.sports.length} Sportarten / ${sportsBuild.modes.length} Modi / ${sportsBuild.exercises.length} Übungen → js/sports.generated.js`);
 }
 
 try {

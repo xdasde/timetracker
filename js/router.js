@@ -11,6 +11,7 @@ const TAB_MAP = {
   'screen-settings':           null,
   'screen-roulette':           'home',
   'screen-roulette-exclude':   'home',
+  'screen-sport-exercises':    'home',
   'screen-teambuilder':        'home',
   'screen-teambuilder-reveal': null,
   'screen-teambuilder-lineup': null,

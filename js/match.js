@@ -32,7 +32,9 @@ export function getSetup() { return { ...setup }; }
 
 // colors (optional) = { a, aName, b, bName } überschreibt das Farbpaar des
 // colorIndex – z. B. um die Teamfarben aus der Teambildung zu übernehmen.
-export function startMatch(nameA, nameB, colorIndex, durationMs = setup.durationMs, breakMs = setup.breakMs, periods = setup.periods, colors = null) {
+// context (optional) = { sportId, modeId } aus dem aktiven Sportmodus.
+// Fehlt er, bleibt das Match wie bisher ein Allgemeinsport-Match.
+export function startMatch(nameA, nameB, colorIndex, durationMs = setup.durationMs, breakMs = setup.breakMs, periods = setup.periods, colors = null, context = null) {
   const pair = COLORS[colorIndex] ?? COLORS[0];
   const cA = colors?.a || pair.a, cAName = colors?.aName || pair.aName;
   const cB = colors?.b || pair.b, cBName = colors?.bName || pair.bName;
@@ -41,6 +43,8 @@ export function startMatch(nameA, nameB, colorIndex, durationMs = setup.duration
     createdAt: Date.now(),
     teamA: { name: nameA || 'Team A', color: cAName, colorHex: cA, score: 0 },
     teamB: { name: nameB || 'Team B', color: cBName, colorHex: cB, score: 0 },
+    sportId: context?.sportId ?? null,
+    modeId: context?.modeId ?? null,
     startedAt: null,
     accMs: 0,
     running: false,
@@ -52,6 +56,7 @@ export function startMatch(nameA, nameB, colorIndex, durationMs = setup.duration
     timeoutRunning: false,
     timeoutStartedAt: null,
     timeoutResumeClock: false,
+    breakEndsAt: null,
     halfTimeScore: null,
     halfTimeMs: null,
   };
@@ -141,10 +146,55 @@ export function toggleTimeout() {
   return live.timeoutRunning;
 }
 
-export function resetTimer() {
-  if (!live) return;
+// Hält die Uhr beim Erreichen der geplanten Spielzeit genau am Limit an –
+// auch wenn das Ende erst nach Hintergrund/Reload bemerkt wird.
+export function stopAtLimit() {
+  if (!live || !live.durationMs) return;
+  const elapsed = getElapsedMs();
+  if (elapsed < live.durationMs) return;
+  if (live.running) {
+    live.accMs = live.durationMs;
+    live.startedAt = null;
+    live.running = false;
+  }
+  _saveSession();
+}
+
+export function isTimeUp() {
+  const remaining = getRemainingMs();
+  return remaining != null && remaining <= 0;
+}
+
+// Halbzeit-Pause: Endzeitpunkt wird in der Session gespeichert, damit die
+// Pause Screenwechsel und Reload übersteht.
+export function startBreak(ms) {
+  if (!live || !ms) return;
+  live.breakEndsAt = Date.now() + ms;
+  _saveSession();
+}
+
+export function isBreakActive() { return !!(live && live.breakEndsAt); }
+
+export function getBreakRemainingMs() {
+  if (!live || !live.breakEndsAt) return null;
+  return live.breakEndsAt - Date.now();
+}
+
+export function endBreak() {
+  if (!live || !live.breakEndsAt) return;
+  live.breakEndsAt = null;
+  _resetClock();
+  _saveSession();
+}
+
+function _resetClock() {
   live.accMs = 0;
   live.startedAt = live.running ? Date.now() : null;
+}
+
+export function resetTimer() {
+  if (!live) return;
+  _resetClock();
   _saveSession();
 }
 
@@ -162,6 +212,8 @@ export function saveMatch() {
     createdAt: live.createdAt,
     teamA: { name: live.teamA.name, color: live.teamA.color, score: live.teamA.score },
     teamB: { name: live.teamB.name, color: live.teamB.color, score: live.teamB.score },
+    sportId: live.sportId ?? null,
+    modeId: live.modeId ?? null,
     durationMs: getElapsedMs(),
     plannedMs: live.durationMs || null,
     timeoutMs: getTimeoutMs(),
@@ -197,14 +249,18 @@ export function restoreSession(s) {
   live.breakMs = live.breakMs || null;
   live.periods = live.periods || 2;
   live.currentPeriod = live.currentPeriod || 1;
-  if (live.running) {
-    live.accMs += Date.now() - s.savedAt;
-    live.startedAt = Date.now();
-  }
-  if (live.timeoutRunning) {
-    live.timeoutMs += Date.now() - s.savedAt;
-    live.timeoutStartedAt = Date.now();
-  }
+  live.accMs = Number(live.accMs) || 0;
+  live.breakEndsAt = Number(live.breakEndsAt) || null;
+  // Sportkontext ist optional: ältere Sessions ohne diese Felder bleiben gültig
+  // und werden als Allgemeinsport gelesen.
+  live.sportId = live.sportId ?? null;
+  live.modeId = live.modeId ?? null;
+  // startedAt/timeoutStartedAt sind Date.now()-Anker und bleiben unverändert:
+  // Die Laufzeit ergibt sich immer aus accMs + (jetzt − startedAt). Früher wurde
+  // hier auf savedAt neu verankert, wodurch die Zeit zwischen Start und letzter
+  // Speicherung beim Reload verloren ging.
+  if (live.running && !Number.isFinite(live.startedAt)) live.startedAt = s.savedAt;
+  if (live.timeoutRunning && !Number.isFinite(live.timeoutStartedAt)) live.timeoutStartedAt = s.savedAt;
 }
 
 function _saveSession() {
