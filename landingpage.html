@@ -135,24 +135,40 @@
          entspricht keinem Sportmodus der App. -->
     <div class="hero__art">
       <div class="art-scene" aria-hidden="true">
-        <svg class="art-marks" viewBox="0 0 520 470" focusable="false">
-          <g stroke="#ffffff" stroke-width="5" stroke-linecap="round" fill="none" opacity="0.92">
-            <path d="M52 24l34 34M86 24l-34 34"/>
+        <!-- Ebene 1: strukturierte Navy-Spielfeldfläche hinter dem Ball. -->
+        <svg class="art-field" viewBox="0 0 500 400" preserveAspectRatio="none" focusable="false">
+          <g filter="url(#tex-soft)">
+            <path d="M296 0h84L204 400h-84z" fill="#14324f" opacity="0.6"/>
+            <path d="M396 0h58L278 400h-58z" fill="#1b4066" opacity="0.45"/>
+            <path d="M472 0h28L326 400h-28z" fill="#24527f" opacity="0.3"/>
+            <ellipse cx="252" cy="205" rx="196" ry="178" fill="#16395a" opacity="0.45"/>
           </g>
-          <circle cx="94" cy="92" r="13" fill="none" stroke="#c7d3de" stroke-width="5" opacity="0.8"/>
-          <circle cx="102" cy="300" r="20" fill="none" stroke="#ffffff" stroke-width="5" opacity="0.92"/>
-          <path d="M70 118c-30 58-24 110 18 152" fill="none" stroke="#ffffff" stroke-width="4.5"
-                stroke-linecap="round" stroke-dasharray="15 15" opacity="0.85"/>
-          <path d="M88 270l6 20 18-11z" fill="#ffffff" opacity="0.92"/>
+          <g fill="none" stroke="#8fb4d2" stroke-width="7" stroke-linejoin="round" opacity="0.26">
+            <path d="M-8 322 176 258 138 400"/>
+            <path d="M52 400 214 344"/>
+            <path d="M330 400 428 366"/>
+          </g>
+        </svg>
+
+        <!-- Ebene 3: weiße/amberfarbene Bewegungsmarkierungen über dem Ball. -->
+        <svg class="art-marks" viewBox="0 0 500 400" preserveAspectRatio="none" focusable="false">
+          <g stroke="#ffffff" stroke-width="5" stroke-linecap="round" fill="none" opacity="0.94">
+            <path d="M82 33 117 72M117 33 82 72"/>
+          </g>
+          <circle cx="97" cy="102" r="11" fill="none" stroke="#c7d3de" stroke-width="4.5" opacity="0.8"/>
+          <path d="M84 122C52 190 62 262 110 298" fill="none" stroke="#ffffff" stroke-width="4.5"
+                stroke-linecap="round" stroke-dasharray="14 14" opacity="0.88"/>
+          <path d="M96 282 116 304 90 306Z" fill="#ffffff" opacity="0.94"/>
+          <circle cx="128" cy="330" r="17" fill="none" stroke="#ffffff" stroke-width="5" opacity="0.94"/>
           <g class="art-arrow">
-            <path d="M340 44c-60-22-135-16-206 9" fill="none" stroke="#f5a83c" stroke-width="6"
+            <path d="M372 92C340 42 258 20 172 28" fill="none" stroke="#f5a83c" stroke-width="6"
                   stroke-linecap="round"/>
-            <path d="M134 53l38-16-2 25z" fill="#f5a83c"/>
+            <path d="M150 28 178 15 176 42Z" fill="#f5a83c"/>
           </g>
           <g class="art-arrow art-arrow--2">
-            <path d="M212 424c94 22 164-24 196-108" fill="none" stroke="#f5a83c" stroke-width="6"
+            <path d="M226 386C318 410 392 352 410 268" fill="none" stroke="#f5a83c" stroke-width="6"
                   stroke-linecap="round"/>
-            <path d="M406 320l8 40-34-14z" fill="#f5a83c"/>
+            <path d="M412 242 424 270 398 268Z" fill="#f5a83c"/>
           </g>
         </svg>
 
@@ -299,13 +315,12 @@
 
         <li><a class="sport sport--sky" href="index.html?sport=volleyball&amp;view=exercises" data-sport-id="volleyball">
           <span class="sport__art" aria-hidden="true">
-            <svg viewBox="0 0 120 120" focusable="false">
-              <circle cx="60" cy="60" r="52" fill="#2f7fc4"/>
-              <g fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round">
-                <path d="M60 9c-17 19-23 42-17 75"/>
-                <path d="M60 9c17 19 23 42 17 75"/>
-                <path d="M11 44c25-4 48 2 69 21"/>
-                <path d="M16 96c11-21 30-34 55-36"/>
+            <svg viewBox="0 0 200 200" focusable="false">
+              <circle cx="100" cy="100" r="88" fill="#2f7fc4"/>
+              <g fill="none" stroke="#fff" stroke-width="12" stroke-linecap="round">
+                <path d="M100 12c-30 34-40 76-28 124"/>
+                <path d="M186 76c-40-10-80 2-110 34"/>
+                <path d="M46 172c10-38 36-66 78-82"/>
               </g>
             </svg>
           </span>
